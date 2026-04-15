@@ -1827,8 +1827,155 @@ def miniapp_help_text() -> str:
 
 def miniapp_home_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
-  return '<!DOCTYPE html>\n<html lang="ru">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">\n  <meta name="format-detection" content="telephone=no">\n  <title>Diamond Vault Esim</title>\n  <script src="https://telegram.org/js/telegram-web-app.js"></script>\n  <style>\n    :root {\n      --bg:#070606;\n      --bg2:#140b0b;\n      --card:#15100d;\n      --gold:#f1d18a;\n      --gold2:#ffd98b;\n      --red:#7c1117;\n      --red2:#b11b22;\n      --line:rgba(236,194,107,.24);\n      --text:#f6e8c5;\n      --muted:#c39d5e;\n      --shadow:0 18px 40px rgba(0,0,0,.34);\n    }\n    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }\n    html,body {\n      margin:0; padding:0; min-height:100%;\n      background:\n        radial-gradient(circle at top right, rgba(177,27,34,.20) 0%, rgba(177,27,34,0) 28%),\n        radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 30%),\n        linear-gradient(180deg, #18110f 0%, var(--bg2) 32%, var(--bg) 100%);\n      color:var(--text);\n      font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;\n      overscroll-behavior:none;\n      touch-action:pan-x pan-y;\n    }\n    body { min-height:100vh; }\n    a { color:inherit; }\n    .wrap { width:min(100%, 720px); margin:0 auto; padding:14px 14px 28px; }\n    .top { display:grid; grid-template-columns:1fr 74px; gap:10px; align-items:stretch; margin-bottom:12px; }\n    .brand {\n      position:relative;\n      overflow:hidden;\n      background:linear-gradient(180deg, rgba(28,18,14,.98), rgba(12,9,8,.98));\n      border:1px solid var(--line);\n      border-radius:24px;\n      padding:16px;\n      box-shadow:var(--shadow), inset 0 0 0 1px rgba(255,217,132,.04);\n    }\n    .brand:before {\n      content:"";\n      position:absolute; inset:0;\n      background:linear-gradient(115deg, rgba(255,215,136,0) 20%, rgba(255,215,136,.08) 50%, rgba(255,215,136,0) 80%);\n      transform:translateX(-120%);\n      animation:shine 7s linear infinite;\n      pointer-events:none;\n    }\n    .brand small { display:block; color:var(--muted); letter-spacing:.18em; text-transform:uppercase; font-size:11px; margin-bottom:8px; position:relative; }\n    .brand h1 { margin:0; font-size:29px; line-height:1.02; color:var(--gold2); position:relative; }\n    .brand p { margin:8px 0 0; font-size:12px; color:#d6bc8b; position:relative; }\n    .avatar {\n      width:74px; height:74px; border-radius:24px; border:1px solid var(--line);\n      background:linear-gradient(180deg, #2e2217, #100b09);\n      display:flex; align-items:center; justify-content:center; overflow:hidden;\n      box-shadow:0 10px 24px rgba(0,0,0,.3);\n    }\n    .avatar img { width:100%; height:100%; object-fit:cover; display:none; }\n    .avatar .fallback { font-size:24px; color:var(--gold2); }\n    .card {\n      background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98));\n      border:1px solid var(--line);\n      border-radius:26px;\n      overflow:hidden;\n      margin-bottom:14px;\n      box-shadow:var(--shadow);\n    }\n    .hero { position:relative; }\n    .hero img { display:block; width:100%; height:auto; }\n    .hero .overlay {\n      position:absolute; inset:auto 0 0 0; padding:14px 16px;\n      background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.78));\n      font-weight:700; color:#fff2cd;\n    }\n    .section { padding:14px; }\n    .title { margin:0 0 10px; font-size:13px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; }\n    .manual-banner {\n      position:relative;\n      display:block;\n      text-decoration:none;\n      border-radius:20px;\n      overflow:hidden;\n      border:1px solid rgba(236,194,107,.24);\n      box-shadow:0 12px 28px rgba(0,0,0,.28);\n      margin-top:10px;\n    }\n    .manual-banner img { display:block; width:100%; height:132px; object-fit:cover; object-position:center; filter:saturate(1.03) contrast(1.02); }\n    .manual-banner .cap {\n      position:absolute; inset:auto 0 0 0; padding:10px 14px;\n      background:linear-gradient(180deg, rgba(91,10,15,0) 0%, rgba(0,0,0,.82) 100%);\n    }\n    .manual-banner .cap strong { display:block; font-size:19px; color:#ffe4a6; }\n    .manual-banner .cap span { display:block; margin-top:3px; font-size:12px; color:#dfbd7c; }\n    .btn {\n      position:relative;\n      overflow:hidden;\n      width:100%; display:block; border:none; border-radius:20px; padding:16px 18px; margin:10px 0 0;\n      text-align:left; text-decoration:none;\n      background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);\n      background-size:220% 220%;\n      color:var(--text); font-size:18px; font-weight:700;\n      border:1px solid rgba(234,196,116,.30);\n      box-shadow:inset 0 0 0 1px rgba(255,214,130,.04), 0 10px 24px rgba(0,0,0,.24);\n      animation:flow 4.5s ease-in-out infinite;\n    }\n    .btn:before {\n      content:"";\n      position:absolute; top:0; left:-130%; width:88%; height:100%;\n      background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%);\n      transform:skewX(-18deg);\n      animation:sweep 3.8s linear infinite;\n      pointer-events:none;\n    }\n    .btn span { display:block; margin-top:4px; font-size:12px; color:#d7b57a; font-weight:500; position:relative; }\n    .btn.secondary {\n      text-align:center;\n      background:linear-gradient(135deg, rgba(45,16,17,.92) 0%, rgba(26,16,13,.98) 48%, rgba(10,8,7,.98) 100%);\n    }\n    @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }\n    @keyframes flow {\n      0% { background-position:0% 50%; }\n      50% { background-position:100% 50%; }\n      100% { background-position:0% 50%; }\n    }\n    @keyframes shine {\n      0% { transform:translateX(-120%); }\n      100% { transform:translateX(140%); }\n    }\n  </style>\n</head>\n<body>\n  <div class="wrap">\n    <div class="top">\n      <div class="brand">\n        <small>Diamond Vault Esim</small>\n        <h1>Главное меню</h1>\n        <p>Быстрый вход в разделы и материалы по работе.</p>\n      </div>\n      <div class="avatar" id="avatarBox">\n        <img id="tgAvatar" alt="avatar">\n        <div class="fallback" id="avatarFallback">👤</div>\n      </div>\n    </div>\n\n    <div class="card hero">\n      <img src="/mini_profile_banner.jpg" alt="banner">\n      <div class="overlay">Личный кабинет и основной доступ</div>\n    </div>\n\n    <div class="card">\n      <div class="section">\n        <div class="title">Меню</div>\n        <a class="manual-banner" href="/manuals">\n          <img src="/mini_manuals_banner.jpg" alt="manuals">\n          <div class="cap">\n            <strong>Мануалы</strong>\n            <span>Открыть раздел с инструкциями</span>\n          </div>\n        </a>\n        <a class="btn secondary" href="__BOT_LINK__">Назад в Telegram</a>\n      </div>\n    </div>\n  </div>\n<script>\n  const tg = window.Telegram?.WebApp;\n  if (tg) {\n    tg.ready(); tg.expand();\n    try { tg.disableVerticalSwipes?.(); } catch (e) {}\n    const user = tg.initDataUnsafe?.user;\n    const img = document.getElementById(\'tgAvatar\');\n    const fallback = document.getElementById(\'avatarFallback\');\n    if (user?.photo_url) { img.src = user.photo_url; img.style.display=\'block\'; fallback.style.display=\'none\'; }\n  }\n  document.addEventListener(\'gesturestart\', e => e.preventDefault());\n</script>\n</body>\n</html>'.replace("__BOT_LINK__", bot_link)
+  return '''<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
+  <title>Diamond Vault Esim</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg:#060505;
+      --bg2:#130908;
+      --card:#120d0c;
+      --gold:#f1d18a;
+      --gold2:#ffd98b;
+      --red:#7b0f16;
+      --red2:#b41e27;
+      --line:rgba(236,194,107,.24);
+      --text:#f6e8c5;
+      --muted:#c39d5e;
+      --shadow:0 18px 40px rgba(0,0,0,.34);
+    }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body {
+      margin:0; padding:0; min-height:100%;
+      background:
+        radial-gradient(circle at top right, rgba(180,28,36,.22) 0%, rgba(180,28,36,0) 28%),
+        radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 30%),
+        linear-gradient(180deg, #17100f 0%, var(--bg2) 34%, var(--bg) 100%);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      overscroll-behavior:none;
+      touch-action:pan-x pan-y;
+    }
+    body { min-height:100vh; }
+    a { color:inherit; }
+    .wrap { width:min(100%, 720px); margin:0 auto; padding:14px 14px 28px; }
+    .top { display:grid; grid-template-columns:1fr 74px; gap:10px; align-items:start; margin-bottom:12px; }
+    .brand {
+      position:relative; overflow:hidden;
+      background:linear-gradient(180deg, rgba(28,18,14,.98), rgba(12,9,8,.98));
+      border:1px solid var(--line); border-radius:24px; padding:16px;
+      box-shadow:var(--shadow), inset 0 0 0 1px rgba(255,217,132,.04);
+    }
+    .brand:before {
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(115deg, rgba(255,215,136,0) 20%, rgba(255,215,136,.08) 50%, rgba(255,215,136,0) 80%);
+      transform:translateX(-120%); animation:shine 7s linear infinite; pointer-events:none;
+    }
+    .brand small { display:block; color:var(--muted); letter-spacing:.18em; text-transform:uppercase; font-size:11px; margin-bottom:8px; position:relative; }
+    .brand h1 { margin:0; font-size:29px; line-height:1.02; color:var(--gold2); position:relative; }
+    .brand p { margin:8px 0 0; font-size:12px; color:#d6bc8b; position:relative; }
+    .avatar {
+      width:74px; height:74px; border-radius:24px; border:1px solid var(--line);
+      background:linear-gradient(180deg, #2e2217, #100b09);
+      display:flex; align-items:center; justify-content:center; overflow:hidden;
+      box-shadow:0 10px 24px rgba(0,0,0,.3);
+    }
+    .avatar img { width:100%; height:100%; object-fit:cover; display:none; }
+    .avatar .fallback { font-size:24px; color:var(--gold2); }
+    .card {
+      background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98));
+      border:1px solid var(--line); border-radius:26px; overflow:hidden; margin-bottom:14px; box-shadow:var(--shadow);
+    }
+    .hero { position:relative; }
+    .hero img { display:block; width:100%; height:220px; object-fit:cover; object-position:center; }
+    .hero .overlay {
+      position:absolute; inset:auto 0 0 0; padding:14px 16px;
+      background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.78)); font-weight:700; color:#fff2cd;
+    }
+    .section { padding:14px; }
+    .title { margin:0 0 10px; font-size:13px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; }
+    .manual-banner {
+      position:relative; display:block; text-decoration:none; border-radius:20px; overflow:hidden;
+      border:1px solid rgba(236,194,107,.24); box-shadow:0 12px 28px rgba(0,0,0,.28); margin-top:10px;
+      transform:translateZ(0);
+    }
+    .manual-banner img { display:block; width:100%; height:108px; object-fit:cover; object-position:center; filter:saturate(1.03) contrast(1.02); }
+    .manual-banner .cap {
+      position:absolute; inset:auto 0 0 0; padding:10px 14px;
+      background:linear-gradient(180deg, rgba(91,10,15,0) 0%, rgba(0,0,0,.82) 100%);
+    }
+    .manual-banner .cap strong { display:block; font-size:18px; color:#ffe4a6; }
+    .manual-banner .cap span { display:block; margin-top:3px; font-size:12px; color:#dfbd7c; }
+    .btn {
+      position:relative; overflow:hidden; width:100%; display:block; border:none; border-radius:20px; padding:16px 18px; margin:10px 0 0;
+      text-align:left; text-decoration:none; background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);
+      background-size:220% 220%; color:var(--text); font-size:18px; font-weight:700;
+      border:1px solid rgba(234,196,116,.30); box-shadow:inset 0 0 0 1px rgba(255,214,130,.04), 0 10px 24px rgba(0,0,0,.24);
+      animation:flow 4.5s ease-in-out infinite;
+    }
+    .btn:before {
+      content:""; position:absolute; top:0; left:-130%; width:88%; height:100%;
+      background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%);
+      transform:skewX(-18deg); animation:sweep 3.8s linear infinite; pointer-events:none;
+    }
+    .btn.secondary { text-align:center; background:linear-gradient(135deg, rgba(45,16,17,.92) 0%, rgba(26,16,13,.98) 48%, rgba(10,8,7,.98) 100%); }
+    @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }
+    @keyframes flow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+    @keyframes shine { 0% { transform:translateX(-120%); } 100% { transform:translateX(140%); } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <small>Diamond Vault Esim</small>
+        <h1>Главное меню</h1>
+        <p>Быстрый вход в разделы и материалы по работе.</p>
+      </div>
+      <div class="avatar" id="avatarBox">
+        <img id="tgAvatar" alt="avatar">
+        <div class="fallback" id="avatarFallback">👤</div>
+      </div>
+    </div>
 
+    <a class="card hero" href="#" aria-label="Личный кабинет">
+      <img src="/mini_profile_banner.jpg" alt="banner">
+      <div class="overlay">Личный кабинет и основной доступ</div>
+    </a>
+
+    <div class="card">
+      <div class="section">
+        <div class="title">Меню</div>
+        <a class="manual-banner" href="/manuals">
+          <img src="/mini_manuals_banner.jpg" alt="manuals">
+          <div class="cap">
+            <strong>Мануалы</strong>
+            <span>Открыть раздел с инструкциями</span>
+          </div>
+        </a>
+        <a class="btn secondary" href="__BOT_LINK__">Назад в Telegram</a>
+      </div>
+    </div>
+  </div>
+<script>
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready(); tg.expand();
+    try { tg.disableVerticalSwipes?.(); } catch (e) {}
+    const user = tg.initDataUnsafe?.user;
+    const img = document.getElementById('tgAvatar');
+    const fallback = document.getElementById('avatarFallback');
+    if (user?.photo_url) { img.src = user.photo_url; img.style.display='block'; fallback.style.display='none'; }
+  }
+  document.addEventListener('gesturestart', e => e.preventDefault());
+</script>
+</body>
+</html>'''.replace("__BOT_LINK__", bot_link)
 
 async def miniapp_index(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
@@ -1837,12 +1984,289 @@ async def miniapp_index(request):
 
 def miniapp_manuals_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
-  return '<!DOCTYPE html>\n<html lang="ru">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">\n  <title>Мануалы</title>\n  <script src="https://telegram.org/js/telegram-web-app.js"></script>\n  <style>\n    :root {\n      --bg:#070606; --bg2:#130b0b; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e;\n    }\n    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }\n    html,body {\n      margin:0; padding:0;\n      background:\n        radial-gradient(circle at top right, rgba(177,27,34,.18) 0%, rgba(177,27,34,0) 28%),\n        radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 28%),\n        linear-gradient(180deg, #17100e 0%, var(--bg2) 34%, var(--bg) 100%);\n      color:var(--text);\n      font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;\n      overscroll-behavior:none; touch-action:pan-x pan-y;\n    }\n    .wrap { width:min(100%, 720px); margin:0 auto; padding:14px 14px 28px; }\n    .hero {\n      background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98));\n      border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 14px 35px rgba(0,0,0,.30);\n    }\n    .mini-banner {\n      margin:14px 14px 0; border-radius:18px; overflow:hidden; border:1px solid rgba(236,194,107,.24);\n      box-shadow:0 10px 24px rgba(0,0,0,.24);\n    }\n    .mini-banner img { display:block; width:100%; height:116px; object-fit:cover; object-position:center; }\n    .hero .cap { padding:14px 16px 16px; }\n    .hero .cap small { display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }\n    .hero .cap h1 { margin:0; color:var(--gold2); font-size:38px; line-height:.95; }\n    .hero .cap p { margin:8px 0 0; color:#d9bb82; font-size:13px; }\n    .list {\n      margin-top:14px; background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98));\n      border:1px solid var(--line); border-radius:24px; padding:14px; box-shadow:0 14px 35px rgba(0,0,0,.26);\n    }\n    .item, .back {\n      position:relative; overflow:hidden;\n      width:100%; display:block; text-decoration:none; text-align:center; padding:18px 16px; border-radius:999px; margin:12px 0 0;\n      color:var(--text);\n      background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);\n      background-size:220% 220%;\n      border:1px solid rgba(234,196,116,.28); font-size:18px; font-weight:700;\n      animation:flow 4.5s ease-in-out infinite;\n      box-shadow:0 10px 22px rgba(0,0,0,.22);\n    }\n    .item:before, .back:before {\n      content:""; position:absolute; top:0; left:-130%; width:88%; height:100%;\n      background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%);\n      transform:skewX(-18deg); animation:sweep 3.8s linear infinite; pointer-events:none;\n    }\n    .back {\n      background:linear-gradient(135deg, rgba(43,15,17,.92) 0%, rgba(22,15,13,.98) 42%, rgba(10,8,7,.98) 100%);\n    }\n    @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }\n    @keyframes flow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }\n  </style>\n</head>\n<body>\n<div class="wrap">\n  <div class="hero">\n    <div class="mini-banner">\n      <img src="/mini_manuals_banner.jpg" alt="manuals">\n    </div>\n    <div class="cap">\n      <small>Diamond Vault Esim</small>\n      <h1>Мануалы</h1>\n      <p>Выбери нужное направление и переходи к материалам.</p>\n    </div>\n  </div>\n\n  <div class="list">\n    <a class="item" href="#">Основы работы</a>\n    <a class="item" href="#">MTC ESIM</a>\n    <a class="item" href="#">Билайн ESIM</a>\n    <a class="item" href="#">ВТБ, Газпром ESIM</a>\n    <a class="back" href="/">Назад</a>\n    <a class="back" href="__BOT_LINK__">Открыть бота в Telegram</a>\n  </div>\n</div>\n<script>\n  const tg = window.Telegram?.WebApp;\n  if (tg) { tg.ready(); tg.expand(); try { tg.disableVerticalSwipes?.(); } catch (e) {} }\n  document.addEventListener(\'gesturestart\', e => e.preventDefault());\n</script>\n</body>\n</html>'.replace("__BOT_LINK__", bot_link)
+  return '''<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Мануалы</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg:#070606; --bg2:#130b0b; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e;
+      --red:#7b0f16; --red2:#b41e27;
+    }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body {
+      margin:0; padding:0;
+      background:
+        radial-gradient(circle at top right, rgba(177,27,34,.18) 0%, rgba(177,27,34,0) 28%),
+        radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 28%),
+        linear-gradient(180deg, #17100e 0%, var(--bg2) 34%, var(--bg) 100%);
+      color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      overscroll-behavior:none; touch-action:pan-x pan-y;
+    }
+    .wrap { width:min(100%, 720px); margin:0 auto; padding:14px 14px 28px; }
+    .hero {
+      background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98));
+      border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 14px 35px rgba(0,0,0,.30);
+    }
+    .mini-banner {
+      margin:14px 14px 0; border-radius:18px; overflow:hidden; border:1px solid rgba(236,194,107,.24);
+      box-shadow:0 10px 24px rgba(0,0,0,.24);
+    }
+    .mini-banner img { display:block; width:100%; height:92px; object-fit:cover; object-position:center; }
+    .hero .cap { padding:14px 16px 16px; }
+    .hero .cap small { display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }
+    .hero .cap h1 { margin:0; color:var(--gold2); font-size:38px; line-height:.95; }
+    .hero .cap p { margin:8px 0 0; color:#d9bb82; font-size:13px; }
+    .list {
+      margin-top:14px; background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98));
+      border:1px solid var(--line); border-radius:24px; padding:14px; box-shadow:0 14px 35px rgba(0,0,0,.26);
+    }
+    .item, .back {
+      position:relative; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
+      text-decoration:none; text-align:center; padding:18px 74px; border-radius:999px; margin:12px 0 0;
+      color:var(--text); background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);
+      background-size:220% 220%; border:1px solid rgba(234,196,116,.28); font-size:18px; font-weight:700;
+      animation:flow 4.5s ease-in-out infinite; box-shadow:0 10px 22px rgba(0,0,0,.22);
+      min-height:74px;
+    }
+    .item:before, .back:before {
+      content:""; position:absolute; top:0; left:-130%; width:88%; height:100%;
+      background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%);
+      transform:skewX(-18deg); animation:sweep 3.8s linear infinite; pointer-events:none;
+    }
+    .back { background:linear-gradient(135deg, rgba(43,15,17,.92) 0%, rgba(22,15,13,.98) 42%, rgba(10,8,7,.98) 100%); }
+    .label { position:relative; z-index:2; }
+    .orbit {
+      position:absolute; top:50%; width:98px; height:52px; transform:translateY(-50%); pointer-events:none; z-index:2;
+    }
+    .orbit.left { left:10px; }
+    .orbit.right { right:10px; }
+    .orbit img {
+      position:absolute; width:24px; height:24px; object-fit:contain; filter:drop-shadow(0 0 8px rgba(255,215,130,.25));
+      animation:spin 6s linear infinite, pulse 2.5s ease-in-out infinite;
+    }
+    .orbit.right img { animation-direction:reverse, normal; }
+    .orbit img:nth-child(1) { top:0; left:36px; animation-delay:0s, .1s; }
+    .orbit img:nth-child(2) { top:14px; left:72px; animation-delay:-1.3s, .6s; }
+    .orbit img:nth-child(3) { top:28px; left:36px; animation-delay:-2.6s, 1.1s; }
+    .orbit img:nth-child(4) { top:14px; left:0; animation-delay:-3.9s, 1.6s; }
+    .pair {
+      position:absolute; top:50%; transform:translateY(-50%); width:66px; height:34px; z-index:2; pointer-events:none;
+    }
+    .pair.left { left:10px; }
+    .pair.right { right:10px; }
+    .pair img {
+      position:absolute; top:50%; width:26px; height:26px; object-fit:contain; transform:translateY(-50%);
+      animation:glow 2.8s ease-in-out infinite;
+      filter:drop-shadow(0 0 8px rgba(255,215,130,.24));
+    }
+    .pair.left img:nth-child(1), .pair.right img:nth-child(1) { left:0; }
+    .pair.left img:nth-child(2), .pair.right img:nth-child(2) { right:0; animation-delay:1.2s; }
+    .swap img { animation:swapA 5s ease-in-out infinite, glow 2.6s ease-in-out infinite; }
+    .swap img:last-child { animation:swapB 5s ease-in-out infinite, glow 2.6s ease-in-out infinite; }
+    .pair.right.swap img { animation-name:swapB, glow; }
+    .pair.right.swap img:last-child { animation-name:swapA, glow; }
+    @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }
+    @keyframes flow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+    @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+    @keyframes pulse { 0%,100% { opacity:.72; } 50% { opacity:1; } }
+    @keyframes glow { 0%,100% { opacity:.72; transform:translateY(-50%) scale(.96); } 50% { opacity:1; transform:translateY(-50%) scale(1.06); } }
+    @keyframes swapA { 0%,100% { left:0; } 50% { left:40px; } }
+    @keyframes swapB { 0%,100% { left:40px; } 50% { left:0; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="mini-banner">
+      <img src="/mini_manuals_banner.jpg" alt="manuals">
+    </div>
+    <div class="cap">
+      <small>Diamond Vault Esim</small>
+      <h1>Мануалы</h1>
+      <p>Выбери нужное направление и переходи к материалам.</p>
+    </div>
+  </div>
 
+  <div class="list">
+    <a class="item" href="/manuals/basics">
+      <span class="orbit left">
+        <img src="/mts_logo.jpg" alt="mts">
+        <img src="/bil_logo.png" alt="bil">
+        <img src="/vtb_logo.png" alt="vtb">
+        <img src="/gaz_logo.png" alt="gaz">
+      </span>
+      <span class="label">Основы работы</span>
+      <span class="orbit right">
+        <img src="/mts_logo.jpg" alt="mts">
+        <img src="/bil_logo.png" alt="bil">
+        <img src="/vtb_logo.png" alt="vtb">
+        <img src="/gaz_logo.png" alt="gaz">
+      </span>
+    </a>
+    <a class="item" href="#">
+      <span class="pair left"><img src="/mts_logo.jpg" alt="mts"><img src="/mts_logo.jpg" alt="mts"></span>
+      <span class="label">MTC ESIM</span>
+      <span class="pair right"><img src="/mts_logo.jpg" alt="mts"><img src="/mts_logo.jpg" alt="mts"></span>
+    </a>
+    <a class="item" href="#">
+      <span class="pair left"><img src="/bil_logo.png" alt="bil"><img src="/bil_logo.png" alt="bil"></span>
+      <span class="label">Билайн ESIM</span>
+      <span class="pair right"><img src="/bil_logo.png" alt="bil"><img src="/bil_logo.png" alt="bil"></span>
+    </a>
+    <a class="item" href="#">
+      <span class="pair left swap"><img src="/vtb_logo.png" alt="vtb"><img src="/gaz_logo.png" alt="gaz"></span>
+      <span class="label">ВТБ, Газпром ESIM</span>
+      <span class="pair right swap"><img src="/gaz_logo.png" alt="gaz"><img src="/vtb_logo.png" alt="vtb"></span>
+    </a>
+    <a class="back" href="/">Назад</a>
+    <a class="back" href="__BOT_LINK__">Открыть бота в Telegram</a>
+  </div>
+</div>
+<script>
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); try { tg.disableVerticalSwipes?.(); } catch (e) {} }
+  document.addEventListener('gesturestart', e => e.preventDefault());
+</script>
+</body>
+</html>'''.replace("__BOT_LINK__", bot_link)
+
+def miniapp_basics_html(bot_username: str) -> str:
+  bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
+  submit_link = "https://t.me/DiamondVaultE_bot"
+  return '''<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Основы работы</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root { --bg:#070606; --bg2:#130b0b; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e; }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body {
+      margin:0; padding:0;
+      background: radial-gradient(circle at top right, rgba(177,27,34,.18) 0%, rgba(177,27,34,0) 28%), radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 28%), linear-gradient(180deg, #17100e 0%, var(--bg2) 34%, var(--bg) 100%);
+      color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y;
+    }
+    .wrap { width:min(100%, 760px); margin:0 auto; padding:14px 14px 30px; }
+    .hero, .card {
+      background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 14px 35px rgba(0,0,0,.30);
+    }
+    .hero { padding:18px 16px; position:relative; overflow:hidden; }
+    .hero:before, .card:before {
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background:linear-gradient(110deg, rgba(255,217,138,0) 12%, rgba(255,217,138,.06) 36%, rgba(255,217,138,0) 60%);
+      transform:translateX(-140%); animation:shine 8s linear infinite;
+    }
+    .eyebrow { color:var(--muted); text-transform:uppercase; letter-spacing:.15em; font-size:11px; margin-bottom:8px; position:relative; }
+    h1 { margin:0; color:var(--gold2); font-size:34px; line-height:1; position:relative; }
+    .lead { margin:10px 0 0; color:#ddc08a; font-size:14px; position:relative; }
+    .warn {
+      margin-top:14px; padding:14px; border-radius:18px; background:linear-gradient(135deg, rgba(112,14,20,.88), rgba(31,15,11,.98));
+      border:1px solid rgba(234,196,116,.24); color:#fff0c8; box-shadow:0 8px 22px rgba(0,0,0,.22); position:relative;
+    }
+    .warn strong { color:#ffd98b; }
+    .card { margin-top:14px; position:relative; padding:16px; }
+    .section-title { margin:0 0 10px; color:var(--gold2); font-size:24px; }
+    .section-sub { margin:0 0 12px; color:#ddc08a; font-size:14px; }
+    .points { display:grid; gap:10px; }
+    .point {
+      position:relative; padding:14px 14px 14px 44px; border-radius:18px; background:linear-gradient(180deg, rgba(17,13,10,.94), rgba(10,8,7,.98));
+      border:1px solid rgba(234,196,116,.16); box-shadow:0 8px 20px rgba(0,0,0,.18);
+    }
+    .point:before {
+      content:""; position:absolute; left:16px; top:18px; width:12px; height:12px; border-radius:999px;
+      background:radial-gradient(circle at center, #ffd98b 0%, #bf7a29 75%, rgba(0,0,0,0) 76%); box-shadow:0 0 18px rgba(255,217,138,.24);
+    }
+    .point b { color:#fff0c8; }
+    .links a, .cta, .back {
+      display:flex; align-items:center; justify-content:center; text-decoration:none; border-radius:18px; padding:15px 18px; margin-top:12px;
+      background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);
+      background-size:220% 220%; color:var(--text); font-weight:800; border:1px solid rgba(234,196,116,.28);
+      box-shadow:0 10px 22px rgba(0,0,0,.22); animation:flow 4.5s ease-in-out infinite; position:relative; overflow:hidden;
+    }
+    .links a:before, .cta:before, .back:before {
+      content:""; position:absolute; top:0; left:-130%; width:88%; height:100%; background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%); transform:skewX(-18deg); animation:sweep 3.8s linear infinite;
+    }
+    .links { display:grid; gap:10px; margin-top:8px; }
+    .muted { color:#cfb07a; font-size:13px; }
+    @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }
+    @keyframes flow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+    @keyframes shine { 0% { transform:translateX(-140%); } 100% { transform:translateX(140%); } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Diamond Vault Esim</div>
+    <h1>Основы работы с E‑SIM</h1>
+    <p class="lead">Удобная стартовая памятка для новичков: что подготовить, как пройти путь оформления и куда передать QR после выпуска.</p>
+    <div class="warn"><strong>Важно:</strong> если у вас Android, для этой связки используйте DuckDuckGo вместо Dolphin Anty.</div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Часть 1 · Что подготовить заранее</h2>
+    <p class="section-sub">Базовый набор, чтобы процесс шёл ровно и без лишних вопросов.</p>
+    <div class="points">
+      <div class="point"><b>Отдельный Telegram-аккаунт.</b> Лучше держать рабочие материалы и уведомления отдельно от личного профиля.</div>
+      <div class="point"><b>Подходящий браузер и стабильная среда.</b> Для Android здесь лучше использовать DuckDuckGo.</div>
+      <div class="point"><b>Аккуратность в работе.</b> Не смешивайте личные и рабочие данные, храните ссылки и заметки в одном месте.</div>
+      <div class="point"><b>Платёжный способ.</b> Подготовьте карту или счёт, который вы используете именно для оплаты тарифов операторов.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Часть 2 · Как обычно проходит оформление</h2>
+    <p class="section-sub">У большинства операторов путь похожий, поэтому общий принцип здесь один.</p>
+    <div class="points">
+      <div class="point"><b>Шаг 1.</b> Выберите нужного оператора и регион оформления.</div>
+      <div class="point"><b>Шаг 2.</b> Пройдите выпуск eSIM через официальный сценарий выбранного оператора.</div>
+      <div class="point"><b>Шаг 3.</b> После завершения сохраните номер и QR-код, чтобы не потерять данные.</div>
+      <div class="point"><b>Шаг 4.</b> Подготовьте QR к передаче в бота вместе с номером.</div>
+    </div>
+    <div class="links">
+      <a href="https://stavropol.mts.ru/personal" target="_blank" rel="noopener">Открыть МТС</a>
+      <a href="https://stavropol.beeline.ru/customers/products" target="_blank" rel="noopener">Открыть Билайн</a>
+      <a href="https://stavropol.megafon.ru/" target="_blank" rel="noopener">Открыть МегаФон</a>
+      <a href="https://stavropol.t2.ru/promo/esim?ysclid=mnk8zobow6764619581" target="_blank" rel="noopener">Открыть T2</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Часть 3 · Передача в бота</h2>
+    <p class="section-sub">Когда QR уже на руках, дальше всё просто.</p>
+    <div class="points">
+      <div class="point"><b>Сдаём QR в бота.</b> Откройте бота и передайте QR-код вместе с номером, к которому он относится.</div>
+      <div class="point"><b>Проверяйте подписи.</b> Перед отправкой убедитесь, что номер и QR не перепутаны между собой.</div>
+      <div class="point"><b>Храните копию до подтверждения.</b> Не удаляйте материалы, пока не завершите цикл полностью.</div>
+    </div>
+    <a class="cta" href="__SUBMIT_LINK__">Перейти в бота для сдачи QR</a>
+    <div class="muted" style="margin-top:10px;">QR‑код отправляется вместе с номером — так его удобнее проверить и обработать без путаницы.</div>
+  </div>
+
+  <a class="back" href="/manuals">Назад к мануалам</a>
+  <a class="back" href="__BOT_LINK__">Открыть бота в Telegram</a>
+</div>
+<script>
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); try { tg.disableVerticalSwipes?.(); } catch (e) {} }
+  document.addEventListener('gesturestart', e => e.preventDefault());
+</script>
+</body>
+</html>'''.replace("__BOT_LINK__", bot_link).replace("__SUBMIT_LINK__", submit_link)
 
 async def miniapp_manuals(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
   return web.Response(text=miniapp_manuals_html(username), content_type='text/html', charset='utf-8')
+
+
+async def miniapp_basics(request):
+  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
+  return web.Response(text=miniapp_basics_html(username), content_type='text/html', charset='utf-8')
 
 
 async def miniapp_profile_banner(request):
@@ -1853,12 +2277,33 @@ async def miniapp_manuals_banner(request):
   return web.FileResponse(Path(MINI_MANUALS_BANNER))
 
 
+async def miniapp_mts_logo(request):
+  return web.FileResponse(Path('mts_logo.jpg'))
+
+
+async def miniapp_bil_logo(request):
+  return web.FileResponse(Path('bil_logo.png'))
+
+
+async def miniapp_vtb_logo(request):
+  return web.FileResponse(Path('vtb_logo.png'))
+
+
+async def miniapp_gaz_logo(request):
+  return web.FileResponse(Path('gaz_logo.png'))
+
+
 async def run_web_server():
   app = web.Application()
   app.router.add_get('/', miniapp_index)
   app.router.add_get('/manuals', miniapp_manuals)
+  app.router.add_get('/manuals/basics', miniapp_basics)
   app.router.add_get('/mini_profile_banner.jpg', miniapp_profile_banner)
   app.router.add_get('/mini_manuals_banner.jpg', miniapp_manuals_banner)
+  app.router.add_get('/mts_logo.jpg', miniapp_mts_logo)
+  app.router.add_get('/bil_logo.png', miniapp_bil_logo)
+  app.router.add_get('/vtb_logo.png', miniapp_vtb_logo)
+  app.router.add_get('/gaz_logo.png', miniapp_gaz_logo)
   runner = web.AppRunner(app)
   await runner.setup()
   site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
