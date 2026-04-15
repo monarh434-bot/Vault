@@ -2012,7 +2012,7 @@ def miniapp_manuals_html(bot_username: str) -> str:
       margin:14px 14px 0; border-radius:18px; overflow:hidden; border:1px solid rgba(236,194,107,.24);
       box-shadow:0 10px 24px rgba(0,0,0,.24);
     }
-    .mini-banner img { display:block; width:100%; height:92px; object-fit:cover; object-position:center; }
+    .mini-banner img { display:block; width:100%; height:84px; object-fit:cover; object-position:center; }
     .hero .cap { padding:14px 16px 16px; }
     .hero .cap small { display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }
     .hero .cap h1 { margin:0; color:var(--gold2); font-size:38px; line-height:.95; }
@@ -2023,7 +2023,7 @@ def miniapp_manuals_html(bot_username: str) -> str:
     }
     .item, .back {
       position:relative; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
-      text-decoration:none; text-align:center; padding:18px 86px; border-radius:999px; margin:12px 0 0;
+      text-decoration:none; text-align:center; padding:18px 92px; border-radius:999px; margin:12px 0 0;
       color:var(--text); background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);
       background-size:220% 220%; border:1px solid rgba(234,196,116,.28); font-size:18px; font-weight:700;
       animation:flow 4.5s ease-in-out infinite; box-shadow:0 10px 22px rgba(0,0,0,.22);
@@ -2036,21 +2036,20 @@ def miniapp_manuals_html(bot_username: str) -> str:
     }
     .back { background:linear-gradient(135deg, rgba(43,15,17,.92) 0%, rgba(22,15,13,.98) 42%, rgba(10,8,7,.98) 100%); }
     .label { position:relative; z-index:2; }
-    .quartet { position:absolute; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px; z-index:2; pointer-events:none; }
-    .quartet.left { left:14px; }
-    .quartet.right { right:14px; }
-    .pair { position:absolute; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px; z-index:2; pointer-events:none; }
-    .pair { width:auto; }
+    .orbitbox, .pair {
+      position:absolute; top:50%; transform:translateY(-50%); display:flex; align-items:center; justify-content:space-between; z-index:2; pointer-events:none;
+    }
+    .orbitbox { width:82px; }
+    .pair { width:52px; }
     .left { left:16px; }
     .right { right:16px; }
-    .quartet img, .pair img {
-      width:28px; height:28px; object-fit:contain; filter:drop-shadow(0 0 10px rgba(255,215,130,.18)); image-rendering:auto;
+    .orbitbox img, .pair img {
+      width:34px; height:34px; object-fit:contain; filter:drop-shadow(0 0 12px rgba(255,215,130,.20)); image-rendering:auto;
     }
-    .quartet img { animation:floatLogo 3.2s ease-in-out infinite, pulse 2.5s ease-in-out infinite; }
-    .quartet img:nth-child(2) { animation-delay:-.8s, -.4s; }
+    .orbitbox img { animation:floatLogo 3.1s ease-in-out infinite, pulse 2.5s ease-in-out infinite; }
+    .orbitbox img:nth-child(2) { animation-delay:-1.55s, -.7s; }
     .mtspair img, .bilpair img { animation:pulseGlow 2.6s ease-in-out infinite; }
-    .pair.left { left:18px; }
-    .pair.right { right:18px; }
+    
     .swap img { animation:swapA 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
     .swap img:nth-child(2) { animation:swapB 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
     .pair.right.swap img { animation:swapB 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
@@ -2078,9 +2077,9 @@ def miniapp_manuals_html(bot_username: str) -> str:
 
   <div class="list">
     <a class="item" href="/manuals/basics">
-      <span class="quartet left"><img src="/mts_logo.jpg" alt="mts"><img src="/vtb_logo.png" alt="vtb"></span>
+      <span class="orbitbox left"><img src="/mts_logo.jpg" alt="mts"><img src="/vtb_logo.png" alt="vtb"></span>
       <span class="label">Основы работы</span>
-      <span class="quartet right"><img src="/bil_logo.png" alt="bil"><img src="/gaz_logo.png" alt="gaz"></span>
+      <span class="orbitbox right"><img src="/bil_logo.png" alt="bil"><img src="/gaz_logo.png" alt="gaz"></span>
     </a>
     <a class="item" href="#">
       <span class="pair left mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
@@ -2215,37 +2214,11 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
   pieces.append(f'<a class="back" href="{escape(bot_link)}">Открыть бота в Telegram</a>')
   return "\n".join(pieces)
 
-def miniapp_default_basics_content(bot_username: str) -> str:
-  bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
-  submit_link = miniapp_submit_link()
-  return f"""
-  <div class=\"warn\"><strong>Важно:</strong> Для Android используйте браузер DuckDuckGo. Материалы на этой странице можно потом заменить своим текстом через админку mini app.</div>
-
-  <div class=\"card\">
-    <h2 class=\"section-title\">Как заполнить страницу</h2>
-    <p class=\"section-sub\">Экран уже рабочий. Теперь его можно редактировать прямо из бота без перезалива проекта.</p>
-    <div class=\"points\">
-      <div class=\"point\">Открой админку и перейди в <b>🧩 Настройки Mini App</b>.</div>
-      <div class=\"point\">Нажми <b>✍️ Текст «Основы работы»</b> и отправь новый материал одним сообщением.</div>
-      <div class=\"point\">Через <b>🤖 Бот для кнопки QR</b> можно сменить ссылку, куда ведёт кнопка сдачи QR.</div>
-    </div>
-  </div>
-
-  <div class=\"card\">
-    <h2 class=\"section-title\">Быстрые действия</h2>
-    <div class=\"links\">
-      <a href=\"{escape(submit_link)}\">Перейти в бота для сдачи QR</a>
-      <a href=\"/manuals\">Назад к мануалам</a>
-      <a href=\"{escape(bot_link)}\">Открыть бота в Telegram</a>
-    </div>
-  </div>
-  """
-
 def miniapp_basics_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
   custom_html = miniapp_render_custom_basics(db.get_setting('miniapp_basics_text', '') or '', bot_username)
-  content = custom_html or miniapp_default_basics_content(bot_username)
-  return '''<!DOCTYPE html>
+  if custom_html:
+    return '''<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
@@ -2255,26 +2228,53 @@ def miniapp_basics_html(bot_username: str) -> str:
   <style>
     :root { --bg:#070606; --bg2:#130b0b; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e; }
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html,body { margin:0; padding:0; background: radial-gradient(circle at top right, rgba(177,27,34,.18) 0%, rgba(177,27,34,0) 28%), radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 28%), linear-gradient(180deg, #17100e 0%, var(--bg2) 34%, var(--bg) 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }
+    html,body {
+      margin:0; padding:0;
+      background: radial-gradient(circle at top right, rgba(177,27,34,.18) 0%, rgba(177,27,34,0) 28%), radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 28%), linear-gradient(180deg, #17100e 0%, var(--bg2) 34%, var(--bg) 100%);
+      color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y;
+    }
     .wrap { width:min(100%, 760px); margin:0 auto; padding:14px 14px 30px; }
-    .hero, .card { background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 14px 35px rgba(0,0,0,.30); }
+    .hero, .card {
+      background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 14px 35px rgba(0,0,0,.30);
+    }
     .hero { padding:18px 16px; position:relative; overflow:hidden; }
-    .hero:before, .card:before { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(110deg, rgba(255,217,138,0) 12%, rgba(255,217,138,.06) 36%, rgba(255,217,138,0) 60%); transform:translateX(-140%); animation:shine 8s linear infinite; }
+    .hero:before, .card:before {
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background:linear-gradient(110deg, rgba(255,217,138,0) 12%, rgba(255,217,138,.06) 36%, rgba(255,217,138,0) 60%);
+      transform:translateX(-140%); animation:shine 8s linear infinite;
+    }
     .eyebrow { color:var(--muted); text-transform:uppercase; letter-spacing:.15em; font-size:11px; margin-bottom:8px; position:relative; }
     h1 { margin:0; color:var(--gold2); font-size:34px; line-height:1; position:relative; }
     .lead { margin:10px 0 0; color:#ddc08a; font-size:14px; position:relative; }
-    .warn { margin-top:14px; padding:14px; border-radius:18px; background:linear-gradient(135deg, rgba(112,14,20,.88), rgba(31,15,11,.98)); border:1px solid rgba(234,196,116,.24); color:#fff0c8; box-shadow:0 8px 22px rgba(0,0,0,.22); position:relative; }
+    .warn {
+      margin-top:14px; padding:14px; border-radius:18px; background:linear-gradient(135deg, rgba(112,14,20,.88), rgba(31,15,11,.98));
+      border:1px solid rgba(234,196,116,.24); color:#fff0c8; box-shadow:0 8px 22px rgba(0,0,0,.22); position:relative;
+    }
     .warn strong { color:#ffd98b; }
     .card { margin-top:14px; position:relative; padding:16px; }
     .section-title { margin:0 0 10px; color:var(--gold2); font-size:24px; }
     .section-sub { margin:0 0 12px; color:#ddc08a; font-size:14px; }
     .points { display:grid; gap:10px; }
-    .point { position:relative; padding:14px 14px 14px 44px; border-radius:18px; background:linear-gradient(180deg, rgba(17,13,10,.94), rgba(10,8,7,.98)); border:1px solid rgba(234,196,116,.16); box-shadow:0 8px 20px rgba(0,0,0,.18); }
-    .point:before { content:""; position:absolute; left:16px; top:18px; width:12px; height:12px; border-radius:999px; background:radial-gradient(circle at center, #ffd98b 0%, #bf7a29 75%, rgba(0,0,0,0) 76%); box-shadow:0 0 18px rgba(255,217,138,.24); }
+    .point {
+      position:relative; padding:14px 14px 14px 44px; border-radius:18px; background:linear-gradient(180deg, rgba(17,13,10,.94), rgba(10,8,7,.98));
+      border:1px solid rgba(234,196,116,.16); box-shadow:0 8px 20px rgba(0,0,0,.18);
+    }
+    .point:before {
+      content:""; position:absolute; left:16px; top:18px; width:12px; height:12px; border-radius:999px;
+      background:radial-gradient(circle at center, #ffd98b 0%, #bf7a29 75%, rgba(0,0,0,0) 76%); box-shadow:0 0 18px rgba(255,217,138,.24);
+    }
     .point b { color:#fff0c8; }
-    .links a, .cta, .back { display:flex; align-items:center; justify-content:center; text-decoration:none; border-radius:18px; padding:15px 18px; margin-top:12px; background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%); background-size:220% 220%; color:var(--text); font-weight:800; border:1px solid rgba(234,196,116,.28); box-shadow:0 10px 22px rgba(0,0,0,.22); animation:flow 4.5s ease-in-out infinite; position:relative; overflow:hidden; }
-    .links a:before, .cta:before, .back:before { content:""; position:absolute; top:0; left:-130%; width:88%; height:100%; background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%); transform:skewX(-18deg); animation:sweep 3.8s linear infinite; }
+    .links a, .cta, .back {
+      display:flex; align-items:center; justify-content:center; text-decoration:none; border-radius:18px; padding:15px 18px; margin-top:12px;
+      background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);
+      background-size:220% 220%; color:var(--text); font-weight:800; border:1px solid rgba(234,196,116,.28);
+      box-shadow:0 10px 22px rgba(0,0,0,.22); animation:flow 4.5s ease-in-out infinite; position:relative; overflow:hidden;
+    }
+    .links a:before, .cta:before, .back:before {
+      content:""; position:absolute; top:0; left:-130%; width:88%; height:100%; background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%); transform:skewX(-18deg); animation:sweep 3.8s linear infinite;
+    }
     .links { display:grid; gap:10px; margin-top:8px; }
+    .muted { color:#cfb07a; font-size:13px; }
     @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }
     @keyframes flow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
     @keyframes shine { 0% { transform:translateX(-140%); } 100% { transform:translateX(140%); } }
@@ -2285,7 +2285,7 @@ def miniapp_basics_html(bot_username: str) -> str:
   <div class="hero">
     <div class="eyebrow">Diamond Vault Esim</div>
     <h1>Основы работы с E‑SIM</h1>
-    <p class="lead">Удобная стартовая памятка. Эту страницу можно настраивать прямо из админки mini app.</p>
+    <p class="lead">Удобная стартовая памятка для новичков: что подготовить, как пройти путь оформления и куда передать QR после выпуска.</p>
   </div>
   __CUSTOM_CONTENT__
 </div>
@@ -2295,7 +2295,7 @@ def miniapp_basics_html(bot_username: str) -> str:
   document.addEventListener('gesturestart', e => e.preventDefault());
 </script>
 </body>
-</html>'''.replace("__CUSTOM_CONTENT__", content).replace("__BOT_LINK__", bot_link)
+</html>'''.replace("__CUSTOM_CONTENT__", custom_html).replace("__BOT_LINK__", bot_link)
 
 async def miniapp_manuals(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
@@ -3658,74 +3658,6 @@ async def start_cmd(message: Message, state: FSMContext):
   await remove_reply_keyboard(message)
   await send_banner_message(message, db.get_setting('start_banner_path', START_BANNER), render_start(message.from_user.id), main_menu())
 
-
-
-@router.callback_query(F.data == "admin:miniapp_settings")
-async def admin_miniapp_settings(callback: CallbackQuery):
-  if not is_admin(callback.from_user.id):
-    return
-  await safe_edit_or_send(callback, render_miniapp_settings(), reply_markup=miniapp_settings_kb())
-  await callback.answer()
-
-@router.callback_query(F.data == "admin:miniapp_set_text")
-async def admin_miniapp_set_text(callback: CallbackQuery, state: FSMContext):
-  if not is_admin(callback.from_user.id):
-    return
-  await state.set_state(AdminStates.waiting_miniapp_text)
-  await callback.message.answer(
-    """Отправьте новый текст для страницы <b>«Основы работы»</b> одним сообщением.
-
-Mini App сам оформит его в карточки, акценты, ссылки и кнопки."""
-  )
-  await callback.answer()
-
-@router.callback_query(F.data == "admin:miniapp_set_submit_bot")
-async def admin_miniapp_set_submit_bot(callback: CallbackQuery, state: FSMContext):
-  if not is_admin(callback.from_user.id):
-    return
-  await state.set_state(AdminStates.waiting_miniapp_submit_bot)
-  current = (db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot') or '@DiamondVaultE_bot').strip()
-  await callback.message.answer(
-    f"""Отправьте @username бота или полную ссылку, куда должна вести кнопка сдачи QR.
-
-Сейчас: <code>{escape(current)}</code>"""
-  )
-  await callback.answer()
-
-@router.callback_query(F.data == "admin:miniapp_reset_text")
-async def admin_miniapp_reset_text(callback: CallbackQuery, state: FSMContext):
-  if not is_admin(callback.from_user.id):
-    return
-  db.set_setting('miniapp_basics_text', '')
-  await state.clear()
-  await safe_edit_or_send(callback, render_miniapp_settings(), reply_markup=miniapp_settings_kb())
-  await callback.answer("Текст сброшен")
-
-@router.message(AdminStates.waiting_miniapp_text)
-async def admin_miniapp_text_value(message: Message, state: FSMContext):
-  if not is_admin(message.from_user.id):
-    return
-  raw = (message.html_text or message.text or '').strip()
-  if not raw:
-    await message.answer("Отправьте текст одним сообщением.")
-    return
-  db.set_setting('miniapp_basics_text', raw)
-  await state.clear()
-  await message.answer("✅ Текст для Mini App обновлён.")
-  await message.answer(render_miniapp_settings(), reply_markup=miniapp_settings_kb())
-
-@router.message(AdminStates.waiting_miniapp_submit_bot)
-async def admin_miniapp_submit_bot_value(message: Message, state: FSMContext):
-  if not is_admin(message.from_user.id):
-    return
-  raw = (message.text or '').strip()
-  if not raw:
-    await message.answer("Отправьте @username или ссылку.")
-    return
-  db.set_setting('miniapp_submit_bot', raw)
-  await state.clear()
-  await message.answer("✅ Кнопка сдачи QR обновлена.")
-  await message.answer(render_miniapp_settings(), reply_markup=miniapp_settings_kb())
 
 @router.message(Command("miniapp"))
 async def miniapp_cmd(message: Message, state: FSMContext):
