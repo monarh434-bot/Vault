@@ -23,8 +23,9 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import BufferedInputFile, CallbackQuery, FSInputFile, Message, ForceReply, InlineKeyboardButton
+from aiogram.types import BufferedInputFile, CallbackQuery, FSInputFile, Message, ForceReply, InlineKeyboardButton, MenuButtonWebApp, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiohttp import web
 
 # =========================================================
 # CONFIG - ALL IN ONE FILE
@@ -66,6 +67,11 @@ PROFILE_BANNER = "profile_banner.jpg"
 MY_NUMBERS_BANNER = "my_numbers_banner.jpg"
 WITHDRAW_BANNER = "withdraw_banner.jpg"
 MSK_OFFSET = timedelta(hours=3)
+WEBAPP_HOST = "0.0.0.0"
+WEBAPP_PORT = int(__import__("os").getenv("PORT", "8080"))
+WEBAPP_BASE_URL = (__import__("os").getenv("WEBAPP_BASE_URL") or "").rstrip("/")
+MINI_PROFILE_BANNER = "mini_profile_banner.jpg"
+MINI_MANUALS_BANNER = "mini_manuals_banner.jpg"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", handlers=[logging.StreamHandler(), logging.FileHandler("bot.log", mode="a", encoding="utf-8")])
 logging.info("Railway logging enabled: stdout + bot.log")
@@ -1261,6 +1267,7 @@ def main_menu():
   kb.button(text="👤 Личный кабинет", callback_data="menu:profile")
   kb.button(text="👥 Реф. система", callback_data="menu:ref")
   kb.button(text="🏦 Вывод средств", callback_data="menu:withdraw")
+  kb.button(text="✨ Mini App", callback_data="menu:miniapp")
   kb.button(text="🔗 Зеркало", callback_data="menu:mirror")
   kb.adjust(1)
   return kb.as_markup()
@@ -1781,6 +1788,83 @@ def referral_kb(user_id: int):
   kb.button(text="🏠 На главную", callback_data="menu:home")
   kb.adjust(1)
   return kb.as_markup()
+
+
+
+def webapp_base_url() -> str:
+  if WEBAPP_BASE_URL:
+    return WEBAPP_BASE_URL
+  cached = (db.get_setting("webapp_base_url", "") or "").strip().rstrip("/")
+  return cached
+
+
+def miniapp_url(path: str = "/") -> str:
+  base = webapp_base_url()
+  if not base:
+    return ""
+  return f"{base}{path}"
+
+
+def miniapp_home_kb():
+  kb = InlineKeyboardBuilder()
+  url = miniapp_url('/')
+  if url:
+    kb.button(text="✨ Открыть Mini App", web_app=WebAppInfo(url=url))
+  else:
+    kb.button(text="ℹ️ Mini App не настроен", callback_data="miniapp:help")
+  kb.button(text="🏠 На главную", callback_data="menu:home")
+  kb.adjust(1)
+  return kb.as_markup()
+
+
+def miniapp_help_text() -> str:
+  return (
+    "<b>✨ Mini App</b>\n\n"
+    "Укажи домен Railway в переменной <code>WEBAPP_BASE_URL</code>, чтобы встроенное меню открывалось прямо внутри Telegram.\n\n"
+    "<b>Пример:</b> <code>https://your-project.up.railway.app</code>"
+  )
+
+
+def miniapp_home_html(bot_username: str) -> str:
+  bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me"
+  return '<!DOCTYPE html>\n<html lang="ru">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">\n  <meta name="format-detection" content="telephone=no">\n  <title>Diamond Vault Esim</title>\n  <script src="https://telegram.org/js/telegram-web-app.js"></script>\n  <style>\n    :root {\n      --bg:#0a0907; --card:#13100c; --gold2:#f1d18a; --line:rgba(216,179,106,.28); --text:#f6e8c5; --muted:#b89a61;\n    }\n    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }\n    html,body { margin:0; padding:0; background:radial-gradient(circle at top, #2a1f0d 0%, var(--bg) 45%, #050505 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }\n    body { min-height:100vh; }\n    .wrap { width:min(100%, 720px); margin:0 auto; padding:14px 14px 28px; }\n    .top { display:grid; grid-template-columns:1fr 74px; gap:10px; align-items:end; margin-bottom:12px; }\n    .brand { background:linear-gradient(180deg, rgba(24,19,13,.96), rgba(10,8,6,.96)); border:1px solid var(--line); border-radius:22px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,217,132,.05); }\n    .brand small { display:block; color:var(--muted); letter-spacing:.18em; text-transform:uppercase; font-size:11px; margin-bottom:8px; }\n    .brand h1 { margin:0; font-size:28px; line-height:1.02; color:var(--gold2); }\n    .avatar { width:74px; height:74px; border-radius:22px; border:1px solid var(--line); background:linear-gradient(180deg, #2c2112, #0e0b07); display:flex; align-items:center; justify-content:center; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.26); }\n    .avatar img { width:100%; height:100%; object-fit:cover; display:none; }\n    .avatar .fallback { font-size:24px; color:var(--gold2); }\n    .card { background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); border:1px solid var(--line); border-radius:24px; overflow:hidden; margin-bottom:14px; box-shadow:0 14px 35px rgba(0,0,0,.28); }\n    .hero { position:relative; }\n    .hero img { display:block; width:100%; height:auto; }\n    .hero .overlay { position:absolute; inset:auto 0 0 0; padding:14px 16px; background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.72)); font-weight:700; color:#fff2cd; }\n    .section { padding:14px; }\n    .title { margin:0 0 10px; font-size:13px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; }\n    .btn { width:100%; display:block; border:none; border-radius:20px; padding:16px 18px; margin:10px 0 0; text-align:left; text-decoration:none; background:linear-gradient(180deg, rgba(46,34,17,.98), rgba(20,15,10,.98)); color:var(--text); font-size:19px; font-weight:700; border:1px solid rgba(234,196,116,.28); box-shadow:inset 0 0 0 1px rgba(255,214,130,.04); }\n    .btn span { display:block; margin-top:4px; font-size:12px; color:var(--muted); font-weight:500; }\n    .btn.secondary { text-align:center; }\n  </style>\n</head>\n<body>\n  <div class="wrap">\n    <div class="top">\n      <div class="brand">\n        <small>Diamond Vault Esim</small>\n        <h1>Главное меню</h1>\n      </div>\n      <div class="avatar" id="avatarBox">\n        <img id="tgAvatar" alt="avatar">\n        <div class="fallback" id="avatarFallback">👤</div>\n      </div>\n    </div>\n\n    <div class="card hero">\n      <img src="/mini_profile_banner.jpg" alt="banner">\n      <div class="overlay">Личный кабинет и быстрый доступ</div>\n    </div>\n\n    <div class="card">\n      <div class="section">\n        <div class="title">Разделы</div>\n        <a class="btn" href="/manuals">Мануалы<span>Инструкции и направления по работе</span></a>\n        <a class="btn secondary" href="__BOT_LINK__">Назад в Telegram</a>\n      </div>\n    </div>\n  </div>\n<script>\n  const tg = window.Telegram?.WebApp;\n  if (tg) {\n    tg.ready(); tg.expand();\n    try { tg.disableVerticalSwipes?.(); } catch (e) {}\n    const user = tg.initDataUnsafe?.user;\n    const img = document.getElementById(\'tgAvatar\');\n    const fallback = document.getElementById(\'avatarFallback\');\n    if (user?.photo_url) { img.src = user.photo_url; img.style.display=\'block\'; fallback.style.display=\'none\'; }\n  }\n  document.addEventListener(\'gesturestart\', e => e.preventDefault());\n</script>\n</body>\n</html>'.replace("__BOT_LINK__", bot_link)
+
+
+def miniapp_manuals_html(bot_username: str) -> str:
+  bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me"
+  return '<!DOCTYPE html>\n<html lang="ru">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">\n  <title>Мануалы</title>\n  <script src="https://telegram.org/js/telegram-web-app.js"></script>\n  <style>\n    :root { --bg:#090806; --gold2:#f1d18a; --line:rgba(216,179,106,.28); --text:#f6e8c5; --muted:#b89a61; }\n    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }\n    html,body { margin:0; padding:0; background:radial-gradient(circle at top, #2a1f0d 0%, var(--bg) 48%, #040404 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }\n    .wrap { width:min(100%, 720px); margin:0 auto; padding:14px 14px 28px; }\n    .hero { background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 14px 35px rgba(0,0,0,.28); }\n    .hero img { display:block; width:100%; height:auto; }\n    .hero .cap { padding:14px 16px 16px; }\n    .hero .cap small { display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }\n    .hero .cap h1 { margin:0; color:var(--gold2); font-size:44px; line-height:.95; }\n    .list { margin-top:14px; background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); border:1px solid var(--line); border-radius:24px; padding:14px; }\n    .item, .back { width:100%; display:block; text-decoration:none; text-align:center; padding:18px 16px; border-radius:999px; margin:12px 0 0; color:var(--text); background:linear-gradient(180deg, rgba(46,34,17,.98), rgba(20,15,10,.98)); border:1px solid rgba(234,196,116,.28); font-size:18px; font-weight:700; }\n    .back { background:transparent; border:1px solid var(--line); }\n  </style>\n</head>\n<body>\n<div class="wrap">\n  <div class="hero">\n    <img src="/mini_manuals_banner.jpg" alt="manuals">\n    <div class="cap">\n      <small>Diamond Vault Esim</small>\n      <h1>Мануалы</h1>\n    </div>\n  </div>\n\n  <div class="list">\n    <a class="item" href="#">Основы работы</a>\n    <a class="item" href="#">MTC ESIM</a>\n    <a class="item" href="#">Билайн ESIM</a>\n    <a class="item" href="#">ВТБ, Газпром ESIM</a>\n    <a class="back" href="/">Назад</a>\n    <a class="back" href="__BOT_LINK__">Открыть бота в Telegram</a>\n  </div>\n</div>\n<script>\n  const tg = window.Telegram?.WebApp;\n  if (tg) { tg.ready(); tg.expand(); try { tg.disableVerticalSwipes?.(); } catch (e) {} }\n  document.addEventListener(\'gesturestart\', e => e.preventDefault());\n</script>\n</body>\n</html>'.replace("__BOT_LINK__", bot_link)
+
+
+async def miniapp_index(request):
+  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
+  return web.Response(text=miniapp_home_html(username), content_type='text/html', charset='utf-8')
+
+
+async def miniapp_manuals(request):
+  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
+  return web.Response(text=miniapp_manuals_html(username), content_type='text/html', charset='utf-8')
+
+
+async def miniapp_profile_banner(request):
+  return web.FileResponse(Path(MINI_PROFILE_BANNER))
+
+
+async def miniapp_manuals_banner(request):
+  return web.FileResponse(Path(MINI_MANUALS_BANNER))
+
+
+async def run_web_server():
+  app = web.Application()
+  app.router.add_get('/', miniapp_index)
+  app.router.add_get('/manuals', miniapp_manuals)
+  app.router.add_get('/mini_profile_banner.jpg', miniapp_profile_banner)
+  app.router.add_get('/mini_manuals_banner.jpg', miniapp_manuals_banner)
+  runner = web.AppRunner(app)
+  await runner.setup()
+  site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
+  await site.start()
+  logging.info('Mini App started on %s:%s', WEBAPP_HOST, WEBAPP_PORT)
+  return runner
 
 
 def render_start(user_id: int) -> str:
@@ -3064,6 +3148,28 @@ async def start_cmd(message: Message, state: FSMContext):
     return
   await remove_reply_keyboard(message)
   await send_banner_message(message, db.get_setting('start_banner_path', START_BANNER), render_start(message.from_user.id), main_menu())
+
+
+@router.message(Command("miniapp"))
+async def miniapp_cmd(message: Message, state: FSMContext):
+  await state.clear()
+  await remove_reply_keyboard(message)
+  if not await ensure_required_subscription_entity(message, message.bot, message.from_user.id):
+    return
+  await send_banner_message(message, db.get_setting('profile_banner_path', PROFILE_BANNER), '<b>✨ Mini App</b>\n\nВстроенное меню Diamond Vault Esim открывается отдельным окном внутри Telegram.', miniapp_home_kb())
+
+
+@router.callback_query(F.data == "menu:miniapp")
+async def menu_miniapp(callback: CallbackQuery, state: FSMContext):
+  await state.clear()
+  await replace_banner_message(callback, db.get_setting('profile_banner_path', PROFILE_BANNER), '<b>✨ Mini App</b>\n\nВстроенное меню Diamond Vault Esim открывается отдельным окном внутри Telegram.', miniapp_home_kb())
+  await callback.answer()
+
+
+@router.callback_query(F.data == "miniapp:help")
+async def miniapp_help(callback: CallbackQuery):
+  await callback.answer()
+  await callback.message.answer(miniapp_help_text())
 
 
 @router.callback_query(F.data == "noop")
@@ -7545,9 +7651,16 @@ async def main():
   asyncio.create_task(hold_watcher(primary_bot))
   asyncio.create_task(backup_watcher(primary_bot))
 
+  await run_web_server()
+
   try:
     me = await primary_bot.get_me()
     db.set_setting('bot_username_cached', me.username or BOT_USERNAME_FALLBACK)
+    if WEBAPP_BASE_URL:
+      try:
+        await primary_bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="Diamond Vault Esim", web_app=WebAppInfo(url=miniapp_url('/'))))
+      except Exception:
+        logging.exception("set_chat_menu_button failed")
     logging.info("Primary bot started as @%s", me.username or BOT_USERNAME_FALLBACK)
     logging.info("Anti-crash recovery complete; holds and queue state restored")
   except Exception:
