@@ -2040,7 +2040,7 @@ def miniapp_manuals_html(bot_username: str) -> str:
       position:absolute; top:50%; transform:translateY(-50%); display:flex; align-items:center; justify-content:space-between; z-index:2; pointer-events:none;
     }
     .orbitbox { width:82px; }
-    .pair { width:74px; }
+    .pair { width:52px; }
     .left { left:16px; }
     .right { right:16px; }
     .orbitbox img, .pair img {
@@ -2049,7 +2049,7 @@ def miniapp_manuals_html(bot_username: str) -> str:
     .orbitbox img { animation:floatLogo 3.1s ease-in-out infinite, pulse 2.5s ease-in-out infinite; }
     .orbitbox img:nth-child(2) { animation-delay:-1.55s, -.7s; }
     .mtspair img, .bilpair img { animation:pulseGlow 2.6s ease-in-out infinite; }
-    .mtspair img:nth-child(2), .bilpair img:nth-child(2) { animation-delay:-1.3s; }
+    
     .swap img { animation:swapA 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
     .swap img:nth-child(2) { animation:swapB 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
     .pair.right.swap img { animation:swapB 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
@@ -2082,14 +2082,14 @@ def miniapp_manuals_html(bot_username: str) -> str:
       <span class="orbitbox right"><img src="/bil_logo.png" alt="bil"><img src="/gaz_logo.png" alt="gaz"></span>
     </a>
     <a class="item" href="#">
-      <span class="pair left mtspair"><img src="/mts_logo.jpg" alt="mts"><img src="/mts_logo.jpg" alt="mts"></span>
+      <span class="pair left mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
       <span class="label">МТС ESIM</span>
-      <span class="pair right mtspair"><img src="/mts_logo.jpg" alt="mts"><img src="/mts_logo.jpg" alt="mts"></span>
+      <span class="pair right mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
     </a>
     <a class="item" href="#">
-      <span class="pair left bilpair"><img src="/bil_logo.png" alt="bil"><img src="/bil_logo.png" alt="bil"></span>
+      <span class="pair left bilpair"><img src="/bil_logo.png" alt="bil"></span>
       <span class="label">Билайн ESIM</span>
-      <span class="pair right bilpair"><img src="/bil_logo.png" alt="bil"><img src="/bil_logo.png" alt="bil"></span>
+      <span class="pair right bilpair"><img src="/bil_logo.png" alt="bil"></span>
     </a>
     <a class="item" href="#">
       <span class="pair left swap"><img src="/vtb_logo.png" alt="vtb"><img src="/gaz_logo.png" alt="gaz"></span>
@@ -2335,7 +2335,9 @@ async def run_web_server():
   app = web.Application()
   app.router.add_get('/', miniapp_index)
   app.router.add_get('/manuals', miniapp_manuals)
+  app.router.add_get('/manuals/', miniapp_manuals)
   app.router.add_get('/manuals/basics', miniapp_basics)
+  app.router.add_get('/manuals/basics/', miniapp_basics)
   app.router.add_get('/mini_profile_banner.jpg', miniapp_profile_banner)
   app.router.add_get('/mini_manuals_banner.jpg', miniapp_manuals_banner)
   app.router.add_get('/mts_logo.jpg', miniapp_mts_logo)
