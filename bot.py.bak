@@ -171,6 +171,8 @@ class AdminStates(StatesGroup):
   waiting_remove_operator = State()
   waiting_remove_group = State()
   waiting_summary_date = State()
+  waiting_miniapp_text = State()
+  waiting_miniapp_submit_bot = State()
 
 
 @dataclass
@@ -1943,11 +1945,6 @@ def miniapp_home_html(bot_username: str) -> str:
       </div>
     </div>
 
-    <a class="card hero" href="#" aria-label="Личный кабинет">
-      <img src="/mini_profile_banner.jpg" alt="banner">
-      <div class="overlay">Личный кабинет и основной доступ</div>
-    </a>
-
     <div class="card">
       <div class="section">
         <div class="title">Меню</div>
@@ -2015,7 +2012,7 @@ def miniapp_manuals_html(bot_username: str) -> str:
       margin:14px 14px 0; border-radius:18px; overflow:hidden; border:1px solid rgba(236,194,107,.24);
       box-shadow:0 10px 24px rgba(0,0,0,.24);
     }
-    .mini-banner img { display:block; width:100%; height:92px; object-fit:cover; object-position:center; }
+    .mini-banner img { display:block; width:100%; height:84px; object-fit:cover; object-position:center; }
     .hero .cap { padding:14px 16px 16px; }
     .hero .cap small { display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }
     .hero .cap h1 { margin:0; color:var(--gold2); font-size:38px; line-height:.95; }
@@ -2026,11 +2023,11 @@ def miniapp_manuals_html(bot_username: str) -> str:
     }
     .item, .back {
       position:relative; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
-      text-decoration:none; text-align:center; padding:18px 74px; border-radius:999px; margin:12px 0 0;
+      text-decoration:none; text-align:center; padding:18px 92px; border-radius:999px; margin:12px 0 0;
       color:var(--text); background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);
       background-size:220% 220%; border:1px solid rgba(234,196,116,.28); font-size:18px; font-weight:700;
       animation:flow 4.5s ease-in-out infinite; box-shadow:0 10px 22px rgba(0,0,0,.22);
-      min-height:74px;
+      min-height:78px;
     }
     .item:before, .back:before {
       content:""; position:absolute; top:0; left:-130%; width:88%; height:100%;
@@ -2039,44 +2036,31 @@ def miniapp_manuals_html(bot_username: str) -> str:
     }
     .back { background:linear-gradient(135deg, rgba(43,15,17,.92) 0%, rgba(22,15,13,.98) 42%, rgba(10,8,7,.98) 100%); }
     .label { position:relative; z-index:2; }
-    .orbit {
-      position:absolute; top:50%; width:98px; height:52px; transform:translateY(-50%); pointer-events:none; z-index:2;
+    .orbitbox, .pair {
+      position:absolute; top:50%; transform:translateY(-50%); display:flex; align-items:center; justify-content:space-between; z-index:2; pointer-events:none;
     }
-    .orbit.left { left:10px; }
-    .orbit.right { right:10px; }
-    .orbit img {
-      position:absolute; width:24px; height:24px; object-fit:contain; filter:drop-shadow(0 0 8px rgba(255,215,130,.25));
-      animation:spin 6s linear infinite, pulse 2.5s ease-in-out infinite;
+    .orbitbox { width:82px; }
+    .pair { width:74px; }
+    .left { left:16px; }
+    .right { right:16px; }
+    .orbitbox img, .pair img {
+      width:34px; height:34px; object-fit:contain; filter:drop-shadow(0 0 12px rgba(255,215,130,.20)); image-rendering:auto;
     }
-    .orbit.right img { animation-direction:reverse, normal; }
-    .orbit img:nth-child(1) { top:0; left:36px; animation-delay:0s, .1s; }
-    .orbit img:nth-child(2) { top:14px; left:72px; animation-delay:-1.3s, .6s; }
-    .orbit img:nth-child(3) { top:28px; left:36px; animation-delay:-2.6s, 1.1s; }
-    .orbit img:nth-child(4) { top:14px; left:0; animation-delay:-3.9s, 1.6s; }
-    .pair {
-      position:absolute; top:50%; transform:translateY(-50%); width:66px; height:34px; z-index:2; pointer-events:none;
-    }
-    .pair.left { left:10px; }
-    .pair.right { right:10px; }
-    .pair img {
-      position:absolute; top:50%; width:26px; height:26px; object-fit:contain; transform:translateY(-50%);
-      animation:glow 2.8s ease-in-out infinite;
-      filter:drop-shadow(0 0 8px rgba(255,215,130,.24));
-    }
-    .pair.left img:nth-child(1), .pair.right img:nth-child(1) { left:0; }
-    .pair.left img:nth-child(2), .pair.right img:nth-child(2) { right:0; animation-delay:1.2s; }
-    .swap img { animation:swapA 5s ease-in-out infinite, glow 2.6s ease-in-out infinite; }
-    .swap img:last-child { animation:swapB 5s ease-in-out infinite, glow 2.6s ease-in-out infinite; }
-    .pair.right.swap img { animation-name:swapB, glow; }
-    .pair.right.swap img:last-child { animation-name:swapA, glow; }
+    .orbitbox img { animation:floatLogo 3.1s ease-in-out infinite, pulse 2.5s ease-in-out infinite; }
+    .orbitbox img:nth-child(2) { animation-delay:-1.55s, -.7s; }
+    .mtspair img, .bilpair img { animation:pulseGlow 2.6s ease-in-out infinite; }
+    .mtspair img:nth-child(2), .bilpair img:nth-child(2) { animation-delay:-1.3s; }
+    .swap img { animation:swapA 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
+    .swap img:nth-child(2) { animation:swapB 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
+    .pair.right.swap img { animation:swapB 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
+    .pair.right.swap img:nth-child(2) { animation:swapA 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
     @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }
     @keyframes flow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
-    @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-    @keyframes pulse { 0%,100% { opacity:.72; } 50% { opacity:1; } }
-    @keyframes glow { 0%,100% { opacity:.72; transform:translateY(-50%) scale(.96); } 50% { opacity:1; transform:translateY(-50%) scale(1.06); } }
-    @keyframes swapA { 0%,100% { left:0; } 50% { left:40px; } }
-    @keyframes swapB { 0%,100% { left:40px; } 50% { left:0; } }
-  </style>
+    @keyframes floatLogo { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-4px) scale(1.06); } }
+    @keyframes pulse { 0%,100% { opacity:.82; } 50% { opacity:1; } }
+    @keyframes pulseGlow { 0%,100% { transform:scale(.96); opacity:.88; } 50% { transform:scale(1.08); opacity:1; } }
+    @keyframes swapA { 0%,100% { transform:translateX(0); } 50% { transform:translateX(40px); } }
+    @keyframes swapB { 0%,100% { transform:translateX(40px); } 50% { transform:translateX(0); } }  </style>
 </head>
 <body>
 <div class="wrap">
@@ -2093,29 +2077,19 @@ def miniapp_manuals_html(bot_username: str) -> str:
 
   <div class="list">
     <a class="item" href="/manuals/basics">
-      <span class="orbit left">
-        <img src="/mts_logo.jpg" alt="mts">
-        <img src="/bil_logo.png" alt="bil">
-        <img src="/vtb_logo.png" alt="vtb">
-        <img src="/gaz_logo.png" alt="gaz">
-      </span>
+      <span class="orbitbox left"><img src="/mts_logo.jpg" alt="mts"><img src="/vtb_logo.png" alt="vtb"></span>
       <span class="label">Основы работы</span>
-      <span class="orbit right">
-        <img src="/mts_logo.jpg" alt="mts">
-        <img src="/bil_logo.png" alt="bil">
-        <img src="/vtb_logo.png" alt="vtb">
-        <img src="/gaz_logo.png" alt="gaz">
-      </span>
+      <span class="orbitbox right"><img src="/bil_logo.png" alt="bil"><img src="/gaz_logo.png" alt="gaz"></span>
     </a>
     <a class="item" href="#">
-      <span class="pair left"><img src="/mts_logo.jpg" alt="mts"><img src="/mts_logo.jpg" alt="mts"></span>
-      <span class="label">MTC ESIM</span>
-      <span class="pair right"><img src="/mts_logo.jpg" alt="mts"><img src="/mts_logo.jpg" alt="mts"></span>
+      <span class="pair left mtspair"><img src="/mts_logo.jpg" alt="mts"><img src="/mts_logo.jpg" alt="mts"></span>
+      <span class="label">МТС ESIM</span>
+      <span class="pair right mtspair"><img src="/mts_logo.jpg" alt="mts"><img src="/mts_logo.jpg" alt="mts"></span>
     </a>
     <a class="item" href="#">
-      <span class="pair left"><img src="/bil_logo.png" alt="bil"><img src="/bil_logo.png" alt="bil"></span>
+      <span class="pair left bilpair"><img src="/bil_logo.png" alt="bil"><img src="/bil_logo.png" alt="bil"></span>
       <span class="label">Билайн ESIM</span>
-      <span class="pair right"><img src="/bil_logo.png" alt="bil"><img src="/bil_logo.png" alt="bil"></span>
+      <span class="pair right bilpair"><img src="/bil_logo.png" alt="bil"><img src="/bil_logo.png" alt="bil"></span>
     </a>
     <a class="item" href="#">
       <span class="pair left swap"><img src="/vtb_logo.png" alt="vtb"><img src="/gaz_logo.png" alt="gaz"></span>
@@ -2134,10 +2108,117 @@ def miniapp_manuals_html(bot_username: str) -> str:
 </body>
 </html>'''.replace("__BOT_LINK__", bot_link)
 
+
+def miniapp_submit_link() -> str:
+  raw = (db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot') or '@DiamondVaultE_bot').strip()
+  if raw.startswith('http://') or raw.startswith('https://'):
+    return raw
+  if raw.startswith('@'):
+    return f"https://t.me/{raw[1:]}"
+  raw = raw.lstrip('/')
+  return f"https://t.me/{raw}"
+
+def miniapp_parse_custom_basics(raw: str):
+  import re as _re
+  blocks = []
+  current = None
+  important = []
+  links = []
+  cta = None
+  def ensure_card(title, subtitle=''):
+    nonlocal current
+    if current is None or current.get('title') != title:
+      current = {'title': title, 'subtitle': subtitle, 'items': [], 'paras': []}
+      blocks.append(current)
+    return current
+  for src in (raw or '').splitlines():
+    line = src.strip()
+    if not line:
+      continue
+    urls = _re.findall(r'https?://\S+', line)
+    tg_mention = _re.search(r'@([A-Za-z0-9_]{5,})', line)
+    if urls and len(line) <= 180:
+      for u in urls:
+        clean = u.rstrip(').,;]')
+        label = clean.replace('https://','').replace('http://','')
+        if ' - ' in line:
+          maybe = line.split(' - ',1)[1].strip()
+          if maybe and maybe != clean:
+            label = maybe
+        links.append((label[:60], clean))
+      continue
+    if tg_mention and ('бот' in line.lower() or 'сдаем' in line.lower() or 'сдаём' in line.lower()):
+      cta = f"https://t.me/{tg_mention.group(1)}"
+      continue
+    upper = line.upper()
+    if line.startswith('ВАЖНО') or ('ВАЖНО' in upper and len(line) < 220):
+      important.append(line)
+      continue
+    if line.lower().startswith('часть '):
+      title = line.replace(':','').strip()
+      current = {'title': title, 'subtitle': '', 'items': [], 'paras': []}
+      blocks.append(current)
+      continue
+    if line.startswith(('•','-','—','*')):
+      ensure_card('Раздел')
+      current['items'].append(line.lstrip('•-—* ').strip())
+      continue
+    if len(line) < 48 and not line.endswith('.') and not line.endswith('!') and not line.endswith('?') and line.count(':') <= 1:
+      current = {'title': line.rstrip(':'), 'subtitle': '', 'items': [], 'paras': []}
+      blocks.append(current)
+      continue
+    ensure_card('Материал')
+    current['paras'].append(line)
+  if not blocks:
+    return None
+  return {'important': important, 'blocks': blocks, 'links': links, 'cta': cta}
+
+def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
+  parsed = miniapp_parse_custom_basics(raw)
+  if not parsed:
+    return ''
+  bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
+  submit_link = parsed.get('cta') or miniapp_submit_link()
+  pieces = []
+  for msg in parsed['important']:
+    pieces.append(f'<div class="warn"><strong>Важно:</strong> {escape(msg.replace("ВАЖНО!", "").replace("ВАЖНО:", "").strip() or msg)}</div>')
+  for idx, block in enumerate(parsed['blocks'], 1):
+    title = escape(block['title'])
+    subtitle = escape(block.get('subtitle',''))
+    pieces.append('<div class="card">')
+    pieces.append(f'<h2 class="section-title">{title}</h2>')
+    if subtitle:
+      pieces.append(f'<p class="section-sub">{subtitle}</p>')
+    if block['paras'] or block['items']:
+      pieces.append('<div class="points">')
+      for para in block['paras']:
+        pieces.append(f'<div class="point">{escape(para)}</div>')
+      for item in block['items']:
+        pieces.append(f'<div class="point"><b>•</b> {escape(item)}</div>')
+      pieces.append('</div>')
+    pieces.append('</div>')
+  if parsed['links']:
+    pieces.append('<div class="card"><h2 class="section-title">Полезные ссылки</h2><div class="links">')
+    seen=set()
+    for label,url in parsed['links']:
+      if url in seen: continue
+      seen.add(url)
+      pieces.append(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(label)}</a>')
+    pieces.append('</div></div>')
+  pieces.append('<div class="card">')
+  pieces.append('<h2 class="section-title">Сдача QR</h2>')
+  pieces.append('<p class="section-sub">Когда материалы готовы, открой бота и передай QR вместе с номером.</p>')
+  pieces.append(f'<a class="cta" href="{escape(submit_link)}">Перейти в бота для сдачи QR</a>')
+  pieces.append('</div>')
+  pieces.append(f'<a class="back" href="/manuals">Назад к мануалам</a>')
+  pieces.append(f'<a class="back" href="{escape(bot_link)}">Открыть бота в Telegram</a>')
+  return "\n".join(pieces)
+
 def miniapp_basics_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
-  submit_link = "https://t.me/DiamondVaultE_bot"
-  return '''<!DOCTYPE html>
+  custom_html = miniapp_render_custom_basics(db.get_setting('miniapp_basics_text', '') or '', bot_username)
+  if custom_html:
+    return '''<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
@@ -2205,51 +2286,8 @@ def miniapp_basics_html(bot_username: str) -> str:
     <div class="eyebrow">Diamond Vault Esim</div>
     <h1>Основы работы с E‑SIM</h1>
     <p class="lead">Удобная стартовая памятка для новичков: что подготовить, как пройти путь оформления и куда передать QR после выпуска.</p>
-    <div class="warn"><strong>Важно:</strong> если у вас Android, для этой связки используйте DuckDuckGo вместо Dolphin Anty.</div>
   </div>
-
-  <div class="card">
-    <h2 class="section-title">Часть 1 · Что подготовить заранее</h2>
-    <p class="section-sub">Базовый набор, чтобы процесс шёл ровно и без лишних вопросов.</p>
-    <div class="points">
-      <div class="point"><b>Отдельный Telegram-аккаунт.</b> Лучше держать рабочие материалы и уведомления отдельно от личного профиля.</div>
-      <div class="point"><b>Подходящий браузер и стабильная среда.</b> Для Android здесь лучше использовать DuckDuckGo.</div>
-      <div class="point"><b>Аккуратность в работе.</b> Не смешивайте личные и рабочие данные, храните ссылки и заметки в одном месте.</div>
-      <div class="point"><b>Платёжный способ.</b> Подготовьте карту или счёт, который вы используете именно для оплаты тарифов операторов.</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2 class="section-title">Часть 2 · Как обычно проходит оформление</h2>
-    <p class="section-sub">У большинства операторов путь похожий, поэтому общий принцип здесь один.</p>
-    <div class="points">
-      <div class="point"><b>Шаг 1.</b> Выберите нужного оператора и регион оформления.</div>
-      <div class="point"><b>Шаг 2.</b> Пройдите выпуск eSIM через официальный сценарий выбранного оператора.</div>
-      <div class="point"><b>Шаг 3.</b> После завершения сохраните номер и QR-код, чтобы не потерять данные.</div>
-      <div class="point"><b>Шаг 4.</b> Подготовьте QR к передаче в бота вместе с номером.</div>
-    </div>
-    <div class="links">
-      <a href="https://stavropol.mts.ru/personal" target="_blank" rel="noopener">Открыть МТС</a>
-      <a href="https://stavropol.beeline.ru/customers/products" target="_blank" rel="noopener">Открыть Билайн</a>
-      <a href="https://stavropol.megafon.ru/" target="_blank" rel="noopener">Открыть МегаФон</a>
-      <a href="https://stavropol.t2.ru/promo/esim?ysclid=mnk8zobow6764619581" target="_blank" rel="noopener">Открыть T2</a>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2 class="section-title">Часть 3 · Передача в бота</h2>
-    <p class="section-sub">Когда QR уже на руках, дальше всё просто.</p>
-    <div class="points">
-      <div class="point"><b>Сдаём QR в бота.</b> Откройте бота и передайте QR-код вместе с номером, к которому он относится.</div>
-      <div class="point"><b>Проверяйте подписи.</b> Перед отправкой убедитесь, что номер и QR не перепутаны между собой.</div>
-      <div class="point"><b>Храните копию до подтверждения.</b> Не удаляйте материалы, пока не завершите цикл полностью.</div>
-    </div>
-    <a class="cta" href="__SUBMIT_LINK__">Перейти в бота для сдачи QR</a>
-    <div class="muted" style="margin-top:10px;">QR‑код отправляется вместе с номером — так его удобнее проверить и обработать без путаницы.</div>
-  </div>
-
-  <a class="back" href="/manuals">Назад к мануалам</a>
-  <a class="back" href="__BOT_LINK__">Открыть бота в Telegram</a>
+  __CUSTOM_CONTENT__
 </div>
 <script>
   const tg = window.Telegram?.WebApp;
@@ -2257,7 +2295,7 @@ def miniapp_basics_html(bot_username: str) -> str:
   document.addEventListener('gesturestart', e => e.preventDefault());
 </script>
 </body>
-</html>'''.replace("__BOT_LINK__", bot_link).replace("__SUBMIT_LINK__", submit_link)
+</html>'''.replace("__CUSTOM_CONTENT__", custom_html).replace("__BOT_LINK__", bot_link)
 
 async def miniapp_manuals(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
@@ -2671,7 +2709,8 @@ def render_admin_settings() -> str:
     f"🗄 Канал автобэкапа: <code>{escape(db.get_setting('backup_channel_id', '0'))}</code>\n"
     f"📱 Операторов в системе: <b>{len(OPERATORS)}</b>\n"
     f"🔁 Автовыгрузка БД: <b>{'Включена' if is_backup_enabled() else 'Выключена'}</b>\n"
-    f"📣 Рассылка: <b>{'задана' if db.get_setting('broadcast_text', '').strip() else 'пусто'}</b>"
+    f"📣 Рассылка: <b>{'задана' if db.get_setting('broadcast_text', '').strip() else 'пусто'}</b>\n"
+    f"🧩 Mini App текст: <b>{'задан' if db.get_setting('miniapp_basics_text', '').strip() else 'по умолчанию'}</b>"
   )
 
 def render_operator_modes() -> str:
@@ -2706,6 +2745,7 @@ def settings_kb():
   kb.button(text="🎛 Приём номеров по операторам", callback_data="admin:operator_modes")
   kb.button(text="✍️ Главный текст", callback_data="admin:set_start_text")
   kb.button(text="📣 Рассылка", callback_data="admin:broadcast")
+  kb.button(text="🧩 Настройки Mini App", callback_data="admin:miniapp_settings")
   kb.button(text="💳 Канал выплат", callback_data="admin:set_withdraw_channel")
   kb.button(text="🧵 Топик выплат", callback_data="admin:set_withdraw_topic")
   kb.button(text="🧾 Канал логов", callback_data="admin:set_log_channel")
@@ -2739,6 +2779,28 @@ def operator_modes_kb():
   return kb.as_markup()
 
 
+
+
+def render_miniapp_settings() -> str:
+  raw = db.get_setting('miniapp_basics_text', '').strip()
+  submit_bot = db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot').strip() or '@DiamondVaultE_bot'
+  preview = escape((raw[:220] + ('...' if len(raw) > 220 else '')) or 'Кастомный текст не задан.')
+  return (
+    "<b>🧩 Настройки Mini App</b>\n\n"
+    f"📝 Текст страницы «Основы работы»: <b>{'задан' if raw else 'по умолчанию'}</b>\n"
+    f"🤖 Кнопка сдачи QR ведёт в: <code>{escape(submit_bot)}</code>\n\n"
+    "Вставь свой текст целиком, а mini app сам оформит его карточками, акцентами, ссылками и кнопками.\n\n"
+    f"<b>Превью:</b>\n<blockquote>{preview}</blockquote>"
+  )
+
+def miniapp_settings_kb():
+  kb = InlineKeyboardBuilder()
+  kb.button(text="✍️ Текст «Основы работы»", callback_data="admin:miniapp_set_text")
+  kb.button(text="🤖 Бот для кнопки QR", callback_data="admin:miniapp_set_submit_bot")
+  kb.button(text="🧹 Сбросить текст", callback_data="admin:miniapp_reset_text")
+  kb.button(text="↩️ Назад", callback_data="admin:settings")
+  kb.adjust(1)
+  return kb.as_markup()
 
 def render_design() -> str:
   return (
