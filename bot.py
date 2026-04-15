@@ -69,7 +69,7 @@ WITHDRAW_BANNER = "withdraw_banner.jpg"
 MSK_OFFSET = timedelta(hours=3)
 WEBAPP_HOST = "0.0.0.0"
 WEBAPP_PORT = int(__import__("os").getenv("PORT", "8080"))
-WEBAPP_BASE_URL = (__import__("os").getenv("WEBAPP_BASE_URL") or "").rstrip("/")
+WEBAPP_BASE_URL = (__import__("os").getenv("WEBAPP_BASE_URL") or "https://vault-production-67a7.up.railway.app").rstrip("/")
 MINI_PROFILE_BANNER = "mini_profile_banner.jpg"
 MINI_MANUALS_BANNER = "mini_manuals_banner.jpg"
 
