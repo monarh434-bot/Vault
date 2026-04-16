@@ -2146,8 +2146,10 @@ def miniapp_parse_custom_basics(raw: str):
       txt = block['text']
       if txt.upper().startswith('ВАЖНО'):
         important.append(txt)
-      else:
-        blocks.append(block)
+        continue
+      if re.search(r'https?://\S+', txt):
+        continue
+      blocks.append(block)
     cleaned_sections.append({'title': sec['title'], 'blocks': blocks})
   return {'important': important, 'blocks': cleaned_sections, 'links': links, 'cta': cta}
 
@@ -2159,11 +2161,20 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
   submit_link = parsed.get('cta') or miniapp_submit_link()
   pieces = []
+  seen = set()
+  link_items = []
+  for label, url in parsed['links']:
+    if url in seen:
+      continue
+    seen.add(url)
+    link_items.append((label, url))
   for msg in parsed['important']:
     clean = msg.replace('ВАЖНО!', '').replace('ВАЖНО:', '').strip() or msg
     pieces.append(f'<div class="warn"><strong>Важно:</strong> {escape(clean)}</div>')
+  link_card_inserted = False
   for block in parsed['blocks']:
     title = escape(block['title'])
+    low_title = block['title'].lower()
     pieces.append('<div class="card">')
     pieces.append(f'<h2 class="section-title">{title}</h2>')
     if block['blocks']:
@@ -2175,14 +2186,16 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
         else:
           pieces.append(f'<div class="point">{txt}</div>')
       pieces.append('</div>')
+    if link_items and ('ссылк' in low_title or 'оператор' in low_title):
+      pieces.append('<div class="links">')
+      for label, url in link_items:
+        pieces.append(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(label)}</a>')
+      pieces.append('</div>')
+      link_card_inserted = True
     pieces.append('</div>')
-  if parsed['links']:
+  if link_items:
     pieces.append('<div class="card"><h2 class="section-title">Полезные ссылки</h2><div class="links">')
-    seen = set()
-    for label, url in parsed['links']:
-      if url in seen:
-        continue
-      seen.add(url)
+    for label, url in link_items:
       pieces.append(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(label)}</a>')
     pieces.append('</div></div>')
   pieces.append('<div class="card">')
@@ -2265,7 +2278,7 @@ def miniapp_basics_html(bot_username: str) -> str:
   <div class="hero">
     <div class="eyebrow">Diamond Vault Esim</div>
     <h1>Основы работы с E‑SIM</h1>
-    <p class="lead">Удобная стартовая памятка. Эту страницу можно настраивать прямо из админки mini app.</p>
+    
   </div>
   __CUSTOM_CONTENT__
 </div>
