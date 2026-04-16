@@ -1269,9 +1269,10 @@ def main_menu():
   kb.button(text="👤 Личный кабинет", callback_data="menu:profile")
   kb.button(text="👥 Реф. система", callback_data="menu:ref")
   kb.button(text="🏦 Вывод средств", callback_data="menu:withdraw")
+  kb.button(text="📚 Мануалы", callback_data="menu:manuals")
   kb.button(text="✨ Mini App", callback_data="menu:miniapp")
   kb.button(text="🔗 Зеркало", callback_data="menu:mirror")
-  kb.adjust(1)
+  kb.adjust(2, 2, 2, 2)
   return kb.as_markup()
 
 
@@ -2120,59 +2121,36 @@ def miniapp_submit_link() -> str:
   return f"https://t.me/{raw}"
 
 def miniapp_parse_custom_basics(raw: str):
-  import re as _re
-  blocks = []
-  current = None
-  important = []
+  sections = parse_manual_text(raw)
+  if not sections:
+    return None
   links = []
   cta = None
-  def ensure_card(title, subtitle=''):
-    nonlocal current
-    if current is None or current.get('title') != title:
-      current = {'title': title, 'subtitle': subtitle, 'items': [], 'paras': []}
-      blocks.append(current)
-    return current
-  for src in (raw or '').splitlines():
-    line = src.strip()
-    if not line:
-      continue
-    urls = _re.findall(r'https?://\S+', line)
-    tg_mention = _re.search(r'@([A-Za-z0-9_]{5,})', line)
-    if urls and len(line) <= 180:
-      for u in urls:
-        clean = u.rstrip(').,;]')
-        label = clean.replace('https://','').replace('http://','')
-        if ' - ' in line:
-          maybe = line.split(' - ',1)[1].strip()
-          if maybe and maybe != clean:
-            label = maybe
-        links.append((label[:60], clean))
-      continue
+  for line in _manual_split_lines(raw):
+    for m in re.finditer(r'https?://\S+', line):
+      url = m.group(0).rstrip(').,;]')
+      label = url.replace('https://','').replace('http://','')[:60]
+      if ' - ' in line:
+        maybe = line.split(' - ', 1)[1].strip()
+        if maybe and maybe != url:
+          label = maybe[:60]
+      links.append((label, url))
+    tg_mention = re.search(r'@([A-Za-z0-9_]{5,})', line)
     if tg_mention and ('бот' in line.lower() or 'сдаем' in line.lower() or 'сдаём' in line.lower()):
       cta = f"https://t.me/{tg_mention.group(1)}"
-      continue
-    upper = line.upper()
-    if line.startswith('ВАЖНО') or ('ВАЖНО' in upper and len(line) < 220):
-      important.append(line)
-      continue
-    if line.lower().startswith('часть '):
-      title = line.replace(':','').strip()
-      current = {'title': title, 'subtitle': '', 'items': [], 'paras': []}
-      blocks.append(current)
-      continue
-    if line.startswith(('•','-','—','*')):
-      ensure_card('Раздел')
-      current['items'].append(line.lstrip('•-—* ').strip())
-      continue
-    if len(line) < 48 and not line.endswith('.') and not line.endswith('!') and not line.endswith('?') and line.count(':') <= 1:
-      current = {'title': line.rstrip(':'), 'subtitle': '', 'items': [], 'paras': []}
-      blocks.append(current)
-      continue
-    ensure_card('Материал')
-    current['paras'].append(line)
-  if not blocks:
-    return None
-  return {'important': important, 'blocks': blocks, 'links': links, 'cta': cta}
+  important = []
+  cleaned_sections = []
+  for sec in sections:
+    blocks = []
+    for block in sec['blocks']:
+      txt = block['text']
+      if txt.upper().startswith('ВАЖНО'):
+        important.append(txt)
+      else:
+        blocks.append(block)
+    cleaned_sections.append({'title': sec['title'], 'blocks': blocks})
+  return {'important': important, 'blocks': cleaned_sections, 'links': links, 'cta': cta}
+
 
 def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
   parsed = miniapp_parse_custom_basics(raw)
@@ -2182,38 +2160,40 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
   submit_link = parsed.get('cta') or miniapp_submit_link()
   pieces = []
   for msg in parsed['important']:
-    pieces.append(f'<div class="warn"><strong>Важно:</strong> {escape(msg.replace("ВАЖНО!", "").replace("ВАЖНО:", "").strip() or msg)}</div>')
-  for idx, block in enumerate(parsed['blocks'], 1):
+    clean = msg.replace('ВАЖНО!', '').replace('ВАЖНО:', '').strip() or msg
+    pieces.append(f'<div class="warn"><strong>Важно:</strong> {escape(clean)}</div>')
+  for block in parsed['blocks']:
     title = escape(block['title'])
-    subtitle = escape(block.get('subtitle',''))
     pieces.append('<div class="card">')
     pieces.append(f'<h2 class="section-title">{title}</h2>')
-    if subtitle:
-      pieces.append(f'<p class="section-sub">{subtitle}</p>')
-    if block['paras'] or block['items']:
+    if block['blocks']:
       pieces.append('<div class="points">')
-      for para in block['paras']:
-        pieces.append(f'<div class="point">{escape(para)}</div>')
-      for item in block['items']:
-        pieces.append(f'<div class="point"><b>•</b> {escape(item)}</div>')
+      for item in block['blocks']:
+        txt = escape(item['text'])
+        if item['kind'] == 'bullet':
+          pieces.append(f'<div class="point"><b>•</b> {txt}</div>')
+        else:
+          pieces.append(f'<div class="point">{txt}</div>')
       pieces.append('</div>')
     pieces.append('</div>')
   if parsed['links']:
     pieces.append('<div class="card"><h2 class="section-title">Полезные ссылки</h2><div class="links">')
-    seen=set()
-    for label,url in parsed['links']:
-      if url in seen: continue
+    seen = set()
+    for label, url in parsed['links']:
+      if url in seen:
+        continue
       seen.add(url)
       pieces.append(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(label)}</a>')
     pieces.append('</div></div>')
   pieces.append('<div class="card">')
   pieces.append('<h2 class="section-title">Сдача QR</h2>')
-  pieces.append('<p class="section-sub">Когда материалы готовы, открой бота и передай QR вместе с номером.</p>')
+  pieces.append('<p class="section-sub">Когда материал изучен, открой бота и передай QR вместе с номером.</p>')
   pieces.append(f'<a class="cta" href="{escape(submit_link)}">Перейти в бота для сдачи QR</a>')
   pieces.append('</div>')
   pieces.append(f'<a class="back" href="/manuals">Назад к мануалам</a>')
   pieces.append(f'<a class="back" href="{escape(bot_link)}">Открыть бота в Telegram</a>')
   return "\n".join(pieces)
+
 
 def miniapp_default_basics_content(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
@@ -2380,6 +2360,108 @@ def render_start(user_id: int) -> str:
     + quote_block(queue_lines)
     + "\n\n<b>Вы находитесь в главном меню.</b>\n👇 <b>Выберите нужное действие ниже:</b>"
   )
+
+def miniapp_submit_link() -> str:
+  submit_bot = db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot').strip() or '@DiamondVaultE_bot'
+  if submit_bot.startswith('http://') or submit_bot.startswith('https://'):
+    return submit_bot
+  username = submit_bot.lstrip('@').strip()
+  return f"https://t.me/{username}" if username else "https://t.me/"
+
+
+def telegram_manuals_menu_text() -> str:
+  raw = db.get_setting('miniapp_basics_text', '').strip()
+  status = 'загружен' if raw else 'по умолчанию'
+  return (
+    '<b>📚 Мануалы</b>\n\n'
+    'Здесь собраны текстовые материалы прямо внутри Telegram. '
+    'После обновления через админку этот раздел и mini app меняются вместе.\n\n'
+    f'Текущий материал: <b>{status}</b>.\n'
+    'Открой нужный раздел ниже.'
+  )
+
+
+def telegram_manuals_menu_kb():
+  kb = InlineKeyboardBuilder()
+  kb.button(text='📘 Основы работы', callback_data='menu:manuals:basics')
+  kb.button(text='✨ Открыть Mini App', callback_data='menu:miniapp')
+  kb.button(text='🏠 На главную', callback_data='menu:home')
+  kb.adjust(1)
+  return kb.as_markup()
+
+
+def _manual_split_lines(raw: str):
+  lines = [ln.rstrip() for ln in (raw or '').replace('\r\n', '\n').replace('\r', '\n').split('\n')]
+  return [ln for ln in lines if ln.strip()]
+
+
+def parse_manual_text(raw: str):
+  lines = _manual_split_lines(raw)
+  if not lines:
+    return []
+  sections = []
+  current = None
+  for line in lines:
+    s = line.strip()
+    low = s.lower()
+    is_heading = (
+      low.startswith('часть ')
+      or low.startswith('основы работы')
+      or low.startswith('принцип работы')
+      or low.startswith('где искать дропов')
+      or low.startswith('сдача esim')
+      or low.startswith('сдача e-sim')
+      or low.startswith('сдача e‑sim')
+      or (s.endswith(':') and len(s) <= 90)
+    )
+    if is_heading:
+      current = {'title': s.rstrip(':'), 'blocks': []}
+      sections.append(current)
+      continue
+    if current is None:
+      current = {'title': 'Основной материал', 'blocks': []}
+      sections.append(current)
+    kind = 'bullet' if s.startswith(('•','-','—','*')) else 'text'
+    current['blocks'].append({'kind': kind, 'text': s.lstrip('•-—* ').strip() if kind=='bullet' else s})
+  return sections
+
+
+def render_telegram_basics_manual(raw: str) -> str:
+  sections = parse_manual_text(raw)
+  if not sections:
+    raw = (
+      'Основы работы с E-SIM\n\n'
+      'ВАЖНО! Для Android используйте браузер DuckDuckGo.\n\n'
+      'Открой админку и добавь свой текст через «🧩 Настройки Mini App», '
+      'и он появится и здесь, и в mini app.'
+    )
+    sections = parse_manual_text(raw)
+  parts = ['<b>📘 Основы работы</b>']
+  for sec in sections:
+    parts.append(f'\n<b>{escape(sec["title"])}</b>')
+    for block in sec['blocks']:
+      if block['kind'] == 'bullet':
+        parts.append(f'• {escape(block["text"])}')
+      else:
+        txt = block['text']
+        if txt.upper().startswith('ВАЖНО'):
+          parts.append(f'<blockquote>{escape(txt)}</blockquote>')
+        else:
+          parts.append(escape(txt))
+  submit_link = miniapp_submit_link()
+  parts.append(f'\n<b>Сдача QR:</b> <a href="{escape(submit_link)}">открыть бота</a>')
+  return '\n'.join(parts)
+
+
+def telegram_manuals_basics_kb():
+  kb = InlineKeyboardBuilder()
+  kb.button(text='🤖 Открыть бота для QR', url=miniapp_submit_link())
+  kb.button(text='✨ Открыть Mini App', callback_data='menu:miniapp')
+  kb.button(text='↩️ Назад к мануалам', callback_data='menu:manuals')
+  kb.button(text='🏠 На главную', callback_data='menu:home')
+  kb.adjust(1)
+  return kb.as_markup()
+
 
 def render_profile(user_id: int) -> str:
   user = db.get_user(user_id)
@@ -3675,7 +3757,7 @@ async def admin_miniapp_set_text(callback: CallbackQuery, state: FSMContext):
   await callback.message.answer(
     """Отправьте новый текст для страницы <b>«Основы работы»</b> одним сообщением.
 
-Mini App сам оформит его в карточки, акценты, ссылки и кнопки."""
+Бот применит его и в mini app, и в Telegram-мануалах."""
   )
   await callback.answer()
 
@@ -3711,7 +3793,7 @@ async def admin_miniapp_text_value(message: Message, state: FSMContext):
     return
   db.set_setting('miniapp_basics_text', raw)
   await state.clear()
-  await message.answer("✅ Текст для Mini App обновлён.")
+  await message.answer("✅ Текст для Mini App и Telegram-мануалов обновлён.")
   await message.answer(render_miniapp_settings(), reply_markup=miniapp_settings_kb())
 
 @router.message(AdminStates.waiting_miniapp_submit_bot)
@@ -3726,6 +3808,31 @@ async def admin_miniapp_submit_bot_value(message: Message, state: FSMContext):
   await state.clear()
   await message.answer("✅ Кнопка сдачи QR обновлена.")
   await message.answer(render_miniapp_settings(), reply_markup=miniapp_settings_kb())
+
+@router.callback_query(F.data == "menu:manuals")
+async def menu_manuals(callback: CallbackQuery, state: FSMContext):
+  await state.clear()
+  await replace_banner_message(
+    callback,
+    db.get_setting('mini_manuals_banner_path', MINI_MANUALS_BANNER),
+    telegram_manuals_menu_text(),
+    telegram_manuals_menu_kb(),
+  )
+  await callback.answer()
+
+
+@router.callback_query(F.data == "menu:manuals:basics")
+async def menu_manuals_basics(callback: CallbackQuery, state: FSMContext):
+  await state.clear()
+  raw = db.get_setting('miniapp_basics_text', '') or ''
+  await replace_banner_message(
+    callback,
+    db.get_setting('mini_manuals_banner_path', MINI_MANUALS_BANNER),
+    render_telegram_basics_manual(raw),
+    telegram_manuals_basics_kb(),
+  )
+  await callback.answer()
+
 
 @router.message(Command("miniapp"))
 async def miniapp_cmd(message: Message, state: FSMContext):
