@@ -1271,7 +1271,7 @@ def main_menu():
   kb.button(text="🏦 Вывод средств", callback_data="menu:withdraw")
   kb.button(text="📚 Мануалы", callback_data="menu:manuals")
   kb.button(text="🔗 Зеркало", callback_data="menu:mirror")
-  kb.button(text="DVE APP⭐️", callback_data="menu:miniapp")
+  kb.button(text="DVE", callback_data="menu:miniapp")
   kb.adjust(2, 2, 2, 1, 1)
   return kb.as_markup()
 
@@ -2062,7 +2062,11 @@ def miniapp_manuals_html(bot_username: str) -> str:
     @keyframes pulse { 0%,100% { opacity:.82; } 50% { opacity:1; } }
     @keyframes pulseGlow { 0%,100% { transform:scale(.96); opacity:.88; } 50% { transform:scale(1.08); opacity:1; } }
     @keyframes swapA { 0%,100% { transform:translateX(0); } 50% { transform:translateX(40px); } }
-    @keyframes swapB { 0%,100% { transform:translateX(40px); } 50% { transform:translateX(0); } }  </style>
+    @keyframes swapB { 0%,100% { transform:translateX(40px); } 50% { transform:translateX(0); } }
+    .basics-item { background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%); }
+    .mts-item { background:linear-gradient(135deg, rgba(120,14,24,.96) 0%, rgba(73,14,20,.98) 55%, rgba(35,10,12,.98) 100%); }
+    .bil-item { background:linear-gradient(135deg, rgba(110,85,8,.96) 0%, rgba(73,54,10,.98) 55%, rgba(28,23,8,.98) 100%); }
+    .vtb-item { background:linear-gradient(135deg, rgba(13,49,134,.95) 0%, rgba(17,30,72,.98) 55%, rgba(11,14,28,.98) 100%); }  </style>
 </head>
 <body>
 <div class="wrap">
@@ -2078,22 +2082,22 @@ def miniapp_manuals_html(bot_username: str) -> str:
   </div>
 
   <div class="list">
-    <a class="item" href="/manuals/basics">
+    <a class="item basics-item" href="/manuals/basics">
       <span class="quartet left"><img src="/mts_logo.jpg" alt="mts"><img src="/vtb_logo.png" alt="vtb"></span>
       <span class="label">Основы работы</span>
       <span class="quartet right"><img src="/bil_logo.png" alt="bil"><img src="/gaz_logo.png" alt="gaz"></span>
     </a>
-    <a class="item" href="#">
+    <a class="item mts-item" href="/manuals/mts">
       <span class="pair left mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
       <span class="label">МТС ESIM</span>
       <span class="pair right mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
     </a>
-    <a class="item" href="#">
+    <a class="item bil-item" href="/manuals/beeline">
       <span class="pair left bilpair"><img src="/bil_logo.png" alt="bil"></span>
       <span class="label">Билайн ESIM</span>
       <span class="pair right bilpair"><img src="/bil_logo.png" alt="bil"></span>
     </a>
-    <a class="item" href="#">
+    <a class="item vtb-item" href="/manuals/vtb-gazprom">
       <span class="pair left swap"><img src="/vtb_logo.png" alt="vtb"><img src="/gaz_logo.png" alt="gaz"></span>
       <span class="label">ВТБ, Газпром ESIM</span>
       <span class="pair right swap"><img src="/gaz_logo.png" alt="gaz"><img src="/vtb_logo.png" alt="vtb"></span>
@@ -2441,7 +2445,7 @@ def telegram_manuals_menu_kb():
   kb.button(text='🔴 MTS ESIM', callback_data='menu:manuals:mts')
   kb.button(text='🟡 Билайн ESIM', callback_data='menu:manuals:beeline')
   kb.button(text='🔵 ВТБ, Газпром ESIM', callback_data='menu:manuals:vtbgaz')
-  kb.button(text='DVE APP', callback_data='menu:miniapp')
+  kb.button(text='DVE', callback_data='menu:miniapp')
   kb.button(text='🏠 На главную', callback_data='menu:home')
   kb.adjust(1)
   return kb.as_markup()
@@ -2534,7 +2538,7 @@ def telegram_manual_section_kb(section: str):
   kb = InlineKeyboardBuilder()
   if section == 'basics':
     kb.button(text='🤖 Открыть бота для QR', url=miniapp_submit_link())
-  kb.button(text='DVE APP', callback_data='menu:miniapp')
+  kb.button(text='DVE', callback_data='menu:miniapp')
   kb.button(text='↩️ Назад к мануалам', callback_data='menu:manuals')
   kb.button(text='🏠 На главную', callback_data='menu:home')
   kb.adjust(1)
