@@ -174,28 +174,6 @@ class AdminStates(StatesGroup):
   waiting_miniapp_text = State()
   waiting_miniapp_submit_bot = State()
 
-MANUAL_SECTIONS = {
-  'basics': {'title': 'Основы работы', 'emoji': '📘', 'route': 'basics', 'setting_key': 'miniapp_basics_text'},
-  'mts': {'title': 'MTS ESIM', 'emoji': '🔴', 'route': 'mts', 'setting_key': 'miniapp_mts_text'},
-  'beeline': {'title': 'Билайн ESIM', 'emoji': '🟡', 'route': 'beeline', 'setting_key': 'miniapp_beeline_text'},
-  'vtb_gazprom': {'title': 'ВТБ, Газпром ESIM', 'emoji': '🔵', 'route': 'vtb-gazprom', 'setting_key': 'miniapp_vtb_gazprom_text'},
-}
-
-def manual_title(section_id: str) -> str:
-  return MANUAL_SECTIONS.get(section_id, MANUAL_SECTIONS['basics'])['title']
-
-def manual_emoji(section_id: str) -> str:
-  return MANUAL_SECTIONS.get(section_id, MANUAL_SECTIONS['basics'])['emoji']
-
-def manual_route(section_id: str) -> str:
-  return MANUAL_SECTIONS.get(section_id, MANUAL_SECTIONS['basics'])['route']
-
-def manual_setting_key(section_id: str) -> str:
-  return MANUAL_SECTIONS.get(section_id, MANUAL_SECTIONS['basics'])['setting_key']
-
-def get_manual_text(section_id: str) -> str:
-  return (db.get_setting(manual_setting_key(section_id), '') or '').strip()
-
 
 @dataclass
 class QueueItem:
@@ -1292,9 +1270,9 @@ def main_menu():
   kb.button(text="👥 Реф. система", callback_data="menu:ref")
   kb.button(text="🏦 Вывод средств", callback_data="menu:withdraw")
   kb.button(text="📚 Мануалы", callback_data="menu:manuals")
-  kb.button(text="✨ Mini App", callback_data="menu:miniapp")
   kb.button(text="🔗 Зеркало", callback_data="menu:mirror")
-  kb.adjust(2, 2, 2, 2)
+  kb.button(text="DVE APP⭐️", callback_data="menu:miniapp")
+  kb.adjust(2, 2, 2, 1, 1)
   return kb.as_markup()
 
 
@@ -1834,7 +1812,7 @@ def miniapp_home_kb():
   kb = InlineKeyboardBuilder()
   url = miniapp_url('/')
   if url:
-    kb.button(text="✨ Открыть Mini App", web_app=WebAppInfo(url=url))
+    kb.button(text="DVE APP", web_app=WebAppInfo(url=url))
   else:
     kb.button(text="ℹ️ Mini App не настроен", callback_data="miniapp:help")
   kb.button(text="🏠 На главную", callback_data="menu:home")
@@ -2105,17 +2083,17 @@ def miniapp_manuals_html(bot_username: str) -> str:
       <span class="label">Основы работы</span>
       <span class="quartet right"><img src="/bil_logo.png" alt="bil"><img src="/gaz_logo.png" alt="gaz"></span>
     </a>
-    <a class="item" href="/manuals/mts">
+    <a class="item" href="#">
       <span class="pair left mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
-      <span class="label">MTS ESIM</span>
+      <span class="label">МТС ESIM</span>
       <span class="pair right mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
     </a>
-    <a class="item" href="/manuals/beeline">
+    <a class="item" href="#">
       <span class="pair left bilpair"><img src="/bil_logo.png" alt="bil"></span>
       <span class="label">Билайн ESIM</span>
       <span class="pair right bilpair"><img src="/bil_logo.png" alt="bil"></span>
     </a>
-    <a class="item" href="/manuals/vtb-gazprom">
+    <a class="item" href="#">
       <span class="pair left swap"><img src="/vtb_logo.png" alt="vtb"><img src="/gaz_logo.png" alt="gaz"></span>
       <span class="label">ВТБ, Газпром ESIM</span>
       <span class="pair right swap"><img src="/gaz_logo.png" alt="gaz"><img src="/vtb_logo.png" alt="vtb"></span>
@@ -2189,7 +2167,17 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
     if url in seen:
       continue
     seen.add(url)
-    link_items.append((label, url))
+    clean_label = label.strip() or url
+    low = clean_label.lower()
+    if 'mts' in low:
+      clean_label = 'МТС'
+    elif 'beeline' in low or 'билайн' in low:
+      clean_label = 'Билайн'
+    elif 'megafon' in low or 'мегафон' in low:
+      clean_label = 'МегаФон'
+    elif re.search(r't2', low) or 'tele2' in low:
+      clean_label = 'T2'
+    link_items.append((clean_label, url))
   for msg in parsed['important']:
     clean = msg.replace('ВАЖНО!', '').replace('ВАЖНО:', '').strip() or msg
     pieces.append(f'<div class="warn"><strong>Важно:</strong> {escape(clean)}</div>')
@@ -2216,7 +2204,7 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
       link_card_inserted = True
     pieces.append('</div>')
   if link_items:
-    pieces.append('<div class="card"><h2 class="section-title">Полезные ссылки</h2><div class="links">')
+    pieces.append('<div class="card"><h2 class="section-title">Постоянные ссылки на оформление eSIM у операторов</h2><div class="links">')
     for label, url in link_items:
       pieces.append(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(label)}</a>')
     pieces.append('</div></div>')
@@ -2234,7 +2222,7 @@ def miniapp_default_basics_content(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
   submit_link = miniapp_submit_link()
   return f"""
-  <div class=\"warn\"><strong>Важно:</strong> Для Android используйте браузер DuckDuckGo. Материалы на этой странице можно потом заменить своим текстом через админку mini app.</div>
+  <div class=\"warn\"><strong>Важно:</strong> Для Android используйте браузер DuckDuckGo.</div>
 
   <div class=\"card\">
     <h2 class=\"section-title\">Как заполнить страницу</h2>
@@ -2312,17 +2300,30 @@ def miniapp_basics_html(bot_username: str) -> str:
 </body>
 </html>'''.replace("__CUSTOM_CONTENT__", content).replace("__BOT_LINK__", bot_link)
 
-def miniapp_manual_section_html(section_id: str, bot_username: str) -> str:
-  html = miniapp_basics_html(bot_username)
-  title = escape(manual_title(section_id))
-  content = miniapp_render_custom_basics(get_manual_text(section_id) or '', bot_username) or miniapp_default_basics_content(bot_username)
-  if section_id != 'basics':
-    idx = content.find('<div class=\"card\">\n    <h2 class=\"section-title\">Сдача QR</h2>')
-    if idx != -1:
-      content = content[:idx]
-  html = html.replace('Основы работы с E‑SIM', title, 1)
-  html = re.sub(r'(<div class="hero">[\s\S]*?</div>\n)([\s\S]*?)(\n</div>\n<script>)', lambda m: m.group(1) + '  ' + content + m.group(3), html, count=1)
-  return html
+def miniapp_section_html(section: str, bot_username: str) -> str:
+  title = manual_title(section).replace('📘 ', '').replace('🔴 ', '').replace('🟡 ', '').replace('🔵 ', '')
+  raw = db.get_setting(manual_setting_key(section), '') or ''
+  content = miniapp_render_custom_basics(raw, bot_username) if raw.strip() else f'<div class="card"><h2 class="section-title">{escape(title)}</h2><p class="section-sub">Материал пока не задан. Загрузите текст через админку.</p><a class="back" href="/manuals">Назад к мануалам</a></div>'
+  base = miniapp_basics_html(bot_username)
+  basics_default = miniapp_render_custom_basics(db.get_setting('miniapp_basics_text', '') or '', bot_username) or miniapp_default_basics_content(bot_username)
+  base = base.replace('Основы работы с E‑SIM', escape(title), 1)
+  return base.replace(basics_default, content, 1)
+
+
+async def miniapp_mts(request):
+  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
+  return web.Response(text=miniapp_section_html('mts', username), content_type='text/html', charset='utf-8')
+
+
+async def miniapp_beeline(request):
+  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
+  return web.Response(text=miniapp_section_html('beeline', username), content_type='text/html', charset='utf-8')
+
+
+async def miniapp_vtbgaz(request):
+  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
+  return web.Response(text=miniapp_section_html('vtbgaz', username), content_type='text/html', charset='utf-8')
+
 
 async def miniapp_manuals(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
@@ -2331,22 +2332,7 @@ async def miniapp_manuals(request):
 
 async def miniapp_basics(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
-  return web.Response(text=miniapp_manual_section_html('basics', username), content_type='text/html', charset='utf-8')
-
-
-async def miniapp_mts(request):
-  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
-  return web.Response(text=miniapp_manual_section_html('mts', username), content_type='text/html', charset='utf-8')
-
-
-async def miniapp_beeline(request):
-  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
-  return web.Response(text=miniapp_manual_section_html('beeline', username), content_type='text/html', charset='utf-8')
-
-
-async def miniapp_vtb_gazprom(request):
-  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
-  return web.Response(text=miniapp_manual_section_html('vtb_gazprom', username), content_type='text/html', charset='utf-8')
+  return web.Response(text=miniapp_basics_html(username), content_type='text/html', charset='utf-8')
 
 
 async def miniapp_profile_banner(request):
@@ -2384,8 +2370,8 @@ async def run_web_server():
   app.router.add_get('/manuals/mts/', miniapp_mts)
   app.router.add_get('/manuals/beeline', miniapp_beeline)
   app.router.add_get('/manuals/beeline/', miniapp_beeline)
-  app.router.add_get('/manuals/vtb-gazprom', miniapp_vtb_gazprom)
-  app.router.add_get('/manuals/vtb-gazprom/', miniapp_vtb_gazprom)
+  app.router.add_get('/manuals/vtb-gazprom', miniapp_vtbgaz)
+  app.router.add_get('/manuals/vtb-gazprom/', miniapp_vtbgaz)
   app.router.add_get('/mini_profile_banner.jpg', miniapp_profile_banner)
   app.router.add_get('/mini_manuals_banner.jpg', miniapp_manuals_banner)
   app.router.add_get('/mts_logo.jpg', miniapp_mts_logo)
@@ -2438,12 +2424,15 @@ def miniapp_submit_link() -> str:
 
 
 def telegram_manuals_menu_text() -> str:
-  lines = ['<b>📚 Мануалы</b>', '', 'Все разделы ниже редактируются через админку и автоматически обновляются и в Telegram, и в mini app.', '']
-  for section_id in MANUAL_SECTIONS:
-    lines.append(f"{manual_emoji(section_id)} <b>{escape(manual_title(section_id))}</b> — {'задан' if get_manual_text(section_id) else 'по умолчанию'}")
-  lines.append('')
-  lines.append('Открой нужный раздел ниже.')
-  return '\n'.join(lines)
+  return (
+    '<b>📚 Мануалы</b>\n\n'
+    'Здесь вы можете найти обучение по работе.\n\n'
+    '📘 Основы работы\n'
+    '🔴 MTS ESIM\n'
+    '🟡 Билайн ESIM\n'
+    '🔵 ВТБ, Газпром ESIM\n\n'
+    'Открой нужный раздел ниже.'
+  )
 
 
 def telegram_manuals_menu_kb():
@@ -2451,10 +2440,10 @@ def telegram_manuals_menu_kb():
   kb.button(text='📘 Основы работы', callback_data='menu:manuals:basics')
   kb.button(text='🔴 MTS ESIM', callback_data='menu:manuals:mts')
   kb.button(text='🟡 Билайн ESIM', callback_data='menu:manuals:beeline')
-  kb.button(text='🔵 ВТБ, Газпром ESIM', callback_data='menu:manuals:vtb_gazprom')
-  kb.button(text='✨ Открыть Mini App', callback_data='menu:miniapp')
+  kb.button(text='🔵 ВТБ, Газпром ESIM', callback_data='menu:manuals:vtbgaz')
+  kb.button(text='DVE APP', callback_data='menu:miniapp')
   kb.button(text='🏠 На главную', callback_data='menu:home')
-  kb.adjust(2,2,1,1)
+  kb.adjust(1)
   return kb.as_markup()
 
 
@@ -2475,79 +2464,77 @@ def parse_manual_text(raw: str):
     is_heading = (
       low.startswith('часть ')
       or low.startswith('основы работы')
+      or low.startswith('мануал ')
+      or low.startswith('подготовка')
+      or low.startswith('прокси')
+      or low.startswith('почты')
+      or low.startswith('банк')
+      or low.startswith('чаты')
       or low.startswith('принцип работы')
-      or low.startswith('где искать дропов')
-      or low.startswith('сдача esim')
-      or low.startswith('сдача e-sim')
-      or low.startswith('сдача e‑sim')
-      or (s.endswith(':') and len(s) <= 90)
+      or low.startswith('где искать')
+      or low.startswith('сдача')
+      or (s.endswith(':') and len(s) <= 100)
     )
     if is_heading:
       current = {'title': s.rstrip(':'), 'blocks': []}
       sections.append(current)
       continue
     if current is None:
-      current = {'title': 'Основной материал', 'blocks': []}
+      current = {'title': 'Материал', 'blocks': []}
       sections.append(current)
     kind = 'bullet' if s.startswith(('•','-','—','*')) else 'text'
     current['blocks'].append({'kind': kind, 'text': s.lstrip('•-—* ').strip() if kind=='bullet' else s})
   return sections
 
 
-def default_manual_text(section_id: str) -> str:
-  return (
-    f"{manual_title(section_id)}\n\n"
-    "Текст для этого раздела пока не задан.\n\n"
-    "Открой админку и добавь материал через «🧩 Настройки Mini App»."
-  )
+def manual_setting_key(section: str) -> str:
+  mapping = {
+    'basics': 'miniapp_basics_text',
+    'mts': 'miniapp_mts_text',
+    'beeline': 'miniapp_beeline_text',
+    'vtbgaz': 'miniapp_vtbgaz_text',
+  }
+  return mapping.get(section, 'miniapp_basics_text')
 
 
-def render_telegram_manual(section_id: str) -> str:
-  raw = get_manual_text(section_id) or default_manual_text(section_id)
+def manual_title(section: str) -> str:
+  mapping = {
+    'basics': '📘 Основы работы',
+    'mts': '🔴 MTS ESIM',
+    'beeline': '🟡 Билайн ESIM',
+    'vtbgaz': '🔵 ВТБ, Газпром ESIM',
+  }
+  return mapping.get(section, '📘 Основы работы')
+
+
+def render_telegram_manual(section: str, raw: str) -> str:
   sections = parse_manual_text(raw)
-  parts = [f"<b>{escape(manual_emoji(section_id))} {escape(manual_title(section_id))}</b>"]
-  seen = set()
-  links = []
+  if not sections:
+    sections = parse_manual_text('Материал пока не задан. Загрузите текст через админку: 🧩 Настройки Mini App.')
+  parts = [f'<b>{manual_title(section)}</b>']
   for sec in sections:
-    parts.append(f"\n<b>{escape(sec['title'])}</b>")
+    title = sec['title'].strip()
+    if title:
+      parts.append(f'\n<b>{escape(title)}</b>')
     for block in sec['blocks']:
-      txt = block['text']
-      urls = [u.rstrip(').,;]') for u in re.findall(r'https?://\S+', txt)]
-      if urls:
-        for url in urls:
-          if url not in seen:
-            seen.add(url)
-            label = url
-            if ' - ' in txt:
-              tail = txt.split(' - ', 1)[1].strip()
-              if tail and not tail.startswith('http'):
-                label = tail
-            links.append((label, url))
-        txt = re.sub(r'https?://\S+', '', txt).strip(' -')
-        if txt:
-          parts.append(f"• {escape(txt)}")
-        continue
+      txt = escape(block['text'])
       if block['kind'] == 'bullet':
-        parts.append(f"• {escape(txt)}")
+        parts.append(f'• {txt}')
       else:
-        if txt.upper().startswith('ВАЖНО'):
-          parts.append(f"<blockquote>{escape(txt)}</blockquote>")
+        if block['text'].upper().startswith('ВАЖНО'):
+          parts.append(f'<blockquote>{txt}</blockquote>')
         else:
-          parts.append(escape(txt))
-  if links:
-    parts.append('\n<b>Полезные ссылки</b>')
-    for label, url in links:
-      parts.append(f'• <a href="{escape(url)}">{escape(label)}</a>')
-  if section_id == 'basics':
-    parts.append(f"\n<b>Сдача QR:</b> <a href=\"{escape(miniapp_submit_link())}\">открыть бота</a>")
+          parts.append(txt)
+  if section == 'basics':
+    parts.append(f'\n<b>Сдача QR:</b> <a href="{escape(miniapp_submit_link())}">открыть бота</a>')
   return '\n'.join(parts)
 
 
-def telegram_manual_section_kb(section_id: str):
+def telegram_manual_section_kb(section: str):
   kb = InlineKeyboardBuilder()
-  if section_id == 'basics':
+  if section == 'basics':
     kb.button(text='🤖 Открыть бота для QR', url=miniapp_submit_link())
-  kb.button(text='✨ Открыть Mini App', callback_data='menu:miniapp')
+  kb.button(text='DVE APP', callback_data='menu:miniapp')
   kb.button(text='↩️ Назад к мануалам', callback_data='menu:manuals')
   kb.button(text='🏠 На главную', callback_data='menu:home')
   kb.adjust(1)
@@ -2885,7 +2872,7 @@ def render_admin_settings() -> str:
     f"📱 Операторов в системе: <b>{len(OPERATORS)}</b>\n"
     f"🔁 Автовыгрузка БД: <b>{'Включена' if is_backup_enabled() else 'Выключена'}</b>\n"
     f"📣 Рассылка: <b>{'задана' if db.get_setting('broadcast_text', '').strip() else 'пусто'}</b>\n"
-    f"🧩 Mini App разделов задано: <b>{sum(1 for sid in MANUAL_SECTIONS if get_manual_text(sid))}</b> / <b>{len(MANUAL_SECTIONS)}</b>"
+    f"🧩 Mini App текст: <b>{'задан' if db.get_setting('miniapp_basics_text', '').strip() else 'по умолчанию'}</b>"
   )
 
 def render_operator_modes() -> str:
@@ -2957,23 +2944,28 @@ def operator_modes_kb():
 
 
 def render_miniapp_settings() -> str:
+  basics = 'задан' if db.get_setting('miniapp_basics_text', '').strip() else 'по умолчанию'
+  mts = 'задан' if db.get_setting('miniapp_mts_text', '').strip() else 'по умолчанию'
+  beeline = 'задан' if db.get_setting('miniapp_beeline_text', '').strip() else 'по умолчанию'
+  vtbgaz = 'задан' if db.get_setting('miniapp_vtbgaz_text', '').strip() else 'по умолчанию'
   submit_bot = db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot').strip() or '@DiamondVaultE_bot'
-  lines = ["<b>🧩 Настройки Mini App</b>", "", f"🤖 Кнопка сдачи QR ведёт в: <code>{escape(submit_bot)}</code>", "", "<b>Разделы:</b>"]
-  for section_id in MANUAL_SECTIONS:
-    raw = get_manual_text(section_id)
-    preview = escape((raw[:90] + ('...' if len(raw) > 90 else '')) or 'Текст не задан.')
-    lines.append(f"{manual_emoji(section_id)} <b>{escape(manual_title(section_id))}</b> — <b>{'задан' if raw else 'по умолчанию'}</b>")
-    lines.append(f"<blockquote>{preview}</blockquote>")
-  lines.append('Нажми на нужный раздел ниже и отправь текст одним сообщением.')
-  return '\n'.join(lines)
+  return (
+    '<b>🧩 Настройки Mini App</b>\n\n'
+    f'📘 Основы: <b>{basics}</b>\n'
+    f'🔴 MTS: <b>{mts}</b>\n'
+    f'🟡 Билайн: <b>{beeline}</b>\n'
+    f'🔵 ВТБ/Газпром: <b>{vtbgaz}</b>\n'
+    f'🤖 Кнопка сдачи QR: <code>{escape(submit_bot)}</code>\n\n'
+    'Выбери раздел ниже. Текст каждого раздела используется и в Telegram-мануалах, и в mini app.'
+  )
 
 
 def miniapp_settings_kb():
   kb = InlineKeyboardBuilder()
   kb.button(text='📘 Основы', callback_data='admin:miniapp_edit:basics')
   kb.button(text='🔴 MTS ESIM', callback_data='admin:miniapp_edit:mts')
-  kb.button(text='🟡 Билайн', callback_data='admin:miniapp_edit:beeline')
-  kb.button(text='🔵 ВТБ/Газпром', callback_data='admin:miniapp_edit:vtb_gazprom')
+  kb.button(text='🟡 Билайн ESIM', callback_data='admin:miniapp_edit:beeline')
+  kb.button(text='🔵 ВТБ/Газпром', callback_data='admin:miniapp_edit:vtbgaz')
   kb.button(text='🤖 Бот для кнопки QR', callback_data='admin:miniapp_set_submit_bot')
   kb.button(text='🧹 Сбросить всё', callback_data='admin:miniapp_reset_text')
   kb.button(text='↩️ Назад', callback_data='admin:settings')
@@ -3848,13 +3840,12 @@ async def admin_miniapp_settings(callback: CallbackQuery):
 async def admin_miniapp_set_text(callback: CallbackQuery, state: FSMContext):
   if not is_admin(callback.from_user.id):
     return
-  section_id = callback.data.rsplit(":", 1)[-1]
-  if section_id not in MANUAL_SECTIONS:
-    await callback.answer("Раздел не найден", show_alert=True)
-    return
+  section = callback.data.split(':')[-1]
   await state.set_state(AdminStates.waiting_miniapp_text)
-  await state.update_data(miniapp_section=section_id)
-  await callback.message.answer(f"Отправьте новый текст для раздела <b>{escape(manual_title(section_id))}</b> одним сообщением.\n\nБот применит его и в mini app, и в Telegram-мануалах.")
+  await state.update_data(miniapp_section=section)
+  await callback.message.answer(
+    f"Отправьте новый текст для раздела <b>{manual_title(section)}</b> одним сообщением.\n\nБот применит его и в mini app, и в Telegram-мануалах."
+  )
   await callback.answer()
 
 @router.callback_query(F.data == "admin:miniapp_set_submit_bot")
@@ -3874,11 +3865,13 @@ async def admin_miniapp_set_submit_bot(callback: CallbackQuery, state: FSMContex
 async def admin_miniapp_reset_text(callback: CallbackQuery, state: FSMContext):
   if not is_admin(callback.from_user.id):
     return
-  for section_id in MANUAL_SECTIONS:
-    db.set_setting(manual_setting_key(section_id), '')
+  db.set_setting('miniapp_basics_text', '')
+  db.set_setting('miniapp_mts_text', '')
+  db.set_setting('miniapp_beeline_text', '')
+  db.set_setting('miniapp_vtbgaz_text', '')
   await state.clear()
   await safe_edit_or_send(callback, render_miniapp_settings(), reply_markup=miniapp_settings_kb())
-  await callback.answer("Текст сброшен")
+  await callback.answer('Тексты сброшены')
 
 @router.message(AdminStates.waiting_miniapp_text)
 async def admin_miniapp_text_value(message: Message, state: FSMContext):
@@ -3886,15 +3879,13 @@ async def admin_miniapp_text_value(message: Message, state: FSMContext):
     return
   raw = (message.html_text or message.text or '').strip()
   if not raw:
-    await message.answer("Отправьте текст одним сообщением.")
+    await message.answer('Отправьте текст одним сообщением.')
     return
   data = await state.get_data()
-  section_id = data.get('miniapp_section', 'basics')
-  if section_id not in MANUAL_SECTIONS:
-    section_id = 'basics'
-  db.set_setting(manual_setting_key(section_id), raw)
+  section = data.get('miniapp_section', 'basics')
+  db.set_setting(manual_setting_key(section), raw)
   await state.clear()
-  await message.answer(f"✅ Текст для раздела «{manual_title(section_id)}» обновлён.")
+  await message.answer(f'✅ Текст для раздела {manual_title(section)} обновлён.')
   await message.answer(render_miniapp_settings(), reply_markup=miniapp_settings_kb())
 
 @router.message(AdminStates.waiting_miniapp_submit_bot)
@@ -3925,28 +3916,32 @@ async def menu_manuals(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "menu:manuals:basics")
 async def menu_manuals_basics(callback: CallbackQuery, state: FSMContext):
   await state.clear()
-  await replace_banner_message(callback, db.get_setting('mini_manuals_banner_path', MINI_MANUALS_BANNER), render_telegram_manual('basics'), telegram_manual_section_kb('basics'))
+  raw = db.get_setting('miniapp_basics_text', '') or ''
+  await safe_edit_or_send(callback, render_telegram_manual('basics', raw), reply_markup=telegram_manual_section_kb('basics'))
   await callback.answer()
 
 
 @router.callback_query(F.data == "menu:manuals:mts")
 async def menu_manuals_mts(callback: CallbackQuery, state: FSMContext):
   await state.clear()
-  await replace_banner_message(callback, db.get_setting('mini_manuals_banner_path', MINI_MANUALS_BANNER), render_telegram_manual('mts'), telegram_manual_section_kb('mts'))
+  raw = db.get_setting('miniapp_mts_text', '') or ''
+  await safe_edit_or_send(callback, render_telegram_manual('mts', raw), reply_markup=telegram_manual_section_kb('mts'))
   await callback.answer()
 
 
 @router.callback_query(F.data == "menu:manuals:beeline")
 async def menu_manuals_beeline(callback: CallbackQuery, state: FSMContext):
   await state.clear()
-  await replace_banner_message(callback, db.get_setting('mini_manuals_banner_path', MINI_MANUALS_BANNER), render_telegram_manual('beeline'), telegram_manual_section_kb('beeline'))
+  raw = db.get_setting('miniapp_beeline_text', '') or ''
+  await safe_edit_or_send(callback, render_telegram_manual('beeline', raw), reply_markup=telegram_manual_section_kb('beeline'))
   await callback.answer()
 
 
-@router.callback_query(F.data == "menu:manuals:vtb_gazprom")
-async def menu_manuals_vtb_gazprom(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "menu:manuals:vtbgaz")
+async def menu_manuals_vtbgaz(callback: CallbackQuery, state: FSMContext):
   await state.clear()
-  await replace_banner_message(callback, db.get_setting('mini_manuals_banner_path', MINI_MANUALS_BANNER), render_telegram_manual('vtb_gazprom'), telegram_manual_section_kb('vtb_gazprom'))
+  raw = db.get_setting('miniapp_vtbgaz_text', '') or ''
+  await safe_edit_or_send(callback, render_telegram_manual('vtbgaz', raw), reply_markup=telegram_manual_section_kb('vtbgaz'))
   await callback.answer()
 
 
