@@ -1271,8 +1271,12 @@ def main_menu():
   kb.button(text="🏦 Вывод средств", callback_data="menu:withdraw")
   kb.button(text="📚 Мануалы", callback_data="menu:manuals")
   kb.button(text="🔗 Зеркало", callback_data="menu:mirror")
-  kb.button(text="DVE", callback_data="menu:miniapp")
-  kb.adjust(2, 2, 2, 1, 1)
+  kb.adjust(2, 2, 2, 1)
+  url = miniapp_url('/')
+  if url:
+    kb.row(InlineKeyboardButton(text="DVE APP⭐️", web_app=WebAppInfo(url=url)))
+  else:
+    kb.row(InlineKeyboardButton(text="DVE APP⭐️", callback_data="miniapp:help"))
   return kb.as_markup()
 
 
@@ -1812,7 +1816,7 @@ def miniapp_home_kb():
   kb = InlineKeyboardBuilder()
   url = miniapp_url('/')
   if url:
-    kb.button(text="DVE APP", web_app=WebAppInfo(url=url))
+    kb.button(text="DVE APP⭐️", web_app=WebAppInfo(url=url))
   else:
     kb.button(text="ℹ️ Mini App не настроен", callback_data="miniapp:help")
   kb.button(text="🏠 На главную", callback_data="menu:home")
@@ -1830,150 +1834,87 @@ def miniapp_help_text() -> str:
 
 def miniapp_home_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
-  return '''<!DOCTYPE html>
-<html lang="ru">
+  submit_link = miniapp_submit_link()
+  return f"""<!DOCTYPE html>
+<html lang=\"ru\">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="format-detection" content="telephone=no">
+  <meta charset=\"utf-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover\">
+  <meta name=\"format-detection\" content=\"telephone=no\">
   <title>Diamond Vault Esim</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src=\"https://telegram.org/js/telegram-web-app.js\"></script>
   <style>
-    :root {
-      --bg:#060505;
-      --bg2:#130908;
-      --card:#120d0c;
-      --gold:#f1d18a;
-      --gold2:#ffd98b;
-      --red:#7b0f16;
-      --red2:#b41e27;
-      --line:rgba(236,194,107,.24);
-      --text:#f6e8c5;
-      --muted:#c39d5e;
-      --shadow:0 18px 40px rgba(0,0,0,.34);
-    }
-    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html,body {
-      margin:0; padding:0; min-height:100%;
-      background:
-        radial-gradient(circle at top right, rgba(180,28,36,.22) 0%, rgba(180,28,36,0) 28%),
-        radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 30%),
-        linear-gradient(180deg, #17100f 0%, var(--bg2) 34%, var(--bg) 100%);
-      color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      overscroll-behavior:none;
-      touch-action:pan-x pan-y;
-    }
-    body { min-height:100vh; }
-    a { color:inherit; }
-    .wrap { width:min(100%, 720px); margin:0 auto; padding:14px 14px 28px; }
-    .top { display:grid; grid-template-columns:1fr 74px; gap:10px; align-items:start; margin-bottom:12px; }
-    .brand {
-      position:relative; overflow:hidden;
-      background:linear-gradient(180deg, rgba(28,18,14,.98), rgba(12,9,8,.98));
-      border:1px solid var(--line); border-radius:24px; padding:16px;
-      box-shadow:var(--shadow), inset 0 0 0 1px rgba(255,217,132,.04);
-    }
-    .brand:before {
-      content:""; position:absolute; inset:0;
-      background:linear-gradient(115deg, rgba(255,215,136,0) 20%, rgba(255,215,136,.08) 50%, rgba(255,215,136,0) 80%);
-      transform:translateX(-120%); animation:shine 7s linear infinite; pointer-events:none;
-    }
-    .brand small { display:block; color:var(--muted); letter-spacing:.18em; text-transform:uppercase; font-size:11px; margin-bottom:8px; position:relative; }
-    .brand h1 { margin:0; font-size:29px; line-height:1.02; color:var(--gold2); position:relative; }
-    .brand p { margin:8px 0 0; font-size:12px; color:#d6bc8b; position:relative; }
-    .avatar {
-      width:74px; height:74px; border-radius:24px; border:1px solid var(--line);
-      background:linear-gradient(180deg, #2e2217, #100b09);
-      display:flex; align-items:center; justify-content:center; overflow:hidden;
-      box-shadow:0 10px 24px rgba(0,0,0,.3);
-    }
-    .avatar img { width:100%; height:100%; object-fit:cover; display:none; }
-    .avatar .fallback { font-size:24px; color:var(--gold2); }
-    .card {
-      background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98));
-      border:1px solid var(--line); border-radius:26px; overflow:hidden; margin-bottom:14px; box-shadow:var(--shadow);
-    }
-    .hero { position:relative; }
-    .hero img { display:block; width:100%; height:220px; object-fit:cover; object-position:center; }
-    .hero .overlay {
-      position:absolute; inset:auto 0 0 0; padding:14px 16px;
-      background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.78)); font-weight:700; color:#fff2cd;
-    }
-    .section { padding:14px; }
-    .title { margin:0 0 10px; font-size:13px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; }
-    .manual-banner {
-      position:relative; display:block; text-decoration:none; border-radius:20px; overflow:hidden;
-      border:1px solid rgba(236,194,107,.24); box-shadow:0 12px 28px rgba(0,0,0,.28); margin-top:10px;
-      transform:translateZ(0);
-    }
-    .manual-banner img { display:block; width:100%; height:108px; object-fit:cover; object-position:center; filter:saturate(1.03) contrast(1.02); }
-    .manual-banner .cap {
-      position:absolute; inset:auto 0 0 0; padding:10px 14px;
-      background:linear-gradient(180deg, rgba(91,10,15,0) 0%, rgba(0,0,0,.82) 100%);
-    }
-    .manual-banner .cap strong { display:block; font-size:18px; color:#ffe4a6; }
-    .manual-banner .cap span { display:block; margin-top:3px; font-size:12px; color:#dfbd7c; }
-    .btn {
-      position:relative; overflow:hidden; width:100%; display:block; border:none; border-radius:20px; padding:16px 18px; margin:10px 0 0;
-      text-align:left; text-decoration:none; background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);
-      background-size:220% 220%; color:var(--text); font-size:18px; font-weight:700;
-      border:1px solid rgba(234,196,116,.30); box-shadow:inset 0 0 0 1px rgba(255,214,130,.04), 0 10px 24px rgba(0,0,0,.24);
-      animation:flow 4.5s ease-in-out infinite;
-    }
-    .btn:before {
-      content:""; position:absolute; top:0; left:-130%; width:88%; height:100%;
-      background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%);
-      transform:skewX(-18deg); animation:sweep 3.8s linear infinite; pointer-events:none;
-    }
-    .btn.secondary { text-align:center; background:linear-gradient(135deg, rgba(45,16,17,.92) 0%, rgba(26,16,13,.98) 48%, rgba(10,8,7,.98) 100%); }
-    @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }
-    @keyframes flow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
-    @keyframes shine { 0% { transform:translateX(-120%); } 100% { transform:translateX(140%); } }
+    :root {{
+      --bg:#070606; --bg2:#130908; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24);
+      --text:#f6e8c5; --muted:#c39d5e; --shadow:0 18px 40px rgba(0,0,0,.34);
+    }}
+    * {{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }}
+    html,body {{ margin:0; padding:0; min-height:100%; background:radial-gradient(circle at top right, rgba(180,28,36,.20) 0%, rgba(180,28,36,0) 28%),radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 30%),linear-gradient(180deg, #17100f 0%, var(--bg2) 34%, var(--bg) 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }}
+    body {{ min-height:100vh; }}
+    a {{ color:inherit; text-decoration:none; }}
+    .wrap {{ width:min(100%, 720px); margin:0 auto; padding:14px 14px 100px; }}
+    .top {{ display:grid; grid-template-columns:1fr 78px; gap:10px; align-items:start; margin-bottom:14px; }}
+    .brand,.card,.action,.stat {{ position:relative; overflow:hidden; background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98)); border:1px solid var(--line); box-shadow:var(--shadow); }}
+    .brand {{ border-radius:24px; padding:16px; }}
+    .card {{ border-radius:24px; margin-bottom:14px; }}
+    .brand small {{ display:block; color:var(--muted); letter-spacing:.18em; text-transform:uppercase; font-size:11px; margin-bottom:8px; }}
+    .brand h1 {{ margin:0; font-size:29px; line-height:1.02; color:var(--gold2); }}
+    .brand p {{ margin:8px 0 0; font-size:12px; color:#d6bc8b; }}
+    .avatar {{ width:78px; height:78px; border-radius:24px; border:1px solid var(--line); background:linear-gradient(180deg, #2e2217, #100b09); display:flex; align-items:center; justify-content:center; overflow:hidden; box-shadow:0 10px 24px rgba(0,0,0,.3); }}
+    .avatar img {{ width:100%; height:100%; object-fit:cover; display:none; }}
+    .avatar .fallback {{ font-size:24px; color:var(--gold2); }}
+    .stats {{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }}
+    .stat {{ border-radius:18px; padding:12px; }}
+    .stat b {{ display:block; font-size:18px; color:var(--gold2); }}
+    .stat span {{ display:block; margin-top:4px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }}
+    .hero img {{ display:block; width:100%; height:154px; object-fit:cover; }}
+    .hero .overlay {{ position:absolute; inset:auto 0 0 0; padding:12px 14px; background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.82)); }}
+    .hero .overlay b {{ display:block; font-size:24px; color:#ffe4a6; }}
+    .hero .overlay span {{ display:block; margin-top:4px; color:#e5c382; font-size:13px; }}
+    .section {{ padding:14px; }}
+    .title {{ margin:0 0 10px; font-size:13px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; }}
+    .grid {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }}
+    .action {{ display:block; border-radius:20px; padding:16px; min-height:116px; }}
+    .action h3 {{ margin:0; font-size:17px; color:#fff0c8; }}
+    .action p {{ margin:7px 0 0; font-size:12px; color:#d6bc8b; line-height:1.35; }}
+    .card-red {{ background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); }}
+    .card-gold {{ background:linear-gradient(135deg, rgba(93,61,12,.96), rgba(40,28,10,.98)); }}
+    .card-blue {{ background:linear-gradient(135deg, rgba(23,63,140,.96), rgba(15,31,72,.98)); }}
+    .card-dark {{ background:linear-gradient(135deg, rgba(30,20,15,.98), rgba(14,10,9,.98)); }}
+    .btnbar {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }}
+    .btn {{ display:block; width:100%; border:none; border-radius:18px; padding:14px 16px; text-align:center; background:linear-gradient(135deg, rgba(72,16,19,.94), rgba(42,24,15,.98), rgba(18,13,10,.98)); color:var(--text); font-size:16px; font-weight:700; border:1px solid rgba(234,196,116,.30); box-shadow:0 10px 24px rgba(0,0,0,.24); }}
+    .btn.primary {{ background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); }}
+    .btn.secondary {{ background:linear-gradient(135deg, rgba(23,63,140,.96), rgba(15,31,72,.98)); }}
+    .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
+    .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); }}
+    .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <small>Diamond Vault Esim</small>
-        <h1>Главное меню</h1>
-        <p>Быстрый вход в разделы и материалы по работе.</p>
-      </div>
-      <div class="avatar" id="avatarBox">
-        <img id="tgAvatar" alt="avatar">
-        <div class="fallback" id="avatarFallback">👤</div>
-      </div>
+  <div class=\"wrap\">
+    <div class=\"top\">
+      <div class=\"brand\"><small>Diamond Vault Esim</small><h1>DVE APP</h1><p>Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.</p></div>
+      <div class=\"avatar\" id=\"avatarBox\"><img id=\"tgAvatar\" alt=\"avatar\"><div class=\"fallback\" id=\"avatarFallback\">👤</div></div>
     </div>
-
-    <div class="card">
-      <div class="section">
-        <div class="title">Меню</div>
-        <a class="manual-banner" href="/manuals">
-          <img src="/mini_manuals_banner.jpg" alt="manuals">
-          <div class="cap">
-            <strong>Мануалы</strong>
-            <span>Открыть раздел с инструкциями</span>
-          </div>
-        </a>
-        <a class="btn secondary" href="__BOT_LINK__">Назад в Telegram</a>
-      </div>
-    </div>
+    <div class=\"stats\"><div class=\"stat\"><b>LIVE</b><span>Статус панели</span></div><div class=\"stat\"><b>DVE</b><span>Внутри Telegram</span></div><div class=\"stat\"><b>4</b><span>Раздела мануалов</span></div></div>
+    <div class=\"card hero\"><img src=\"/mini_profile_banner.jpg\" alt=\"profile\"><div class=\"overlay\"><b>Панель Diamond Vault</b><span>Мини-приложение с быстрым доступом к работе и материалам</span></div></div>
+    <div class=\"card\"><div class=\"section\"><div class=\"title\">Быстрый доступ</div><div class=\"grid\">
+      <a class=\"action card-red\" href=\"{submit_link}\"><h3>📲 Сдать eSIM</h3><p>Открыть бота и перейти к отправке QR или дальнейшим действиям.</p></a>
+      <a class=\"action card-gold\" href=\"/manuals\"><h3>📚 Мануалы</h3><p>Библиотека материалов по разделам с удобными карточками и кнопками.</p></a>
+      <a class=\"action card-blue\" href=\"#profile\"><h3>👤 Профиль</h3><p>Статус, роль, быстрые действия и витрина аккаунта внутри панели.</p></a>
+      <a class=\"action card-dark\" href=\"#numbers\"><h3>📦 Мои номера</h3><p>Заготовка под фильтры, статусы, архив и быстрые действия по номерам.</p></a>
+    </div><div class=\"btnbar\"><a class=\"btn primary\" href=\"/manuals\">Открыть библиотеку</a><a class=\"btn secondary\" href=\"{bot_link}\">Вернуться в бот</a></div></div></div>
+    <div class=\"card\" id=\"profile\"><div class=\"section\"><div class=\"title\">Профиль</div><div class=\"grid\"><div class=\"action card-dark\"><h3>Роль</h3><p>Пользователь mini app. Здесь позже можно показать уровень, теги и текущий статус работы.</p></div><div class=\"action card-dark\"><h3>Последние действия</h3><p>Блок под историю: выдачи, обновления статусов, действия по QR и служебные события.</p></div></div></div></div>
+    <div class=\"card\" id=\"numbers\"><div class=\"section\"><div class=\"title\">Мои номера</div><div class=\"grid\"><div class=\"action card-dark\"><h3>Активные</h3><p>Здесь позже можно вынести активные номера, hold/безhold и фильтрацию по статусам.</p></div><div class=\"action card-dark\"><h3>Архив и проблемные</h3><p>Основа под историю, ошибки, завершённые выдачи и быстрый переход к деталям.</p></div></div></div></div>
   </div>
+  <div class=\"bottomnav\"><a class=\"navbtn active\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn\" href=\"#numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn\" href=\"#profile\"><span>👤</span><span>Профиль</span></a></div>
 <script>
   const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.ready(); tg.expand();
-    try { tg.disableVerticalSwipes?.(); } catch (e) {}
-    const user = tg.initDataUnsafe?.user;
-    const img = document.getElementById('tgAvatar');
-    const fallback = document.getElementById('avatarFallback');
-    if (user?.photo_url) { img.src = user.photo_url; img.style.display='block'; fallback.style.display='none'; }
-  }
+  if (tg) {{ tg.ready(); tg.expand(); try {{ tg.disableVerticalSwipes?.(); }} catch (e) {{}} const user = tg.initDataUnsafe?.user; const img = document.getElementById('tgAvatar'); const fallback = document.getElementById('avatarFallback'); if (user?.photo_url) {{ img.src = user.photo_url; img.style.display='block'; fallback.style.display='none'; }} }}
   document.addEventListener('gesturestart', e => e.preventDefault());
 </script>
 </body>
-</html>'''.replace("__BOT_LINK__", bot_link)
+</html>"""
 
 async def miniapp_index(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
@@ -1982,138 +1923,61 @@ async def miniapp_index(request):
 
 def miniapp_manuals_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
-  return '''<!DOCTYPE html>
-<html lang="ru">
+  return f"""<!DOCTYPE html>
+<html lang=\"ru\">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta charset=\"utf-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover\">
   <title>Мануалы</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src=\"https://telegram.org/js/telegram-web-app.js\"></script>
   <style>
-    :root {
-      --bg:#070606; --bg2:#130b0b; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e;
-      --red:#7b0f16; --red2:#b41e27;
-    }
-    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html,body {
-      margin:0; padding:0;
-      background:
-        radial-gradient(circle at top right, rgba(177,27,34,.18) 0%, rgba(177,27,34,0) 28%),
-        radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 28%),
-        linear-gradient(180deg, #17100e 0%, var(--bg2) 34%, var(--bg) 100%);
-      color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-      overscroll-behavior:none; touch-action:pan-x pan-y;
-    }
-    .wrap { width:min(100%, 720px); margin:0 auto; padding:14px 14px 28px; }
-    .hero {
-      background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98));
-      border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 14px 35px rgba(0,0,0,.30);
-    }
-    .mini-banner {
-      margin:14px 14px 0; border-radius:18px; overflow:hidden; border:1px solid rgba(236,194,107,.24);
-      box-shadow:0 10px 24px rgba(0,0,0,.24);
-    }
-    .mini-banner img { display:block; width:100%; height:92px; object-fit:cover; object-position:center; }
-    .hero .cap { padding:14px 16px 16px; }
-    .hero .cap small { display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }
-    .hero .cap h1 { margin:0; color:var(--gold2); font-size:38px; line-height:.95; }
-    .hero .cap p { margin:8px 0 0; color:#d9bb82; font-size:13px; }
-    .list {
-      margin-top:14px; background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98));
-      border:1px solid var(--line); border-radius:24px; padding:14px; box-shadow:0 14px 35px rgba(0,0,0,.26);
-    }
-    .item, .back {
-      position:relative; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
-      text-decoration:none; text-align:center; padding:18px 86px; border-radius:999px; margin:12px 0 0;
-      color:var(--text); background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%);
-      background-size:220% 220%; border:1px solid rgba(234,196,116,.28); font-size:18px; font-weight:700;
-      animation:flow 4.5s ease-in-out infinite; box-shadow:0 10px 22px rgba(0,0,0,.22);
-      min-height:78px;
-    }
-    .item:before, .back:before {
-      content:""; position:absolute; top:0; left:-130%; width:88%; height:100%;
-      background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%);
-      transform:skewX(-18deg); animation:sweep 3.8s linear infinite; pointer-events:none;
-    }
-    .back { background:linear-gradient(135deg, rgba(43,15,17,.92) 0%, rgba(22,15,13,.98) 42%, rgba(10,8,7,.98) 100%); }
-    .label { position:relative; z-index:2; }
-    .quartet { position:absolute; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px; z-index:2; pointer-events:none; }
-    .quartet.left { left:14px; }
-    .quartet.right { right:14px; }
-    .pair { position:absolute; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:8px; z-index:2; pointer-events:none; }
-    .pair { width:auto; }
-    .left { left:16px; }
-    .right { right:16px; }
-    .quartet img, .pair img {
-      width:28px; height:28px; object-fit:contain; filter:drop-shadow(0 0 10px rgba(255,215,130,.18)); image-rendering:auto;
-    }
-    .quartet img { animation:floatLogo 3.2s ease-in-out infinite, pulse 2.5s ease-in-out infinite; }
-    .quartet img:nth-child(2) { animation-delay:-.8s, -.4s; }
-    .mtspair img, .bilpair img { animation:pulseGlow 2.6s ease-in-out infinite; }
-    .pair.left { left:18px; }
-    .pair.right { right:18px; }
-    .swap img { animation:swapA 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
-    .swap img:nth-child(2) { animation:swapB 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
-    .pair.right.swap img { animation:swapB 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
-    .pair.right.swap img:nth-child(2) { animation:swapA 4.6s ease-in-out infinite, pulseGlow 2.6s ease-in-out infinite; }
-    @keyframes sweep { 0% { left:-130%; } 100% { left:145%; } }
-    @keyframes flow { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
-    @keyframes floatLogo { 0%,100% { transform:translateY(0) scale(1); } 50% { transform:translateY(-4px) scale(1.06); } }
-    @keyframes pulse { 0%,100% { opacity:.82; } 50% { opacity:1; } }
-    @keyframes pulseGlow { 0%,100% { transform:scale(.96); opacity:.88; } 50% { transform:scale(1.08); opacity:1; } }
-    @keyframes swapA { 0%,100% { transform:translateX(0); } 50% { transform:translateX(40px); } }
-    @keyframes swapB { 0%,100% { transform:translateX(40px); } 50% { transform:translateX(0); } }
-    .basics-item { background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%); }
-    .mts-item { background:linear-gradient(135deg, rgba(120,14,24,.96) 0%, rgba(73,14,20,.98) 55%, rgba(35,10,12,.98) 100%); }
-    .bil-item { background:linear-gradient(135deg, rgba(110,85,8,.96) 0%, rgba(73,54,10,.98) 55%, rgba(28,23,8,.98) 100%); }
-    .vtb-item { background:linear-gradient(135deg, rgba(13,49,134,.95) 0%, rgba(17,30,72,.98) 55%, rgba(11,14,28,.98) 100%); }  </style>
+    :root {{ --bg:#070606; --bg2:#130b0b; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e; }}
+    * {{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }}
+    html,body {{ margin:0; padding:0; background:radial-gradient(circle at top right, rgba(177,27,34,.18) 0%, rgba(177,27,34,0) 28%), radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 28%), linear-gradient(180deg, #17100e 0%, var(--bg2) 34%, var(--bg) 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }}
+    .wrap {{ width:min(100%, 720px); margin:0 auto; padding:14px 14px 100px; }}
+    .hero,.list {{ background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); border:1px solid var(--line); border-radius:24px; box-shadow:0 14px 35px rgba(0,0,0,.30); }}
+    .hero {{ overflow:hidden; }}
+    .mini-banner {{ margin:14px 14px 0; border-radius:18px; overflow:hidden; border:1px solid rgba(236,194,107,.24); }}
+    .mini-banner img {{ display:block; width:100%; height:92px; object-fit:cover; object-position:center; }}
+    .hero .cap {{ padding:14px 16px 16px; }}
+    .hero .cap small {{ display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }}
+    .hero .cap h1 {{ margin:0; color:var(--gold2); font-size:38px; line-height:.95; }}
+    .hero .cap p {{ margin:8px 0 0; color:#d9bb82; font-size:13px; }}
+    .list {{ margin-top:14px; padding:14px; }}
+    .item, .back {{ position:relative; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; gap:12px; text-decoration:none; text-align:center; padding:18px 24px; border-radius:24px; margin:12px 0 0; color:var(--text); font-size:18px; font-weight:800; border:1px solid rgba(234,196,116,.22); box-shadow:0 10px 22px rgba(0,0,0,.22); min-height:82px; }}
+    .item span.badge {{ position:absolute; top:50%; transform:translateY(-50%); display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; font-size:22px; background:rgba(0,0,0,.18); border:1px solid rgba(255,255,255,.08); }}
+    .item span.badge.left {{ left:14px; }}
+    .item span.badge.right {{ right:14px; }}
+    .basics-item {{ background:linear-gradient(135deg, rgba(72,16,19,.94), rgba(42,24,15,.98), rgba(18,13,10,.98)); }}
+    .mts-item {{ background:linear-gradient(135deg, rgba(170,18,34,.98), rgba(97,15,24,.98), rgba(44,10,12,.98)); }}
+    .bil-item {{ background:linear-gradient(135deg, rgba(210,177,27,.98), rgba(88,67,6,.98), rgba(27,23,8,.98)); }}
+    .vtb-item {{ background:linear-gradient(135deg, rgba(22,83,210,.98), rgba(17,45,108,.98), rgba(11,14,28,.98)); }}
+    .back {{ background:linear-gradient(135deg, rgba(43,15,17,.92), rgba(22,15,13,.98), rgba(10,8,7,.98)); }}
+    .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
+    .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }}
+    .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="hero">
-    <div class="mini-banner">
-      <img src="/mini_manuals_banner.jpg" alt="manuals">
-    </div>
-    <div class="cap">
-      <small>Diamond Vault Esim</small>
-      <h1>Мануалы</h1>
-      <p>Выбери нужное направление и переходи к материалам.</p>
-    </div>
-  </div>
-
-  <div class="list">
-    <a class="item basics-item" href="/manuals/basics">
-      <span class="quartet left"><img src="/mts_logo.jpg" alt="mts"><img src="/vtb_logo.png" alt="vtb"></span>
-      <span class="label">Основы работы</span>
-      <span class="quartet right"><img src="/bil_logo.png" alt="bil"><img src="/gaz_logo.png" alt="gaz"></span>
-    </a>
-    <a class="item mts-item" href="/manuals/mts">
-      <span class="pair left mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
-      <span class="label">МТС ESIM</span>
-      <span class="pair right mtspair"><img src="/mts_logo.jpg" alt="mts"></span>
-    </a>
-    <a class="item bil-item" href="/manuals/beeline">
-      <span class="pair left bilpair"><img src="/bil_logo.png" alt="bil"></span>
-      <span class="label">Билайн ESIM</span>
-      <span class="pair right bilpair"><img src="/bil_logo.png" alt="bil"></span>
-    </a>
-    <a class="item vtb-item" href="/manuals/vtb-gazprom">
-      <span class="pair left swap"><img src="/vtb_logo.png" alt="vtb"><img src="/gaz_logo.png" alt="gaz"></span>
-      <span class="label">ВТБ, Газпром ESIM</span>
-      <span class="pair right swap"><img src="/gaz_logo.png" alt="gaz"><img src="/vtb_logo.png" alt="vtb"></span>
-    </a>
-    <a class="back" href="/">Назад</a>
-    <a class="back" href="__BOT_LINK__">Открыть бота в Telegram</a>
+<div class=\"wrap\">
+  <div class=\"hero\"><div class=\"mini-banner\"><img src=\"/mini_manuals_banner.jpg\" alt=\"manuals\"></div><div class=\"cap\"><small>Diamond Vault Esim</small><h1>Мануалы</h1><p>Выбери нужное направление и переходи к материалам.</p></div></div>
+  <div class=\"list\">
+    <a class=\"item basics-item\" href=\"/manuals/basics\"><span class=\"badge left\">📘</span><span class=\"label\">Основы работы</span><span class=\"badge right\">📚</span></a>
+    <a class=\"item mts-item\" href=\"/manuals/mts\"><span class=\"badge left\">🔴</span><span class=\"label\">MTS ESIM</span><span class=\"badge right\">📱</span></a>
+    <a class=\"item bil-item\" href=\"/manuals/beeline\"><span class=\"badge left\">🟡</span><span class=\"label\">Билайн ESIM</span><span class=\"badge right\">⚡</span></a>
+    <a class=\"item vtb-item\" href=\"/manuals/vtb-gazprom\"><span class=\"badge left\">🔵</span><span class=\"label\">ВТБ, Газпром ESIM</span><span class=\"badge right\">🏦</span></a>
+    <a class=\"back\" href=\"/\">DVE</a>
+    <a class=\"back\" href=\"{bot_link}\">Открыть бота в Telegram</a>
   </div>
 </div>
+<div class=\"bottomnav\"><a class=\"navbtn\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn active\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn\" href=\"/#numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn\" href=\"/#profile\"><span>👤</span><span>Профиль</span></a></div>
 <script>
   const tg = window.Telegram?.WebApp;
-  if (tg) { tg.ready(); tg.expand(); try { tg.disableVerticalSwipes?.(); } catch (e) {} }
+  if (tg) {{ tg.ready(); tg.expand(); try {{ tg.disableVerticalSwipes?.(); }} catch (e) {{}} }}
   document.addEventListener('gesturestart', e => e.preventDefault());
 </script>
 </body>
-</html>'''.replace("__BOT_LINK__", bot_link)
-
+</html>"""
 
 def miniapp_submit_link() -> str:
   raw = (db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot') or '@DiamondVaultE_bot').strip()
@@ -2437,17 +2301,19 @@ def telegram_manuals_menu_text() -> str:
     '🔵 ВТБ, Газпром ESIM\n\n'
     'Открой нужный раздел ниже.'
   )
-
-
 def telegram_manuals_menu_kb():
   kb = InlineKeyboardBuilder()
   kb.button(text='📘 Основы работы', callback_data='menu:manuals:basics')
   kb.button(text='🔴 MTS ESIM', callback_data='menu:manuals:mts')
   kb.button(text='🟡 Билайн ESIM', callback_data='menu:manuals:beeline')
   kb.button(text='🔵 ВТБ, Газпром ESIM', callback_data='menu:manuals:vtbgaz')
-  kb.button(text='DVE', callback_data='menu:miniapp')
-  kb.button(text='🏠 На главную', callback_data='menu:home')
   kb.adjust(1)
+  url = miniapp_url('/')
+  if url:
+    kb.row(InlineKeyboardButton(text='DVE', web_app=WebAppInfo(url=url)))
+  else:
+    kb.row(InlineKeyboardButton(text='DVE', callback_data='miniapp:help'))
+  kb.row(InlineKeyboardButton(text='🏠 На главную', callback_data='menu:home'))
   return kb.as_markup()
 
 
@@ -2538,7 +2404,11 @@ def telegram_manual_section_kb(section: str):
   kb = InlineKeyboardBuilder()
   if section == 'basics':
     kb.button(text='🤖 Открыть бота для QR', url=miniapp_submit_link())
-  kb.button(text='DVE', callback_data='menu:miniapp')
+  url = miniapp_url('/')
+  if url:
+    kb.button(text='DVE', web_app=WebAppInfo(url=url))
+  else:
+    kb.button(text='DVE', callback_data='miniapp:help')
   kb.button(text='↩️ Назад к мануалам', callback_data='menu:manuals')
   kb.button(text='🏠 На главную', callback_data='menu:home')
   kb.adjust(1)
