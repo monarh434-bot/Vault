@@ -1274,9 +1274,9 @@ def main_menu():
   kb.adjust(2, 2, 2, 1)
   url = miniapp_url('/')
   if url:
-    kb.row(InlineKeyboardButton(text="DVE APP⭐️", web_app=WebAppInfo(url=url)))
+    kb.row(InlineKeyboardButton(text="DVE", web_app=WebAppInfo(url=url)))
   else:
-    kb.row(InlineKeyboardButton(text="DVE APP⭐️", callback_data="miniapp:help"))
+    kb.row(InlineKeyboardButton(text="DVE", callback_data="miniapp:help"))
   return kb.as_markup()
 
 
@@ -1816,7 +1816,7 @@ def miniapp_home_kb():
   kb = InlineKeyboardBuilder()
   url = miniapp_url('/')
   if url:
-    kb.button(text="DVE APP⭐️", web_app=WebAppInfo(url=url))
+    kb.button(text="DVE", web_app=WebAppInfo(url=url))
   else:
     kb.button(text="ℹ️ Mini App не настроен", callback_data="miniapp:help")
   kb.button(text="🏠 На главную", callback_data="menu:home")
@@ -1886,6 +1886,14 @@ def miniapp_home_html(bot_username: str) -> str:
     .btn.primary {{ background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); }}
     .btn.secondary {{ background:linear-gradient(135deg, rgba(23,63,140,.96), rgba(15,31,72,.98)); }}
     .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
+    .preloader {{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#080808,#160909 45%,#080808); z-index:9999; transition:opacity .35s ease, visibility .35s ease; }}
+    .preloader.hide {{ opacity:0; visibility:hidden; pointer-events:none; }}
+    .prebox {{ display:flex; flex-direction:column; align-items:center; gap:16px; }}
+    .prebox img {{ width:min(52vw,220px); height:auto; }}
+    .pretext {{ font-size:13px; font-weight:900; letter-spacing:.22em; color:#f4d497; }}
+    .pulse {{ width:120px; height:4px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; }}
+    .pulse::after {{ content:''; display:block; width:42%; height:100%; background:linear-gradient(90deg,transparent,#d9a84d,transparent); animation:load 1.2s linear infinite; }}
+    @keyframes load {{ 0% {{ transform:translateX(-120%); }} 100% {{ transform:translateX(290%); }} }}
     .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); }}
     .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }}
   </style>
@@ -1893,23 +1901,29 @@ def miniapp_home_html(bot_username: str) -> str:
 <body>
   <div class=\"wrap\">
     <div class=\"top\">
-      <div class=\"brand\"><small>Diamond Vault Esim</small><h1>DVE APP</h1><p>Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.</p></div>
+      <div class=\"brand\"><small>Diamond Vault Esim</small><h1>DVE APP</h1><p>Главное меню для работы, очереди, профиля и материалов.</p></div>
       <div class=\"avatar\" id=\"avatarBox\"><img id=\"tgAvatar\" alt=\"avatar\"><div class=\"fallback\" id=\"avatarFallback\">👤</div></div>
     </div>
     <div class=\"stats\"><div class=\"stat\"><b>LIVE</b><span>Статус панели</span></div><div class=\"stat\"><b>DVE</b><span>Внутри Telegram</span></div><div class=\"stat\"><b>4</b><span>Раздела мануалов</span></div></div>
     <div class=\"card hero\"><img src=\"/mini_profile_banner.jpg\" alt=\"profile\"><div class=\"overlay\"><b>Панель Diamond Vault</b><span>Мини-приложение с быстрым доступом к работе и материалам</span></div></div>
     <div class=\"card\"><div class=\"section\"><div class=\"title\">Быстрый доступ</div><div class=\"grid\">
-      <a class=\"action card-red\" href=\"{submit_link}\"><h3>📲 Сдать eSIM</h3><p>Открыть бота и перейти к отправке QR или дальнейшим действиям.</p></a>
+      <a class=\"action card-red\" href=\"{submit_link}\"><h3>📲 Сдать eSIM</h3><p>Отправка QR и номера через mini app сразу в очередь.</p></a>
       <a class=\"action card-gold\" href=\"/manuals\"><h3>📚 Мануалы</h3><p>Библиотека материалов по разделам с удобными карточками и кнопками.</p></a>
-      <a class=\"action card-blue\" href=\"#profile\"><h3>👤 Профиль</h3><p>Статус, роль, быстрые действия и витрина аккаунта внутри панели.</p></a>
-      <a class=\"action card-dark\" href=\"#numbers\"><h3>📦 Мои номера</h3><p>Заготовка под фильтры, статусы, архив и быстрые действия по номерам.</p></a>
+      <a class=\"action card-blue\" href=\"#profile\"><h3>👤 Профиль</h3><p>Тег, ID, баланс и статистика.</p></a>
+      <a class=\"action card-dark\" href=\"#numbers\"><h3>📦 Мои номера</h3><p>Текущие заявки, статусы и позиции в очереди.</p></a>
     </div><div class=\"btnbar\"><a class=\"btn primary\" href=\"/manuals\">Открыть библиотеку</a><a class=\"btn secondary\" href=\"{bot_link}\">Вернуться в бот</a></div></div></div>
     <div class=\"card\" id=\"profile\"><div class=\"section\"><div class=\"title\">Профиль</div><div class=\"grid\"><div class=\"action card-dark\"><h3>Роль</h3><p>Пользователь mini app. Здесь позже можно показать уровень, теги и текущий статус работы.</p></div><div class=\"action card-dark\"><h3>Последние действия</h3><p>Блок под историю: выдачи, обновления статусов, действия по QR и служебные события.</p></div></div></div></div>
-    <div class=\"card\" id=\"numbers\"><div class=\"section\"><div class=\"title\">Мои номера</div><div class=\"grid\"><div class=\"action card-dark\"><h3>Активные</h3><p>Здесь позже можно вынести активные номера, hold/безhold и фильтрацию по статусам.</p></div><div class=\"action card-dark\"><h3>Архив и проблемные</h3><p>Основа под историю, ошибки, завершённые выдачи и быстрый переход к деталям.</p></div></div></div></div>
+    <div class=\"card\" id=\"numbers\"><div class=\"section\"><div class=\"title\">Мои номера</div><div class=\"grid\"><div class=\"action card-dark\"><h3>Активные</h3><p>Здесь позже можно вынести активные номера, hold/безhold и фильтрацию по статусам.</p></div><div class=\"action card-dark\"><h3>Архив и проблемные</h3><p>Завершённые, проблемные и архивные заявки.</p></div></div></div></div>
   </div>
   <div class=\"bottomnav\"><a class=\"navbtn active\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn\" href=\"#numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn\" href=\"#profile\"><span>👤</span><span>Профиль</span></a></div>
 <script>
   const tg = window.Telegram?.WebApp;
+  const frames = ['/DVE_frame_001.png','/DVE_frame_002.png','/DVE_frame_003.png','/DVE_frame_004.png','/DVE_frame_005.png','/DVE_frame_006.png','/DVE_frame_007.png','/DVE_frame_008.png','/DVE_frame_009.png','/DVE_frame_010.png','/DVE_frame_011.png','/DVE_frame_012.png','/DVE_frame_013.png','/DVE_frame_014.png','/DVE_frame_015.png','/DVE_frame_016.png','/DVE_frame_017.png','/DVE_frame_018.png','/DVE_frame_019.png','/DVE_frame_020.png','/DVE_frame_021.png','/DVE_frame_022.png','/DVE_frame_023.png','/DVE_frame_024.png','/DVE_frame_025.png','/DVE_frame_026.png','/DVE_frame_027.png','/DVE_frame_028.png','/DVE_frame_029.png','/DVE_frame_030.png'];
+  let fi = 0;
+  const loaderFrame = document.getElementById('loaderFrame');
+  const preloader = document.getElementById('preloader');
+  const loaderTimer = setInterval(() => {{ fi = (fi + 1) % frames.length; if (loaderFrame) loaderFrame.src = frames[fi]; }}, 65);
+  window.addEventListener('load', () => setTimeout(() => {{ clearInterval(loaderTimer); preloader?.classList.add('hide'); }}, 900));
   if (tg) {{ tg.ready(); tg.expand(); try {{ tg.disableVerticalSwipes?.(); }} catch (e) {{}} const user = tg.initDataUnsafe?.user; const img = document.getElementById('tgAvatar'); const fallback = document.getElementById('avatarFallback'); if (user?.photo_url) {{ img.src = user.photo_url; img.style.display='block'; fallback.style.display='none'; }} }}
   document.addEventListener('gesturestart', e => e.preventDefault());
 </script>
@@ -1954,13 +1968,21 @@ def miniapp_manuals_html(bot_username: str) -> str:
     .vtb-item {{ background:linear-gradient(135deg, rgba(22,83,210,.98), rgba(17,45,108,.98), rgba(11,14,28,.98)); }}
     .back {{ background:linear-gradient(135deg, rgba(43,15,17,.92), rgba(22,15,13,.98), rgba(10,8,7,.98)); }}
     .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
+    .preloader {{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#080808,#160909 45%,#080808); z-index:9999; transition:opacity .35s ease, visibility .35s ease; }}
+    .preloader.hide {{ opacity:0; visibility:hidden; pointer-events:none; }}
+    .prebox {{ display:flex; flex-direction:column; align-items:center; gap:16px; }}
+    .prebox img {{ width:min(52vw,220px); height:auto; }}
+    .pretext {{ font-size:13px; font-weight:900; letter-spacing:.22em; color:#f4d497; }}
+    .pulse {{ width:120px; height:4px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; }}
+    .pulse::after {{ content:''; display:block; width:42%; height:100%; background:linear-gradient(90deg,transparent,#d9a84d,transparent); animation:load 1.2s linear infinite; }}
+    @keyframes load {{ 0% {{ transform:translateX(-120%); }} 100% {{ transform:translateX(290%); }} }}
     .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }}
     .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }}
   </style>
 </head>
 <body>
 <div class=\"wrap\">
-  <div class=\"hero\"><div class=\"mini-banner\"><img src=\"/mini_manuals_banner.jpg\" alt=\"manuals\"></div><div class=\"cap\"><small>Diamond Vault Esim</small><h1>Мануалы</h1><p>Выбери нужное направление и переходи к материалам.</p></div></div>
+  <div class=\"hero\"><div class=\"mini-banner\"><img src=\"/mini_manuals_banner.jpg\" alt=\"manuals\"></div><div class=\"cap\"><small>Diamond Vault Esim</small><h1>Мануалы</h1><p>Здесь вы можете найти обучение по работе.</p></div></div>
   <div class=\"list\">
     <a class=\"item basics-item\" href=\"/manuals/basics\"><span class=\"badge left\">📘</span><span class=\"label\">Основы работы</span><span class=\"badge right\">📚</span></a>
     <a class=\"item mts-item\" href=\"/manuals/mts\"><span class=\"badge left\">🔴</span><span class=\"label\">MTS ESIM</span><span class=\"badge right\">📱</span></a>
@@ -2203,6 +2225,162 @@ async def miniapp_basics(request):
   return web.Response(text=miniapp_basics_html(username), content_type='text/html', charset='utf-8')
 
 
+
+
+
+def _miniapp_page(title: str, body_html: str, active: str) -> str:
+  nav = {k: ('active' if active == k else '') for k in ('home', 'manuals', 'numbers', 'profile')}
+  return f"""<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><title>{escape(title)}</title><script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {{ --line:rgba(236,194,107,.20); --text:#f6e8c5; --muted:#cdb58b; }}
+* {{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }}
+html,body {{ margin:0; padding:0; background:radial-gradient(circle at top right, rgba(177,27,34,.18) 0%, rgba(177,27,34,0) 28%), radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 28%), linear-gradient(180deg, #17100e 0%, #120909 34%, #070606 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }}
+body {{ padding:14px 14px 100px; }} a {{ color:inherit; text-decoration:none; }}
+.top {{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }}
+.head small {{ display:block; color:#c39d5e; text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }}
+.head h1 {{ margin:0; color:#ffd98b; font-size:34px; line-height:.95; }}
+.head p {{ margin:8px 0 0; color:#d9bb82; font-size:13px; }}
+.chip {{ display:inline-flex; align-items:center; justify-content:center; padding:12px 14px; border-radius:18px; border:1px solid var(--line); background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); box-shadow:0 10px 22px rgba(0,0,0,.22); font-weight:800; }}
+.box {{ background:linear-gradient(180deg, rgba(21,16,12,.98), rgba(10,8,6,.98)); border:1px solid var(--line); border-radius:24px; box-shadow:0 14px 35px rgba(0,0,0,.30); padding:14px; }}
+.grid {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }}
+.info,.row,.empty,.status {{ padding:14px; border-radius:18px; border:1px solid rgba(234,196,116,.14); background:rgba(255,255,255,.02); }}
+.info h3,.row b {{ margin:0 0 7px; font-size:15px; display:block; }}
+.info div,.row div,.empty,.status,.hint {{ color:var(--muted); font-size:13px; line-height:1.4; }}
+.list,.form {{ display:flex; flex-direction:column; gap:10px; }}
+.select,.input {{ width:100%; padding:14px 16px; border-radius:16px; border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.42); color:#fff; font-size:15px; outline:none; }}
+.btn {{ border:none; border-radius:18px; padding:14px 16px; font-weight:800; font-size:15px; background:linear-gradient(180deg, #d7a64a, #7c4917); color:#120d06; }}
+.bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
+.navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); }}
+.navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:#ffd98b; }}
+</style></head><body>
+{body_html}
+<div class="bottomnav"><a class="navbtn {nav['home']}" href="/"><span>🏠</span><span>Главная</span></a><a class="navbtn {nav['manuals']}" href="/manuals"><span>📚</span><span>Мануалы</span></a><a class="navbtn {nav['numbers']}" href="/numbers"><span>📦</span><span>Номера</span></a><a class="navbtn {nav['profile']}" href="/profile"><span>👤</span><span>Профиль</span></a></div>
+<script>window.Telegram?.WebApp?.ready(); window.Telegram?.WebApp?.expand();</script>
+</body></html>"""
+
+
+def miniapp_profile_html() -> str:
+  body = """<div class="top"><div class="head"><small>Diamond Vault Esim</small><h1>Профиль</h1><p>Ваши данные, баланс и статистика.</p></div><a class="chip" href="/">DVE</a></div><div class="box"><div class="grid"><div class="info"><h3>Имя</h3><div id="pf_name">—</div></div><div class="info"><h3>Тег</h3><div id="pf_tag">—</div></div><div class="info"><h3>ID</h3><div id="pf_id">—</div></div><div class="info"><h3>Баланс</h3><div id="pf_balance">—</div></div><div class="info"><h3>Всего сдано</h3><div id="pf_total">—</div></div><div class="info"><h3>Успешно</h3><div id="pf_completed">—</div></div><div class="info"><h3>Заработано</h3><div id="pf_earned">—</div></div><div class="info"><h3>Рефералы</h3><div id="pf_refs">—</div></div></div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user; if(u){document.getElementById('pf_name').textContent=[u.first_name,u.last_name].filter(Boolean).join(' ')||'—'; document.getElementById('pf_tag').textContent=u.username?('@'+u.username):'—'; document.getElementById('pf_id').textContent=u.id; fetch('/api/profile-summary?user_id='+encodeURIComponent(u.id)).then(r=>r.json()).then(d=>{document.getElementById('pf_balance').textContent=d.balance||'$0'; document.getElementById('pf_total').textContent=d.total??'0'; document.getElementById('pf_completed').textContent=d.completed??'0'; document.getElementById('pf_earned').textContent=d.earned||'$0'; document.getElementById('pf_refs').textContent=d.refs??'0';}).catch(()=>{});}</script>"""
+  return _miniapp_page('Профиль', body, 'profile')
+
+
+def miniapp_numbers_html() -> str:
+  body = """<div class="top"><div class="head"><small>Diamond Vault Esim</small><h1>Мои номера</h1><p>Все текущие заявки и их статусы.</p></div><a class="chip" href="/submit">Сдать eSIM</a></div><div class="box"><div id="numbersWrap" class="list"><div class="empty">Загрузка заявок…</div></div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user; const wrap=document.getElementById('numbersWrap'); if(u){fetch('/api/my-numbers?user_id='+encodeURIComponent(u.id)).then(r=>r.json()).then(d=>{if(!d.items||!d.items.length){wrap.innerHTML='<div class=\"empty\">Сейчас активных заявок нет.</div>';return;} wrap.innerHTML=d.items.map(it=>`<div class=\"row\"><b>#${it.id} • ${it.operator}</b><div>${it.mode} • ${it.phone}</div><div>${it.status}${it.position?(' • позиция: '+it.position):''}</div></div>`).join('');}).catch(()=>{wrap.innerHTML='<div class=\"empty\">Не удалось загрузить заявки.</div>';});} else {wrap.innerHTML='<div class=\"empty\">Откройте mini app из Telegram.</div>';}</script>"""
+  return _miniapp_page('Мои номера', body, 'numbers')
+
+
+def miniapp_submit_html() -> str:
+  options = ''.join(f'<option value="{escape(k)}">{escape(v["title"])}</option>' for k, v in OPERATORS.items())
+  body = f"""<div class="top"><div class="head"><small>Diamond Vault Esim</small><h1>Сдать eSIM</h1><p>Отправьте QR и номер, заявка сразу уйдёт в очередь.</p></div><a class="chip" href="/numbers">Мои номера</a></div><div class="box"><form id="submitForm" class="form"><select class="select" name="operator">{options}</select><select class="select" name="mode"><option value="hold">Холд</option><option value="no_hold">Безхолд</option></select><input class="input" name="phone" placeholder="Номер: +79991234567" inputmode="tel"><input class="input" type="file" accept="image/*" name="qr" capture="environment"><button class="btn" type="submit">Отправить в очередь</button><div class="hint">Загрузите фото QR и укажите номер в одном из допустимых форматов.</div></form><div id="submitStatus" class="status"></div></div><script>const tg=window.Telegram?.WebApp; const form=document.getElementById('submitForm'); const box=document.getElementById('submitStatus'); form.addEventListener('submit', async (e)=>{{e.preventDefault(); const u=tg?.initDataUnsafe?.user; if(!u){{box.textContent='Откройте mini app из Telegram.'; return;}} const fd=new FormData(form); fd.append('user_id', String(u.id)); fd.append('username', u.username||''); fd.append('full_name', [u.first_name,u.last_name].filter(Boolean).join(' ')); box.textContent='Загрузка...'; try{{const res=await fetch('/api/submit-esim',{{method:'POST',body:fd}}); const data=await res.json(); if(!res.ok||!data.ok) throw new Error(data.error||'Ошибка отправки'); box.innerHTML=`✅ Заявка #${{data.item_id}} принята.<br>${{data.operator}} • ${{data.mode_label}} • ${{data.phone}}`; form.reset(); }}catch(err){{box.textContent=err.message||'Ошибка отправки';}} }});</script>"""
+  return _miniapp_page('Сдать eSIM', body, 'home')
+
+
+async def miniapp_profile(request):
+  return web.Response(text=miniapp_profile_html(), content_type='text/html', charset='utf-8')
+
+
+async def miniapp_numbers(request):
+  return web.Response(text=miniapp_numbers_html(), content_type='text/html', charset='utf-8')
+
+
+async def miniapp_submit(request):
+  return web.Response(text=miniapp_submit_html(), content_type='text/html', charset='utf-8')
+
+
+async def api_profile_summary(request):
+  try:
+    user_id = int(request.query.get('user_id', '0'))
+  except Exception:
+    user_id = 0
+  user = db.get_user(user_id) if user_id else None
+  stats = db.user_stats(user_id) if user_id else {'total': 0, 'completed': 0, 'earned': 0, 'queued': 0, 'taken': 0, 'in_progress': 0}
+  try:
+    ref_row = db.conn.execute("SELECT COUNT(*) AS c FROM users WHERE referred_by=?", (user_id,)).fetchone() if user_id else None
+    refs = int((ref_row['c'] if ref_row else 0) or 0)
+  except Exception:
+    refs = 0
+  payload = {'balance': usd(user['balance'] if user else 0), 'total': int((stats['total'] if stats else 0) or 0), 'completed': int((stats['completed'] if stats else 0) or 0), 'earned': usd(stats['earned'] if stats else 0), 'current_queue': int(((stats['queued'] if stats else 0) or 0) + ((stats['taken'] if stats else 0) or 0) + ((stats['in_progress'] if stats else 0) or 0)), 'refs': refs}
+  return web.json_response(payload)
+
+
+async def api_my_numbers(request):
+  try:
+    user_id = int(request.query.get('user_id', '0'))
+  except Exception:
+    user_id = 0
+  items = []
+  if user_id:
+    for row in user_active_queue_items(user_id)[:30]:
+      pos = queue_position(row['id']) if row['status'] == 'queued' else None
+      items.append({'id': int(row['id']), 'operator': op_text(row['operator_key']), 'mode': mode_label(row['mode']), 'phone': pretty_phone(row['normalized_phone']), 'status': status_label_from_row(row), 'position': pos})
+  return web.json_response({'items': items})
+
+
+async def api_submit_esim(request):
+  reader = await request.multipart()
+  data = {}
+  file_part = None
+  while True:
+    part = await reader.next()
+    if part is None:
+      break
+    if part.name == 'qr':
+      file_part = part
+    else:
+      data[part.name] = (await part.text()).strip()
+  try:
+    user_id = int(data.get('user_id', '0'))
+  except Exception:
+    user_id = 0
+  username = data.get('username', '')
+  full_name = data.get('full_name', '') or username or f'User {user_id}'
+  operator_key = data.get('operator', '')
+  mode = data.get('mode', 'hold')
+  phone = normalize_phone(data.get('phone', ''))
+  if not user_id:
+    return web.json_response({'ok': False, 'error': 'Откройте mini app из Telegram.'}, status=400)
+  if operator_key not in OPERATORS:
+    return web.json_response({'ok': False, 'error': 'Выберите оператора.'}, status=400)
+  if mode not in {'hold', 'no_hold'}:
+    return web.json_response({'ok': False, 'error': 'Выберите режим.'}, status=400)
+  if not is_numbers_enabled():
+    return web.json_response({'ok': False, 'error': 'Приём номеров сейчас отключён.'}, status=400)
+  if not is_operator_mode_enabled(operator_key, mode):
+    return web.json_response({'ok': False, 'error': 'Этот режим сейчас недоступен.'}, status=400)
+  if not phone:
+    return web.json_response({'ok': False, 'error': 'Введите номер в корректном формате.'}, status=400)
+  if phone_locked_until_next_msk_day(phone):
+    return web.json_response({'ok': False, 'error': 'Этот номер уже вставал сегодня.'}, status=400)
+  if file_part is None or not file_part.filename:
+    return web.json_response({'ok': False, 'error': 'Загрузите фото QR.'}, status=400)
+  blob = await file_part.read(decode=False)
+  if not blob:
+    return web.json_response({'ok': False, 'error': 'Файл QR пустой.'}, status=400)
+  touch_user(user_id, username, full_name)
+  bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+  try:
+    sent = await bot.send_photo(chat_id=user_id, photo=BufferedInputFile(blob, filename=file_part.filename or 'qr.jpg'), caption='DVE QR upload')
+    file_id = sent.photo[-1].file_id
+    item_id = create_queue_item_ext(user_id, username, full_name, operator_key, phone, file_id, mode, BOT_TOKEN)
+    log_text = (
+      '<b>📥 Новая ESIM заявка</b>\n'
+      f'👤 Отправил: <b>{escape(full_name or "—")}</b>\n'
+      f'🆔 <code>{user_id}</code>\n'
+      f'🔗 Username: <b>{escape("@" + username) if username else "—"}</b>\n'
+      f'🧾 Заявка: <b>#{item_id}</b>\n'
+      f'📱 {op_html(operator_key)}\n'
+      f'📞 <code>{escape(pretty_phone(phone))}</code>\n'
+      f'🔄 {mode_label(mode)}'
+    )
+    await send_log(bot, log_text)
+    return web.json_response({'ok': True, 'item_id': item_id, 'operator': OPERATORS[operator_key]['title'], 'phone': pretty_phone(phone), 'mode_label': ('Холд' if mode == 'hold' else 'Безхолд')})
+  except Exception as exc:
+    logging.exception('miniapp submit failed')
+    return web.json_response({'ok': False, 'error': f'Не удалось отправить заявку: {type(exc).__name__}'}, status=500)
+  finally:
+    await bot.session.close()
+
 async def miniapp_profile_banner(request):
   return web.FileResponse(Path(MINI_PROFILE_BANNER))
 
@@ -2240,12 +2418,19 @@ async def run_web_server():
   app.router.add_get('/manuals/beeline/', miniapp_beeline)
   app.router.add_get('/manuals/vtb-gazprom', miniapp_vtbgaz)
   app.router.add_get('/manuals/vtb-gazprom/', miniapp_vtbgaz)
+  app.router.add_get('/profile', miniapp_profile)
+  app.router.add_get('/numbers', miniapp_numbers)
+  app.router.add_get('/submit', miniapp_submit)
+  app.router.add_get('/api/profile-summary', api_profile_summary)
+  app.router.add_get('/api/my-numbers', api_my_numbers)
+  app.router.add_post('/api/submit-esim', api_submit_esim)
   app.router.add_get('/mini_profile_banner.jpg', miniapp_profile_banner)
   app.router.add_get('/mini_manuals_banner.jpg', miniapp_manuals_banner)
   app.router.add_get('/mts_logo.jpg', miniapp_mts_logo)
   app.router.add_get('/bil_logo.png', miniapp_bil_logo)
   app.router.add_get('/vtb_logo.png', miniapp_vtb_logo)
   app.router.add_get('/gaz_logo.png', miniapp_gaz_logo)
+  app.router.add_get('/{name:DVE_frame_[0-9]{3}\.png}', miniapp_loading_frame)
   runner = web.AppRunner(app)
   await runner.setup()
   site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
