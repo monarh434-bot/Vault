@@ -2303,18 +2303,16 @@ async def api_submit_esim(request):
     raw = qr.file.read()
     if not raw:
       return web.json_response({'ok': False, 'error': 'Пустой файл QR.'}, status=400)
-    upload = BufferedInputFile(raw, filename=getattr(qr, 'filename', 'qr.jpg') or 'qr.jpg')
-    sink_chat = LOG_CHANNEL_ID if int(LOG_CHANNEL_ID or 0) else user_id
-    sent = await bot.send_photo(sink_chat, upload, caption='miniapp submit buffer')
-    file_id = sent.photo[-1].file_id if getattr(sent, 'photo', None) else None
-    if sink_chat == user_id:
-      try:
-        await bot.delete_message(user_id, sent.message_id)
-      except Exception:
-        pass
-    if not file_id:
-      return web.json_response({'ok': False, 'error': 'Не удалось сохранить QR.'}, status=500)
-    item_id = create_queue_item_ext(user_id, username or '', full_name or username or str(user_id), operator_key, normalized, file_id, mode, submit_bot_token=BOT_TOKEN)
+    uploads_dir = Path('miniapp_uploads')
+    uploads_dir.mkdir(exist_ok=True)
+    ext = Path(getattr(qr, 'filename', 'qr.jpg') or 'qr.jpg').suffix.lower() or '.jpg'
+    if ext not in {'.jpg', '.jpeg', '.png', '.webp'}:
+      ext = '.jpg'
+    safe_name = f"qr_{user_id}_{int(time.time()*1000)}{ext}"
+    target = uploads_dir / safe_name
+    target.write_bytes(raw)
+    photo_ref = f"local:{target.as_posix()}"
+    item_id = create_queue_item_ext(user_id, username or '', full_name or username or str(user_id), operator_key, normalized, photo_ref, mode, submit_bot_token=BOT_TOKEN)
     return web.json_response({'ok': True, 'item_id': int(item_id)})
   except Exception:
     logging.exception('miniapp submit failed')
@@ -3379,6 +3377,9 @@ async def send_queue_item_photo_to_chat(target_bot: Bot, chat_id: int, item, cap
   if photo is None and hasattr(item, 'keys'):
     photo = item['qr_file_id']
   try:
+    local_input = queue_photo_input(photo)
+    if local_input is not photo:
+      return await target_bot.send_photo(chat_id, local_input, caption=caption, reply_markup=reply_markup, message_thread_id=message_thread_id)
     if token == getattr(target_bot, 'token', None):
       try:
         return await target_bot.send_photo(chat_id, photo, caption=caption, reply_markup=reply_markup, message_thread_id=message_thread_id)
@@ -3398,6 +3399,13 @@ async def send_queue_item_photo_to_chat(target_bot: Bot, chat_id: int, item, cap
   finally:
     if close_after and source_bot is not None:
       await source_bot.session.close()
+
+def queue_photo_input(photo):
+  if isinstance(photo, str) and photo.startswith('local:'):
+    path = photo.split(':', 1)[1]
+    if path and Path(path).exists():
+      return FSInputFile(path)
+  return photo
 
 def group_price_for_take(chat_id: int, thread_id: int | None, operator_key: str, mode: str) -> float:
   price = db.get_group_price(chat_id, thread_id, operator_key, mode)
@@ -4233,9 +4241,9 @@ async def takeop_callback(callback: CallbackQuery):
     item = db.get_queue_item(item['id'])
   caption = queue_caption(item) + "\n\n👇 Выберите нужное действие:"
   if getattr(callback.message, 'photo', None):
-    await callback.message.answer_photo(item['qr_file_id'], caption=caption, reply_markup=admin_queue_kb(item))
+    await callback.message.answer_photo(queue_photo_input(item['qr_file_id']), caption=caption, reply_markup=admin_queue_kb(item))
   else:
-    await callback.message.answer_photo(item['qr_file_id'], caption=caption, reply_markup=admin_queue_kb(item))
+    await callback.message.answer_photo(queue_photo_input(item['qr_file_id']), caption=caption, reply_markup=admin_queue_kb(item))
   await callback.answer()
 
 
@@ -5724,9 +5732,9 @@ async def takeop_callback(callback: CallbackQuery):
     item = db.get_queue_item(item['id'])
   caption = queue_caption(item) + "\n\n👇 Выберите нужное действие:"
   if getattr(callback.message, 'photo', None):
-    await callback.message.answer_photo(item['qr_file_id'], caption=caption, reply_markup=admin_queue_kb(item))
+    await callback.message.answer_photo(queue_photo_input(item['qr_file_id']), caption=caption, reply_markup=admin_queue_kb(item))
   else:
-    await callback.message.answer_photo(item['qr_file_id'], caption=caption, reply_markup=admin_queue_kb(item))
+    await callback.message.answer_photo(queue_photo_input(item['qr_file_id']), caption=caption, reply_markup=admin_queue_kb(item))
   await callback.answer()
 
 
