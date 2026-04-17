@@ -2405,6 +2405,14 @@ async def miniapp_gaz_logo(request):
   return web.FileResponse(Path('gaz_logo.png'))
 
 
+async def miniapp_loading_frame(request):
+  name = request.match_info.get('name', '')
+  frame_path = Path(name)
+  if not frame_path.exists():
+    raise web.HTTPNotFound()
+  return web.FileResponse(frame_path)
+
+
 async def run_web_server():
   app = web.Application()
   app.router.add_get('/', miniapp_index)
