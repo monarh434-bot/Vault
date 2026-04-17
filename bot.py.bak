@@ -1835,7 +1835,7 @@ def miniapp_help_text() -> str:
 
 def miniapp_home_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
-  submit_link = miniapp_submit_link()
+  submit_link = '/submit'
   frame_urls = ",".join([f"'/DVE_frame_{i:03d}.png'" for i in range(1,31)])
   return f"""<!DOCTYPE html>
 <html lang=\"ru\">
@@ -1887,9 +1887,9 @@ def miniapp_home_html(bot_username: str) -> str:
     .btn {{ display:block; width:100%; border:none; border-radius:18px; padding:14px 16px; text-align:center; background:linear-gradient(135deg, rgba(72,16,19,.94), rgba(42,24,15,.98), rgba(18,13,10,.98)); color:var(--text); font-size:16px; font-weight:700; border:1px solid rgba(234,196,116,.30); box-shadow:0 10px 24px rgba(0,0,0,.24); }}
     .btn.primary {{ background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); }}
     .btn.secondary {{ background:linear-gradient(135deg, rgba(23,63,140,.96), rgba(15,31,72,.98)); }}
-    .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
+    .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
     .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); }}
-    .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }}
+    .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }} .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
     .loader {{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at top, rgba(183,26,36,.26), rgba(0,0,0,0) 35%), linear-gradient(180deg,#140c0d,#070606); transition:opacity .45s ease, visibility .45s ease; }}
     .loader.hidden {{ opacity:0; visibility:hidden; pointer-events:none; }}
     .loader-box {{ display:flex; flex-direction:column; align-items:center; gap:16px; }}
@@ -1920,7 +1920,7 @@ def miniapp_home_html(bot_username: str) -> str:
   const tg = window.Telegram?.WebApp;
   if (tg) {{ tg.ready(); tg.expand(); try {{ tg.disableVerticalSwipes?.(); }} catch (e) {{}} const user = tg.initDataUnsafe?.user; const img = document.getElementById('tgAvatar'); const fallback = document.getElementById('avatarFallback'); if (user?.photo_url) {{ img.src = user.photo_url; img.style.display='block'; fallback.style.display='none'; }} }}
   document.addEventListener('gesturestart', e => e.preventDefault());
-  const loader=document.getElementById('appLoader'); const frame=document.getElementById('loaderFrame'); const frames=[{frame_urls}]; let idx=0; const timer=setInterval(()=>{{ idx=(idx+1)%frames.length; frame.src=frames[idx]; }}, 66); window.addEventListener('load', ()=>{{ setTimeout(()=>{{ loader.classList.add('hidden'); clearInterval(timer); }}, 850); }});
+  const loader=document.getElementById('appLoader'); const frame=document.getElementById('loaderFrame'); const frames=[{frame_urls}]; const seenKey='dve_loader_seen_v1'; if(sessionStorage.getItem(seenKey)==='1'){{ loader.classList.add('hidden'); }} else {{ let idx=0; const timer=setInterval(()=>{{ idx=(idx+1)%frames.length; frame.src=frames[idx]; }}, 66); window.addEventListener('load', ()=>{{ setTimeout(()=>{{ loader.classList.add('hidden'); clearInterval(timer); sessionStorage.setItem(seenKey,'1'); }}, 850); }}); }}
 </script>
 </body>
 </html>"""
@@ -1937,12 +1937,12 @@ def _miniapp_shell(title: str, body: str, active: str = '') -> str:
   :root {{ --bg:#070606; --bg2:#130908; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e; --shadow:0 18px 40px rgba(0,0,0,.34); }}
   * {{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }} html,body {{ margin:0; padding:0; min-height:100%; background:radial-gradient(circle at top right, rgba(180,28,36,.20) 0%, rgba(180,28,36,0) 28%),radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 30%),linear-gradient(180deg, #17100f 0%, var(--bg2) 34%, var(--bg) 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }}
   .wrap {{ width:min(100%, 720px); margin:0 auto; padding:14px 14px 100px; }} .top {{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }} .head small {{ display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }} .head h1 {{ margin:0; color:var(--gold2); font-size:34px; line-height:1; }} .head p {{ margin:8px 0 0; color:#d6bc8b; font-size:13px; }} .chip {{ display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:16px; background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); border:1px solid rgba(234,196,116,.24); color:var(--text); text-decoration:none; font-weight:800; min-width:82px; }} .box {{ background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98)); border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow); overflow:hidden; }} .pad {{ padding:16px; }} .grid {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }} .info,.row,.empty {{ background:linear-gradient(135deg, rgba(30,20,15,.98), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); border-radius:18px; padding:14px; }} .info h3 {{ margin:0 0 8px; color:#d6bc8b; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }} .info div,.row div,.row b {{ color:#fff0c8; }} .row {{ margin-bottom:10px; }} .row:last-child{{margin-bottom:0;}} .list {{ display:flex; flex-direction:column; gap:10px; }} .empty {{ text-align:center; color:#d6bc8b; }}
-  .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }} .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }} .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }}
+  .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }} .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }} .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }} .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
   </style></head><body><div class=\"wrap\">{body}</div><div class=\"bottomnav\"><a class=\"navbtn {classes['home']}\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn {classes['manuals']}\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn {classes['numbers']}\" href=\"/numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn {classes['profile']}\" href=\"/profile\"><span>👤</span><span>Профиль</span></a></div><script>window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();document.addEventListener('gesturestart',e=>e.preventDefault());</script></body></html>"""
 
 
 def miniapp_profile_html() -> str:
-  body = """<div class=\"top\"><div class=\"head\"><small>Diamond Vault Esim</small><h1>Профиль</h1><p>Данные аккаунта, баланс и живая сводка по работе.</p></div><a class=\"chip\" href=\"/\">DVE</a></div><div class=\"box pad\"><div style=\"display:flex;align-items:center;gap:14px;margin-bottom:14px;\"><div id=\"pf_avatar\" style=\"width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,rgba(191,40,52,.95),rgba(69,18,19,.98));display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.22);\">D</div><div style=\"min-width:0;flex:1;\"><div id=\"pf_name\" style=\"font-size:20px;font-weight:800;color:#f3dfb1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\">—</div><div id=\"pf_tag\" style=\"font-size:14px;color:#d3b072;margin-top:3px;\">—</div><div id=\"pf_id\" style=\"font-size:13px;color:#9f8454;margin-top:4px;\">ID: —</div></div></div><div class=\"grid\"><div class=\"info\"><h3>Баланс</h3><div id=\"pf_balance\">—</div></div><div class=\"info\"><h3>Заработано</h3><div id=\"pf_earned\">—</div></div><div class=\"info\"><h3>Всего сдано</h3><div id=\"pf_total\">—</div></div><div class=\"info\"><h3>Успешно</h3><div id=\"pf_completed\">—</div></div><div class=\"info\"><h3>В очереди</h3><div id=\"pf_queue\">—</div></div><div class=\"info\"><h3>Рефералы</h3><div id=\"pf_refs\">—</div></div></div><div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;\"><a class=\"chip\" style=\"justify-content:center;min-height:48px;\" href=\"/numbers\">📦 Мои номера</a><a class=\"chip\" style=\"justify-content:center;min-height:48px;\" href=\"/manuals\">📚 Мануалы</a></div></div><script>const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;function setTxt(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}if(u){const full=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';setTxt('pf_name',full);setTxt('pf_tag',u.username?('@'+u.username):'Без username');setTxt('pf_id','ID: '+u.id);const av=document.getElementById('pf_avatar');if(av){av.textContent=(u.first_name||'D').trim().slice(0,1).toUpperCase();}fetch('/api/profile-summary?user_id='+encodeURIComponent(u.id)).then(r=>r.json()).then(d=>{setTxt('pf_balance',d.balance||'$0');setTxt('pf_total',String(d.total??0));setTxt('pf_completed',String(d.completed??0));setTxt('pf_earned',d.earned||'$0');setTxt('pf_refs',String(d.refs??0));setTxt('pf_queue',String(d.current_queue??0));}).catch(()=>{setTxt('pf_balance','$0');setTxt('pf_total','0');setTxt('pf_completed','0');setTxt('pf_earned','$0');setTxt('pf_refs','0');setTxt('pf_queue','0');});} </script>"""
+  body = """<div class=\"top\"><div class=\"head\"><small>Diamond Vault Esim</small><h1>Профиль</h1><p>Данные аккаунта, баланс и живая сводка по работе.</p></div><a class=\"chip\" href=\"/\">DVE</a></div><div class=\"box pad\"><div style=\"display:flex;align-items:center;gap:14px;margin-bottom:14px;\"><div id=\"pf_avatar\" style=\"width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,rgba(191,40,52,.95),rgba(69,18,19,.98));display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.22);\">D</div><div style=\"min-width:0;flex:1;\"><div id=\"pf_name\" style=\"font-size:20px;font-weight:800;color:#f3dfb1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\">—</div><div id=\"pf_tag\" style=\"font-size:14px;color:#d3b072;margin-top:3px;\">—</div><div id=\"pf_id\" style=\"font-size:13px;color:#9f8454;margin-top:4px;\">ID: —</div></div></div><div class=\"grid\"><div class=\"info\"><h3>Баланс</h3><div id=\"pf_balance\">—</div></div><div class=\"info\"><h3>Заработано</h3><div id=\"pf_earned\">—</div></div><div class=\"info\"><h3>Всего сдано</h3><div id=\"pf_total\">—</div></div><div class=\"info\"><h3>Успешно</h3><div id=\"pf_completed\">—</div></div><div class=\"info\"><h3>В очереди</h3><div id=\"pf_queue\">—</div></div><div class=\"info\"><h3>Рефералы</h3><div id=\"pf_refs\">—</div></div></div><div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;\"><a class=\"chip\" style=\"justify-content:center;min-height:48px;\" href=\"/numbers\">📦 Мои номера</a><a class=\"chip\" style=\"justify-content:center;min-height:48px;\" href=\"/manuals\">📚 Мануалы</a></div></div><script>const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;function setTxt(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}if(u){const full=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Пользователь';setTxt('pf_name',full);setTxt('pf_tag',u.username?('@'+u.username):'Без username');setTxt('pf_id','ID: '+u.id);const avImg=document.getElementById('pf_avatar_img');const avFallback=document.getElementById('pf_avatar_fallback');if(u.photo_url&&avImg){avImg.src=u.photo_url;avImg.style.display='block';if(avFallback)avFallback.style.display='none';}else if(avFallback){avFallback.textContent=(u.first_name||'D').trim().slice(0,1).toUpperCase();}fetch('/api/profile-summary?user_id='+encodeURIComponent(u.id)).then(r=>r.json()).then(d=>{setTxt('pf_balance',d.balance||'$0');setTxt('pf_total',String(d.total??0));setTxt('pf_completed',String(d.completed??0));setTxt('pf_earned',d.earned||'$0');setTxt('pf_refs',String(d.refs??0));setTxt('pf_queue',String(d.current_queue??0));}).catch(()=>{setTxt('pf_balance','$0');setTxt('pf_total','0');setTxt('pf_completed','0');setTxt('pf_earned','$0');setTxt('pf_refs','0');setTxt('pf_queue','0');});} </script>"""
   return _miniapp_shell('Профиль', body, 'profile')
 
 
@@ -1950,6 +1950,10 @@ def miniapp_numbers_html() -> str:
   body = """<div class=\"top\"><div class=\"head\"><small>Diamond Vault Esim</small><h1>Мои номера</h1><p>Активные заявки, статусы и текущая очередь.</p></div><a class=\"chip\" href=\"/\">DVE</a></div><div class=\"box pad\"><div style=\"display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;\"><div class=\"chip\" id=\"nm_total\">Всего: 0</div><div class=\"chip\" id=\"nm_active\">Активных: 0</div><button class=\"chip\" id=\"nm_reload\" type=\"button\" style=\"cursor:pointer;\">Обновить</button></div><div id=\"numbersWrap\" class=\"list\"><div class=\"empty\">Загрузка заявок…</div></div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user;const wrap=document.getElementById('numbersWrap');const totalEl=document.getElementById('nm_total');const activeEl=document.getElementById('nm_active');function colorByOperator(op){const s=(op||'').toLowerCase();if(s.includes('мтс'))return 'rgba(180,28,39,.16)';if(s.includes('билайн'))return 'rgba(206,175,28,.16)';if(s.includes('втб')||s.includes('газ'))return 'rgba(38,95,224,.16)';return 'rgba(239,198,112,.08)';}function renderItems(items){totalEl.textContent='Всего: '+items.length;activeEl.textContent='Активных: '+items.length;if(!items.length){wrap.innerHTML='<div class=\"empty\">Сейчас активных заявок нет.</div>';return;}wrap.innerHTML=items.map(it=>`<div class=\"row\" style=\"background:${colorByOperator(it.operator)};border:1px solid rgba(236,194,107,.14);border-radius:18px;padding:14px 14px 12px;\"><div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\"><b>#${it.id} • ${it.operator}</b><span class=\"chip\" style=\"font-size:12px;padding:6px 10px;\">${it.mode}</span></div><div style=\"margin-top:8px;font-size:15px;color:#f3dfb1;\">${it.phone}</div><div style=\"margin-top:6px;font-size:13px;color:#d0b072;\">${it.status}${it.position?(' • позиция '+it.position):''}</div></div>`).join('');}function loadItems(){if(!u){wrap.innerHTML='<div class=\"empty\">Откройте mini app из Telegram.</div>';return;}fetch('/api/my-numbers?user_id='+encodeURIComponent(u.id)).then(r=>r.json()).then(d=>renderItems(d.items||[])).catch(()=>{wrap.innerHTML='<div class=\"empty\">Не удалось загрузить заявки.</div>';});}document.getElementById('nm_reload').addEventListener('click',loadItems);loadItems();setInterval(loadItems,12000);</script>"""
   return _miniapp_shell('Мои номера', body, 'numbers')
 
+
+def miniapp_submit_html(bot_username: str) -> str:
+  body = """<div class="top"><div class="head"><small>Diamond Vault Esim</small><h1>Сдать eSIM</h1><p>Отправка номера и QR напрямую через mini app.</p></div><a class="chip" href="/">DVE</a></div><div class="box pad"><div class="info" style="margin-bottom:12px;"><h3>Новая заявка</h3><div>Заполни данные ниже. После отправки заявка сразу появится в той же очереди бота.</div></div><form id="submitForm" style="display:grid;gap:12px;"><select id="sb_operator" required style="width:100%;min-height:54px;border-radius:18px;padding:0 16px;background:#120d0b;border:1px solid rgba(236,194,107,.18);color:#f5e8c6;font-size:16px;"><option value="mts">🔴 МТС</option><option value="mts_premium">🔴 МТС Салон</option><option value="bil">🟡 Билайн</option><option value="mega">🟢 Мегафон</option><option value="t2">⚫ Tele2</option><option value="vtb">🔵 ВТБ</option><option value="gaz">🔵 Газпром</option></select><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><button type="button" class="chip" id="mode_hold" data-mode="hold" style="justify-content:center;min-height:52px;background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98));">⏳ Холд</button><button type="button" class="chip" id="mode_nohold" data-mode="no_hold" style="justify-content:center;min-height:52px;">⚡ Безхолд</button></div><input id="sb_phone" type="tel" inputmode="numeric" placeholder="Номер в формате +7XXXXXXXXXX" required style="width:100%;min-height:54px;border-radius:18px;padding:0 16px;background:#120d0b;border:1px solid rgba(236,194,107,.18);color:#f5e8c6;font-size:16px;"><label class="chip" style="justify-content:center;min-height:58px;cursor:pointer;">🖼 Загрузить QR<input id="sb_qr" type="file" accept="image/*" required style="display:none"></label><div id="sb_preview" class="empty">QR ещё не выбран.</div><button id="sb_submit" type="submit" class="chip" style="justify-content:center;min-height:58px;background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99));font-size:18px;font-weight:900;">📲 Сдать eSIM</button><div id="sb_msg" class="empty"></div></form></div><script>const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;let submitMode='hold';const holdBtn=document.getElementById('mode_hold');const noholdBtn=document.getElementById('mode_nohold');function syncMode(){holdBtn.style.opacity=submitMode==='hold'?'1':'.62';noholdBtn.style.opacity=submitMode==='no_hold'?'1':'.62';}holdBtn.onclick=()=>{submitMode='hold';syncMode();};noholdBtn.onclick=()=>{submitMode='no_hold';syncMode();};syncMode();const qr=document.getElementById('sb_qr');const preview=document.getElementById('sb_preview');qr.addEventListener('change',()=>{const f=qr.files?.[0];preview.textContent=f?('Выбран файл: '+f.name):'QR ещё не выбран.';});document.getElementById('submitForm').addEventListener('submit', async (e)=>{e.preventDefault();const msg=document.getElementById('sb_msg');msg.textContent='Отправка...';if(!u){msg.textContent='Открой mini app из Telegram.';return;}const f=qr.files?.[0];if(!f){msg.textContent='Загрузи QR.';return;}const fd=new FormData();fd.append('user_id',String(u.id));fd.append('username',u.username||'');fd.append('full_name',[u.first_name||'',u.last_name||''].join(' ').trim());fd.append('operator_key',document.getElementById('sb_operator').value);fd.append('mode',submitMode);fd.append('phone',document.getElementById('sb_phone').value);fd.append('qr',f,f.name||'qr.jpg');try{const r=await fetch('/api/submit-esim',{method:'POST',body:fd});const d=await r.json();if(!r.ok||!d.ok){msg.textContent=d.error||'Не удалось отправить заявку.';return;}msg.textContent='Заявка #'+d.item_id+' отправлена.';document.getElementById('sb_phone').value='';qr.value='';preview.textContent='QR ещё не выбран.';setTimeout(()=>{location.href='/numbers';},700);}catch(err){msg.textContent='Ошибка отправки.';}});</script>"""
+  return _miniapp_shell('Сдать eSIM', body, 'submit')
 
 def miniapp_manuals_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
@@ -1983,9 +1987,9 @@ def miniapp_manuals_html(bot_username: str) -> str:
     .bil-item {{ background:linear-gradient(135deg, rgba(210,177,27,.98), rgba(88,67,6,.98), rgba(27,23,8,.98)); }}
     .vtb-item {{ background:linear-gradient(135deg, rgba(22,83,210,.98), rgba(17,45,108,.98), rgba(11,14,28,.98)); }}
     .back {{ background:linear-gradient(135deg, rgba(43,15,17,.92), rgba(22,15,13,.98), rgba(10,8,7,.98)); }}
-    .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
+    .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
     .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }}
-    .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }}
+    .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }} .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
   </style>
 </head>
 <body>
@@ -2223,6 +2227,11 @@ async def miniapp_vtbgaz(request):
   return web.Response(text=miniapp_section_html('vtbgaz', username), content_type='text/html', charset='utf-8')
 
 
+async def miniapp_submit(request):
+  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
+  return web.Response(text=miniapp_submit_html(username), content_type='text/html', charset='utf-8')
+
+
 async def miniapp_manuals(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
   return web.Response(text=miniapp_manuals_html(username), content_type='text/html', charset='utf-8')
@@ -2262,6 +2271,58 @@ async def miniapp_profile(request):
 
 async def miniapp_numbers(request):
   return web.Response(text=miniapp_numbers_html(), content_type='text/html', charset='utf-8')
+
+async def api_submit_esim(request):
+  data = await request.post()
+  try:
+    user_id = int((data.get('user_id') or '0').strip())
+  except Exception:
+    user_id = 0
+  username = (data.get('username') or '').strip()
+  full_name = (data.get('full_name') or '').strip()
+  operator_key = (data.get('operator_key') or '').strip()
+  mode = (data.get('mode') or 'hold').strip()
+  phone = (data.get('phone') or '').strip()
+  qr = data.get('qr')
+  if not user_id:
+    return web.json_response({'ok': False, 'error': 'Нет пользователя Telegram.'}, status=400)
+  if operator_key not in OPERATORS:
+    return web.json_response({'ok': False, 'error': 'Выберите оператора.'}, status=400)
+  if mode not in {'hold','no_hold'}:
+    mode = 'hold'
+  normalized = normalize_phone(phone)
+  if not normalized:
+    return web.json_response({'ok': False, 'error': 'Номер должен быть в формате +7XXXXXXXXXX.'}, status=400)
+  if qr is None or not getattr(qr, 'file', None):
+    return web.json_response({'ok': False, 'error': 'Загрузите QR.'}, status=400)
+  touch_user(user_id, username, full_name or username or str(user_id))
+  bot = PRIMARY_BOT or Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+  close_after = PRIMARY_BOT is None
+  try:
+    qr.file.seek(0)
+    raw = qr.file.read()
+    if not raw:
+      return web.json_response({'ok': False, 'error': 'Пустой файл QR.'}, status=400)
+    upload = BufferedInputFile(raw, filename=getattr(qr, 'filename', 'qr.jpg') or 'qr.jpg')
+    sink_chat = LOG_CHANNEL_ID if int(LOG_CHANNEL_ID or 0) else user_id
+    sent = await bot.send_photo(sink_chat, upload, caption='miniapp submit buffer')
+    file_id = sent.photo[-1].file_id if getattr(sent, 'photo', None) else None
+    if sink_chat == user_id:
+      try:
+        await bot.delete_message(user_id, sent.message_id)
+      except Exception:
+        pass
+    if not file_id:
+      return web.json_response({'ok': False, 'error': 'Не удалось сохранить QR.'}, status=500)
+    item_id = create_queue_item_ext(user_id, username or '', full_name or username or str(user_id), operator_key, normalized, file_id, mode, submit_bot_token=BOT_TOKEN)
+    return web.json_response({'ok': True, 'item_id': int(item_id)})
+  except Exception:
+    logging.exception('miniapp submit failed')
+    return web.json_response({'ok': False, 'error': 'Ошибка при создании заявки.'}, status=500)
+  finally:
+    if close_after:
+      await bot.session.close()
+
 
 async def api_profile_summary(request):
   try:
@@ -2304,6 +2365,7 @@ async def run_web_server():
   app.router.add_get('/', miniapp_index)
   app.router.add_get('/profile', miniapp_profile)
   app.router.add_get('/numbers', miniapp_numbers)
+  app.router.add_get('/submit', miniapp_submit)
   app.router.add_get('/manuals', miniapp_manuals)
   app.router.add_get('/manuals/', miniapp_manuals)
   app.router.add_get('/manuals/basics', miniapp_basics)
@@ -2316,6 +2378,7 @@ async def run_web_server():
   app.router.add_get('/manuals/vtb-gazprom/', miniapp_vtbgaz)
   app.router.add_get('/api/profile-summary', api_profile_summary)
   app.router.add_get('/api/my-numbers', api_my_numbers)
+  app.router.add_post('/api/submit-esim', api_submit_esim)
   app.router.add_get(r'/{name:DVE_frame_[0-9]{3}\.png}', miniapp_loading_frame)
   app.router.add_get('/mini_profile_banner.jpg', miniapp_profile_banner)
   app.router.add_get('/mini_manuals_banner.jpg', miniapp_manuals_banner)
