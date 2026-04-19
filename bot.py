@@ -1919,7 +1919,7 @@ def miniapp_home_html(bot_username: str) -> str:
       <a class=\"action card-dark\" href=\"/numbers\"><h3>📦 Мои номера</h3><p>Список заявок, статусы и место в очереди.</p></a>
     </div><div class=\"btnbar\"><a class=\"btn primary\" href=\"/manuals\">Открыть библиотеку</a><a class=\"btn secondary\" href=\"{bot_link}\">Вернуться в бот</a></div></div></div>
   </div>
-  <div class=\"bottomnav\"><a class=\"navbtn active\" href=\"/\"><img src=\"/nav_home_final.png?v=1\" alt=\"Главная\"><span>Главная</span></a><a class=\"navbtn\" href=\"/manuals\"><img src=\"/nav_manuals_final.png?v=1\" alt=\"Мануалы\"><span>Мануалы</span></a><a class=\"navbtn navbtn-center\" href=\"/submit\"><img src=\"/nav_submit_final.png?v=1\" alt=\"Сдать eSIM\"><span>Сдать eSIM</span></a><a class=\"navbtn\" href=\"/numbers\"><img src=\"/nav_numbers_final.png?v=1\" alt=\"Номера\"><span>Номера</span></a><a class=\"navbtn\" href=\"/profile\"><img src=\"/nav_profile_final.png?v=1\" alt=\"Профиль\"><span>Профиль</span></a></div>
+  <div class=\"bottomnav\"><a class=\"navbtn active\" href=\"/\"><img src=\"/nav_home_final.png?v=2\" alt=\"Главная\"><span>Главная</span></a><a class=\"navbtn\" href=\"/manuals\"><img src=\"/nav_manuals_final.png?v=2\" alt=\"Мануалы\"><span>Мануалы</span></a><a class=\"navbtn navbtn-center\" href=\"/submit\"><img src=\"/nav_submit_final.png?v=2\" alt=\"Сдать eSIM\"><span>Сдать eSIM</span></a><a class=\"navbtn\" href=\"/numbers\"><img src=\"/nav_numbers_final.png?v=2\" alt=\"Номера\"><span>Номера</span></a><a class=\"navbtn\" href=\"/profile\"><img src=\"/nav_profile_final.png?v=2\" alt=\"Профиль\"><span>Профиль</span></a></div>
 <script>
   const tg = window.Telegram?.WebApp;
   if (tg) {{ tg.ready(); tg.expand(); try {{ tg.disableVerticalSwipes?.(); }} catch (e) {{}} const user = tg.initDataUnsafe?.user; const img = document.getElementById('tgAvatar'); const fallback = document.getElementById('avatarFallback'); if (user?.photo_url) {{ img.src = user.photo_url; img.style.display='block'; fallback.style.display='none'; try {{ localStorage.setItem('dve_photo_url', user.photo_url); }} catch (e) {{}} }} try {{ if (user) {{ localStorage.setItem('dve_first_name', user.first_name||''); localStorage.setItem('dve_last_name', user.last_name||''); localStorage.setItem('dve_username', user.username||''); localStorage.setItem('dve_user_id', String(user.id||'')); }} }} catch (e) {{}} }}
@@ -1942,7 +1942,7 @@ def _miniapp_shell(title: str, body: str, active: str = '') -> str:
   * {{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }} html,body {{ margin:0; padding:0; min-height:100%; background:radial-gradient(circle at top right, rgba(180,28,36,.20) 0%, rgba(180,28,36,0) 28%),radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 30%),linear-gradient(180deg, #17100f 0%, var(--bg2) 34%, var(--bg) 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }}
   .wrap {{ width:min(100%, 720px); margin:0 auto; padding:14px 14px 100px; }} .top {{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }} .head small {{ display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }} .head h1 {{ margin:0; color:var(--gold2); font-size:34px; line-height:1; }} .head p {{ margin:8px 0 0; color:#d6bc8b; font-size:13px; }} .chip {{ display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:16px; background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); border:1px solid rgba(234,196,116,.24); color:var(--text); text-decoration:none; font-weight:800; min-width:82px; }} .box {{ background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98)); border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow); overflow:hidden; }} .pad {{ padding:16px; }} .grid {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }} .info,.row,.empty {{ background:linear-gradient(135deg, rgba(30,20,15,.98), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); border-radius:18px; padding:14px; }} .info h3 {{ margin:0 0 8px; color:#d6bc8b; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }} .info div,.row div,.row b {{ color:#fff0c8; }} .row {{ margin-bottom:10px; }} .row:last-child{{margin-bottom:0;}} .list {{ display:flex; flex-direction:column; gap:10px; }} .empty {{ text-align:center; color:#d6bc8b; }}
   .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }} .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }} .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }} .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
-  </style></head><body><div class=\"wrap\">{body}</div><div class=\"bottomnav\"><a class=\"navbtn {classes['home']}\" href=\"/\"><img src=\"/nav_home_final.png?v=1\" alt=\"Главная\"><span>Главная</span></a><a class=\"navbtn {classes['manuals']}\" href=\"/manuals\"><img src=\"/nav_manuals_final.png?v=1\" alt=\"Мануалы\"><span>Мануалы</span></a><a class=\"navbtn navbtn-center {classes['submit']}\" href=\"/submit\"><img src=\"/nav_submit_final.png?v=1\" alt=\"Сдать eSIM\"><span>Сдать eSIM</span></a><a class=\"navbtn {classes['numbers']}\" href=\"/numbers\"><img src=\"/nav_numbers_final.png?v=1\" alt=\"Номера\"><span>Номера</span></a><a class=\"navbtn {classes['profile']}\" href=\"/profile\"><img src=\"/nav_profile_final.png?v=1\" alt=\"Профиль\"><span>Профиль</span></a></div><script>window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();document.addEventListener('gesturestart',e=>e.preventDefault());try{{const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;if(u){{if(u.photo_url)localStorage.setItem('dve_photo_url',u.photo_url);localStorage.setItem('dve_first_name',u.first_name||'');localStorage.setItem('dve_last_name',u.last_name||'');localStorage.setItem('dve_username',u.username||'');localStorage.setItem('dve_user_id',String(u.id||''));}}}}catch(e){{}}</script></body></html>"""
+  </style></head><body><div class=\"wrap\">{body}</div><div class=\"bottomnav\"><a class=\"navbtn {classes['home']}\" href=\"/\"><img src=\"/nav_home_final.png?v=2\" alt=\"Главная\"><span>Главная</span></a><a class=\"navbtn {classes['manuals']}\" href=\"/manuals\"><img src=\"/nav_manuals_final.png?v=2\" alt=\"Мануалы\"><span>Мануалы</span></a><a class=\"navbtn navbtn-center {classes['submit']}\" href=\"/submit\"><img src=\"/nav_submit_final.png?v=2\" alt=\"Сдать eSIM\"><span>Сдать eSIM</span></a><a class=\"navbtn {classes['numbers']}\" href=\"/numbers\"><img src=\"/nav_numbers_final.png?v=2\" alt=\"Номера\"><span>Номера</span></a><a class=\"navbtn {classes['profile']}\" href=\"/profile\"><img src=\"/nav_profile_final.png?v=2\" alt=\"Профиль\"><span>Профиль</span></a></div><script>window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();document.addEventListener('gesturestart',e=>e.preventDefault());try{{const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;if(u){{if(u.photo_url)localStorage.setItem('dve_photo_url',u.photo_url);localStorage.setItem('dve_first_name',u.first_name||'');localStorage.setItem('dve_last_name',u.last_name||'');localStorage.setItem('dve_username',u.username||'');localStorage.setItem('dve_user_id',String(u.id||''));}}}}catch(e){{}}</script></body></html>"""
 
 
 def miniapp_profile_html() -> str:
@@ -2007,7 +2007,7 @@ def miniapp_manuals_html(bot_username: str) -> str:
     <a class=\"back\" href=\"{bot_link}\">Открыть бота в Telegram</a>
   </div>
 </div>
-<div class=\"bottomnav\"><a class=\"navbtn\" href=\"/\"><img src=\"/nav_home_final.png?v=1\" alt=\"Главная\"><span>Главная</span></a><a class=\"navbtn active\" href=\"/manuals\"><img src=\"/nav_manuals_final.png?v=1\" alt=\"Мануалы\"><span>Мануалы</span></a><a class=\"navbtn navbtn-center\" href=\"/submit\"><img src=\"/nav_submit_final.png?v=1\" alt=\"Сдать eSIM\"><span>Сдать eSIM</span></a><a class=\"navbtn\" href=\"/numbers\"><img src=\"/nav_numbers_final.png?v=1\" alt=\"Номера\"><span>Номера</span></a><a class=\"navbtn\" href=\"/profile\"><img src=\"/nav_profile_final.png?v=1\" alt=\"Профиль\"><span>Профиль</span></a></div>
+<div class=\"bottomnav\"><a class=\"navbtn\" href=\"/\"><img src=\"/nav_home_final.png?v=2\" alt=\"Главная\"><span>Главная</span></a><a class=\"navbtn active\" href=\"/manuals\"><img src=\"/nav_manuals_final.png?v=2\" alt=\"Мануалы\"><span>Мануалы</span></a><a class=\"navbtn navbtn-center\" href=\"/submit\"><img src=\"/nav_submit_final.png?v=2\" alt=\"Сдать eSIM\"><span>Сдать eSIM</span></a><a class=\"navbtn\" href=\"/numbers\"><img src=\"/nav_numbers_final.png?v=2\" alt=\"Номера\"><span>Номера</span></a><a class=\"navbtn\" href=\"/profile\"><img src=\"/nav_profile_final.png?v=2\" alt=\"Профиль\"><span>Профиль</span></a></div>
 <script>
   const tg = window.Telegram?.WebApp;
   if (tg) {{ tg.ready(); tg.expand(); try {{ tg.disableVerticalSwipes?.(); }} catch (e) {{}} }}
@@ -2404,6 +2404,22 @@ async def api_my_numbers(request):
       })
   return web.json_response({'items': items})
 
+
+async def miniapp_nav_home_final(request):
+  return web.FileResponse(Path('nav_home_final.png'))
+
+async def miniapp_nav_manuals_final(request):
+  return web.FileResponse(Path('nav_manuals_final.png'))
+
+async def miniapp_nav_submit_final(request):
+  return web.FileResponse(Path('nav_submit_final.png'))
+
+async def miniapp_nav_numbers_final(request):
+  return web.FileResponse(Path('nav_numbers_final.png'))
+
+async def miniapp_nav_profile_final(request):
+  return web.FileResponse(Path('nav_profile_final.png'))
+
 async def miniapp_loading_frame(request):
   name = request.match_info.get('name', '')
   if not re.fullmatch(r'DVE_frame_\d{3}\.png', name or ''):
@@ -2440,6 +2456,11 @@ async def run_web_server():
   app.router.add_get('/bil_logo.png', miniapp_bil_logo)
   app.router.add_get('/vtb_logo.png', miniapp_vtb_logo)
   app.router.add_get('/gaz_logo.png', miniapp_gaz_logo)
+  app.router.add_get('/nav_home_final.png', miniapp_nav_home_final)
+  app.router.add_get('/nav_manuals_final.png', miniapp_nav_manuals_final)
+  app.router.add_get('/nav_submit_final.png', miniapp_nav_submit_final)
+  app.router.add_get('/nav_numbers_final.png', miniapp_nav_numbers_final)
+  app.router.add_get('/nav_profile_final.png', miniapp_nav_profile_final)
   runner = web.AppRunner(app)
   await runner.setup()
   site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
