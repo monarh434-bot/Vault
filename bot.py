@@ -1887,7 +1887,7 @@ def miniapp_submit_html(bot_username: str) -> str:
   const modeHold=document.getElementById('modeHold'); const modeNoHold=document.getElementById('modeNoHold'); function paintMode(){ if(submitMode==='hold'){modeHold.className='btn primary compactbtn';modeNoHold.className='btn secondary compactbtn';} else {modeHold.className='btn secondary compactbtn';modeNoHold.className='btn primary compactbtn';} }
   modeHold.onclick=()=>{submitMode='hold';paintMode();loadMeta();}; modeNoHold.onclick=()=>{submitMode='no_hold';paintMode();loadMeta();}; paintMode();
   pickQr.onclick=()=>qr.click(); qr.onchange=()=>{ const f=qr.files?.[0]; preview.textContent=f?('Выбран: '+(f.name||'qr.jpg')):'QR ещё не выбран.'; };
-  async function loadMeta(){ try{ const uid = u?.id ? ('&user_id='+encodeURIComponent(u.id)) : ''; const r = await fetch('/api/submit-meta?operator_key='+encodeURIComponent(opSel.value)+'&mode='+encodeURIComponent(submitMode)+uid); const d = await r.json(); document.getElementById('livePrice').textContent = d.price_text || '—'; document.getElementById('liveQueue').textContent = d.queue_text || '—'; document.getElementById('liveStatus').textContent = d.status_text || '—'; if(!d.enabled){ sbSubmit.disabled = true; sbSubmit.style.opacity = '.55'; sbSubmit.textContent = '🚫 Сдача недоступна'; msg.textContent = d.error || 'Сдача сейчас выключена.'; } else { sbSubmit.disabled = false; sbSubmit.style.opacity = '1'; sbSubmit.textContent = '📲 Сдать eSIM'; if(msg.textContent && (msg.textContent.includes('выключ') || msg.textContent.includes('оператор'))){ msg.textContent=''; } } }catch(e){ document.getElementById('livePrice').textContent='—'; document.getElementById('liveQueue').textContent='—'; document.getElementById('liveStatus').textContent='Ошибка'; } }
+  async function loadMeta(){ try{ const uid = u?.id ? ('&user_id='+encodeURIComponent(u.id)) : ''; const r = await fetch('/api/submit-meta?operator_key='+encodeURIComponent(opSel.value)+'&mode='+encodeURIComponent(submitMode)+uid); const d = await r.json(); document.getElementById('livePrice').textContent = d.price_text || '—'; document.getElementById('liveQueue').textContent = d.queue_text || '—'; document.getElementById('liveStatus').textContent = d.status_text || '—'; if(!d.ok && d.error){ sbSubmit.disabled = true; sbSubmit.style.opacity = '.55'; sbSubmit.textContent = '🚫 Сдача недоступна'; msg.textContent = d.error; } else if(!d.enabled){ sbSubmit.disabled = true; sbSubmit.style.opacity = '.55'; sbSubmit.textContent = '🚫 Сдача недоступна'; msg.textContent = d.error || 'Сдача сейчас выключена.'; } else { sbSubmit.disabled = false; sbSubmit.style.opacity = '1'; sbSubmit.textContent = '📲 Сдать eSIM'; if(msg.textContent && (msg.textContent.includes('выключ') || msg.textContent.includes('оператор'))){ msg.textContent=''; } } }catch(e){ document.getElementById('livePrice').textContent='—'; document.getElementById('liveQueue').textContent='—'; document.getElementById('liveStatus').textContent='Ошибка'; msg.textContent='Не удалось загрузить статус оператора.'; } }
   opSel.onchange=loadMeta; loadMeta();
   document.getElementById('submitForm').addEventListener('submit', async (e)=>{e.preventDefault();msg.textContent='Отправка...';if(sbSubmit.disabled){msg.textContent='Сдача сейчас выключена.';return;}if(!u){msg.textContent='Открой mini app из Telegram.';return;}let f=qr.files?.[0];if(!f){msg.textContent='Загрузи QR.';return;}let rawPhone=document.getElementById('sb_phone').value||'';let digits=rawPhone.replace(/\D+/g,'');if(digits.length===11&&(digits.startsWith('7')||digits.startsWith('8'))){rawPhone='+'+'7'+digits.slice(1);}else if(digits.length===10){rawPhone='+7'+digits;}else{msg.textContent='Номер должен быть в формате +7XXXXXXXXXX.';return;}const fd=new FormData();fd.append('user_id',String(u.id));fd.append('username',u.username||'');fd.append('full_name',[u.first_name||'',u.last_name||''].join(' ').trim());fd.append('operator_key',opSel.value);fd.append('mode',submitMode);fd.append('phone',rawPhone);fd.append('qr',f,f.name||'qr.jpg');try{const r=await fetch('/api/submit-esim',{method:'POST',body:fd});let d={};try{d=await r.json();}catch(e){}if(!r.ok||!d.ok){msg.textContent=d.error||(r.status===413?'QR слишком большой.':'Не удалось отправить заявку.');loadMeta();return;}const opText=opSel.options[opSel.selectedIndex].textContent.trim();const modeText=submitMode==='hold'?'Холд':'Безхолд';document.getElementById('submitRoot').innerHTML=`<small class="eyebrow">Заявка отправлена</small><h1 class="h1" style="font-size:34px;">Успех</h1><p class="lead">Заявка добавлена в очередь.</p><div class="info-grid" style="margin-top:12px;"><div class="info"><h3>ID</h3><div>#${d.item_id}</div></div><div class="info"><h3>Оператор</h3><div>${opText}</div></div><div class="info"><h3>Режим</h3><div>${modeText}</div></div><div class="info"><h3>Номер</h3><div>${rawPhone}</div></div></div><div class="grid2" style="margin-top:12px;"><a class="btn blue" href="/numbers">Мои номера</a><a class="btn secondary" href="/submit">Сдать ещё</a></div>`;}catch(err){msg.textContent='Ошибка отправки.';}});
   </script>
@@ -2177,6 +2177,40 @@ async def miniapp_profile(request):
 
 async def miniapp_numbers(request):
   return web.Response(text=miniapp_numbers_html(), content_type='text/html', charset='utf-8')
+
+
+
+def miniapp_operator_key(raw: str) -> str:
+  v = (raw or '').strip().lower()
+  aliases = {
+    'mts': 'mts',
+    'мтс': 'mts',
+    'mts_premium': 'mts_premium',
+    'mtspremium': 'mts_premium',
+    'mts premium': 'mts_premium',
+    'mts salon': 'mts_premium',
+    'мтс салон': 'mts_premium',
+    'bil': 'bil',
+    'beeline': 'bil',
+    'билайн': 'bil',
+    'bee': 'bil',
+    'mega': 'mega',
+    'megafon': 'mega',
+    'megafone': 'mega',
+    'мегафон': 'mega',
+    't2': 't2',
+    'tele2': 't2',
+    'теле2': 't2',
+    'vtb': 'vtb',
+    'втб': 'vtb',
+    'gaz': 'gaz',
+    'gazprom': 'gaz',
+    'gazprombank': 'gaz',
+    'газ': 'gaz',
+    'газпром': 'gaz',
+    'газпромбанк': 'gaz',
+  }
+  return aliases.get(v, v)
 
 async def api_submit_meta(request):
   operator_key = miniapp_operator_key(request.query.get('operator_key') or '')
