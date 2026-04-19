@@ -1994,8 +1994,14 @@ def miniapp_manuals_html(bot_username: str) -> str:
     .vtb-item {{ background:linear-gradient(135deg, rgba(22,83,210,.98), rgba(17,45,108,.98), rgba(11,14,28,.98)); }}
     .back {{ background:linear-gradient(135deg, rgba(43,15,17,.92), rgba(22,15,13,.98), rgba(10,8,7,.98)); }}
     .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
-    .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }}
-    .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }} .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
+    .navbtn {{ position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:64px; border-radius:18px; color:#f5e8c6; font-size:11px; gap:5px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; overflow:hidden; transition:transform .18s ease, box-shadow .22s ease, border-color .22s ease; }}
+    .navicon {{ width:26px; height:26px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,.28)); }}
+    .navlabel {{ line-height:1; }}
+    .navbtn.active {{ outline:none; color:var(--gold2); border-color:rgba(255,219,145,.42); box-shadow:0 0 0 1px rgba(255,219,145,.18) inset, 0 14px 24px rgba(0,0,0,.28), 0 0 18px rgba(225,179,74,.12); transform:translateY(-2px); }}
+    .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-14px); box-shadow:0 18px 34px rgba(98,16,21,.40), 0 0 24px rgba(185,31,43,.18); }}
+    .navbtn-center.active {{ box-shadow:0 18px 34px rgba(98,16,21,.46), 0 0 26px rgba(242,79,93,.24), 0 0 0 1px rgba(255,219,145,.16) inset; }}
+    .navbtn-center::after {{ content:''; position:absolute; inset:auto 18% 8px; height:2px; border-radius:999px; background:linear-gradient(90deg, transparent, rgba(255,221,154,.0), rgba(255,221,154,.9), rgba(255,221,154,.0), transparent); opacity:.78; animation:dvePulse 2.1s ease-in-out infinite; }}
+    @keyframes dvePulse {{ 0%,100%{{ opacity:.35; transform:scaleX(.92); }} 50%{{ opacity:1; transform:scaleX(1.04); }} }}
   </style>
 </head>
 <body>
