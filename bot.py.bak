@@ -1837,6 +1837,8 @@ def miniapp_home_html(bot_username: str) -> str:
   bot_link = f"https://t.me/{bot_username}" if bot_username else "https://t.me/"
   submit_link = '/submit'
   frame_urls = ",".join([f"'/DVE_frame_{i:03d}.png'" for i in range(1,31)])
+  home_title = escape((db.get_setting('miniapp_home_title', 'DVE APP') or 'DVE APP').strip())
+  home_subtitle = escape((db.get_setting('miniapp_home_subtitle', 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.') or 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.').strip())
   return f"""<!DOCTYPE html>
 <html lang=\"ru\">
 <head>
@@ -1909,10 +1911,10 @@ def miniapp_home_html(bot_username: str) -> str:
     <div class=\"stats\"><div class=\"stat\"><b>LIVE</b><span>Статус панели</span></div><div class=\"stat\"><b>DVE</b><span>Внутри Telegram</span></div><div class=\"stat\"><b>4</b><span>Раздела мануалов</span></div></div>
     <div class=\"card hero\"><img src=\"/mini_profile_banner.jpg\" alt=\"profile\"></div>
     <div class=\"card\"><div class=\"section\"><div class=\"title\">Быстрый доступ</div><div class=\"grid\">
-      <a class=\"action card-red\" href=\"{submit_link}\"><h3>📲 Сдать eSIM</h3><p>Открыть бота и перейти к отправке QR или дальнейшим действиям.</p></a>
-      <a class=\"action card-gold\" href=\"/manuals\"><h3>📚 Мануалы</h3><p>Библиотека материалов по разделам с удобными карточками и кнопками.</p></a>
-      <a class=\"action card-blue\" href=\"/profile\"><h3>👤 Профиль</h3><p>Тег, ID, баланс и сводка по аккаунту.</p></a>
-      <a class=\"action card-dark\" href=\"/numbers\"><h3>📦 Мои номера</h3><p>Активные заявки, статусы и место в очереди.</p></a>
+      <a class=\"action card-red\" href=\"{submit_link}\"><h3>📲 Сдать eSIM</h3><p>Создать новую заявку и перейти к отправке QR.</p></a>
+      <a class=\"action card-gold\" href=\"/manuals\"><h3>📚 Мануалы</h3><p>Открыть библиотеку материалов и разделы по операторам.</p></a>
+      <a class=\"action card-blue\" href=\"/profile\"><h3>👤 Профиль</h3><p>Тег, ID, баланс и статистика аккаунта.</p></a>
+      <a class=\"action card-dark\" href=\"/numbers\"><h3>📦 Мои номера</h3><p>Список заявок, статусы и место в очереди.</p></a>
     </div><div class=\"btnbar\"><a class=\"btn primary\" href=\"/manuals\">Открыть библиотеку</a><a class=\"btn secondary\" href=\"{bot_link}\">Вернуться в бот</a></div></div></div>
   </div>
   <div class=\"bottomnav\"><a class=\"navbtn active\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn navbtn-center\" href=\"/submit\"><span>📲</span><span>DVE</span></a><a class=\"navbtn\" href=\"/numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn\" href=\"/profile\"><span>👤</span><span>Профиль</span></a></div>
@@ -1933,13 +1935,18 @@ async def miniapp_index(request):
 
 def _miniapp_shell(title: str, body: str, active: str = '') -> str:
   classes = {k: ('active' if active == k else '') for k in ('home','manuals','submit','numbers','profile')}
-  return f"""<!DOCTYPE html><html lang=\"ru\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover\"><title>{escape(title)}</title><script src=\"https://telegram.org/js/telegram-web-app.js\"></script><style>
+  return f"""<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><title>{escape(title)}</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
   :root {{ --bg:#070606; --bg2:#130908; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e; --shadow:0 18px 40px rgba(0,0,0,.34); }}
   * {{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }} html,body {{ margin:0; padding:0; min-height:100%; background:radial-gradient(circle at top right, rgba(180,28,36,.20) 0%, rgba(180,28,36,0) 28%),radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 30%),linear-gradient(180deg, #17100f 0%, var(--bg2) 34%, var(--bg) 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }}
-  .wrap {{ width:min(100%, 720px); margin:0 auto; padding:14px 14px 100px; }} .top {{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }} .head small {{ display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }} .head h1 {{ margin:0; color:var(--gold2); font-size:34px; line-height:1; }} .head p {{ margin:8px 0 0; color:#d6bc8b; font-size:13px; }} .chip {{ display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:16px; background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); border:1px solid rgba(234,196,116,.24); color:var(--text); text-decoration:none; font-weight:800; min-width:82px; }} .box {{ background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98)); border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow); overflow:hidden; }} .pad {{ padding:16px; }} .grid {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }} .info,.row,.empty {{ background:linear-gradient(135deg, rgba(30,20,15,.98), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); border-radius:18px; padding:14px; }} .info h3 {{ margin:0 0 8px; color:#d6bc8b; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }} .info div,.row div,.row b {{ color:#fff0c8; }} .row {{ margin-bottom:10px; }} .row:last-child{{margin-bottom:0;}} .list {{ display:flex; flex-direction:column; gap:10px; }} .empty {{ text-align:center; color:#d6bc8b; }}
-  .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }} .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }} .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }} .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
-  </style></head><body><div class=\"wrap\">{body}</div><div class=\"bottomnav\"><a class=\"navbtn {classes['home']}\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn {classes['manuals']}\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn navbtn-center {classes['submit']}\" href=\"/submit\"><span>📲</span><span>DVE</span></a><a class=\"navbtn {classes['numbers']}\" href=\"/numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn {classes['profile']}\" href=\"/profile\"><span>👤</span><span>Профиль</span></a></div><script>window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();document.addEventListener('gesturestart',e=>e.preventDefault());try{{const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;if(u){{if(u.photo_url)localStorage.setItem('dve_photo_url',u.photo_url);localStorage.setItem('dve_first_name',u.first_name||'');localStorage.setItem('dve_last_name',u.last_name||'');localStorage.setItem('dve_username',u.username||'');localStorage.setItem('dve_user_id',String(u.id||''));}}}}catch(e){{}}</script></body></html>"""
-
+  .wrap {{ width:min(100%, 720px); margin:0 auto; padding:14px 14px 108px; }} .top {{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }} .head small {{ display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }} .head h1 {{ margin:0; color:var(--gold2); font-size:34px; line-height:1; }} .head p {{ margin:8px 0 0; color:#d6bc8b; font-size:13px; }} .chip {{ display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:16px; background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); border:1px solid rgba(234,196,116,.24); color:var(--text); text-decoration:none; font-weight:800; min-width:82px; }} .box {{ background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98)); border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow); overflow:hidden; }} .pad {{ padding:16px; }} .grid {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }} .info,.row,.empty {{ background:linear-gradient(135deg, rgba(30,20,15,.98), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); border-radius:18px; padding:14px; }} .info h3 {{ margin:0 0 8px; color:#d6bc8b; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }} .info div,.row div,.row b {{ color:#fff0c8; }} .row {{ margin-bottom:10px; }} .row:last-child{{margin-bottom:0;}} .list {{ display:flex; flex-direction:column; gap:10px; }} .empty {{ text-align:center; color:#d6bc8b; }}
+  .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
+  .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:64px; border-radius:16px; color:#f5e8c6; font-size:11px; gap:6px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; padding:6px 4px 8px; }}
+  .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); box-shadow:inset 0 0 0 1px rgba(255,221,161,.06), 0 10px 24px rgba(0,0,0,.24); }}
+  .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
+  .navicon {{ width:26px; height:26px; object-fit:contain; display:block; filter:drop-shadow(0 2px 6px rgba(0,0,0,.28)); }}
+  .navbtn-center .navicon {{ width:30px; height:30px; }}
+  .navlabel {{ line-height:1; white-space:nowrap; }}
+  </style></head><body><div class="wrap">{body}</div><div class="bottomnav"><a class="navbtn {classes['home']}" href="/"><img class="navicon" src="/nav_home.jpg" alt="Главная"><span class="navlabel">Главная</span></a><a class="navbtn {classes['manuals']}" href="/manuals"><img class="navicon" src="/nav_manuals.jpg" alt="Мануалы"><span class="navlabel">Мануалы</span></a><a class="navbtn navbtn-center {classes['submit']}" href="/submit"><img class="navicon" src="/nav_dve.jpg" alt="DVE"><span class="navlabel">DVE</span></a><a class="navbtn {classes['numbers']}" href="/numbers"><img class="navicon" src="/nav_numbers.jpg" alt="Номера"><span class="navlabel">Номера</span></a><a class="navbtn {classes['profile']}" href="/profile"><img class="navicon" src="/nav_profile.jpg" alt="Профиль"><span class="navlabel">Профиль</span></a></div><script>window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();document.addEventListener('gesturestart',e=>e.preventDefault());try{{const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;if(u){{if(u.photo_url)localStorage.setItem('dve_photo_url',u.photo_url);localStorage.setItem('dve_first_name',u.first_name||'');localStorage.setItem('dve_last_name',u.last_name||'');localStorage.setItem('dve_username',u.username||'');localStorage.setItem('dve_user_id',String(u.id||''));}}}}catch(e){{}}</script></body></html>"""
 
 def miniapp_profile_html() -> str:
   body = """<div class="top"><div class="head"><small>Diamond Vault Esim</small><h1>Профиль</h1><p>Тег, ID, баланс и живая сводка по аккаунту.</p></div><a class="chip" href="/submit">DVE</a></div><div class="box pad" id="submitRoot"><div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;"><div id="pf_avatar" style="width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,rgba(191,40,52,.95),rgba(69,18,19,.98));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.22);overflow:hidden;position:relative;"><img id="pf_avatar_img" style="width:100%;height:100%;object-fit:cover;display:none;"><div id="pf_avatar_fallback">D</div></div><div style="min-width:0;flex:1;"><div id="pf_name" style="font-size:20px;font-weight:800;color:#f3dfb1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div><div id="pf_tag" style="font-size:14px;color:#d3b072;margin-top:3px;">—</div><div id="pf_id" style="font-size:13px;color:#9f8454;margin-top:4px;">ID: —</div></div></div><div style="display:grid;grid-template-columns:1.15fr .85fr;gap:10px;margin-bottom:10px;"><div class="info" style="background:linear-gradient(135deg,rgba(133,19,28,.26),rgba(49,16,18,.84));border-color:rgba(236,194,107,.18);"><h3>Баланс</h3><div id="pf_balance" style="font-size:26px;font-weight:900;color:#fff2d1;">—</div><div style="margin-top:6px;color:#c7a566;font-size:12px;">Доступно к выводу</div></div><div class="info"><h3>Сегодня</h3><div id="pf_today" style="font-size:22px;font-weight:900;color:#f3dfb1;">—</div><div style="margin-top:6px;color:#c7a566;font-size:12px;">Заработано за день</div></div></div><div class="grid"><div class="info"><h3>Всего сдано</h3><div id="pf_total">—</div></div><div class="info"><h3>Успешно</h3><div id="pf_completed">—</div></div><div class="info"><h3>В очереди</h3><div id="pf_queue">—</div></div><div class="info"><h3>Рефералы</h3><div id="pf_refs">—</div></div><div class="info"><h3>Заработано</h3><div id="pf_earned">—</div></div><div class="info"><h3>Статус</h3><div id="pf_status">Активен</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;"><a class="chip" style="justify-content:center;min-height:48px;" href="/numbers">📦 Мои номера</a><a class="chip" style="justify-content:center;min-height:48px;" href="/manuals">📚 Мануалы</a></div><div class="box" style="margin-top:14px;padding:14px;"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;"><b style="color:#f3dfb1;">Последние действия</b><a class="chip" href="/numbers" style="font-size:12px;padding:8px 10px;">Все заявки</a></div><div id="pf_recent" class="list"><div class="empty">Загрузка истории…</div></div></div></div><script>const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;function setTxt(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function fmtDate(v){if(!v)return '—';const d=new Date(String(v).replace(' ','T'));if(isNaN(d.getTime()))return v;return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}function recentHtml(items){if(!items||!items.length)return '<div class="empty">Пока нет действий.</div>';return items.map(it=>`<div class="row" style="display:grid;gap:7px;background:rgba(17,12,10,.72);border:1px solid rgba(236,194,107,.12);border-radius:16px;padding:12px;"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><b style="color:#f3dfb1;">#${it.id} • ${esc(it.operator)}</b><span class="chip" style="font-size:12px;padding:6px 10px;">${esc(it.mode)}</span></div><div style="font-size:14px;color:#ead6aa;">${esc(it.phone)}</div><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:#c7a566;"><span>${esc(it.status)}</span><span>${fmtDate(it.created_at)}</span></div>${it.fail_reason?`<div style="font-size:12px;color:#ffb4ad;">${esc(it.fail_reason)}</div>`:''}</div>`).join('');}const first=(u?.first_name)||localStorage.getItem('dve_first_name')||'';const last=(u?.last_name)||localStorage.getItem('dve_last_name')||'';const uname=(u?.username)||localStorage.getItem('dve_username')||'';const uid=(u?.id)||localStorage.getItem('dve_user_id')||'';const full=[first,last].filter(Boolean).join(' ')||'Пользователь';setTxt('pf_name',full);setTxt('pf_tag',uname?('@'+uname):'Без username');setTxt('pf_id','ID: '+(uid||'—'));const avImg=document.getElementById('pf_avatar_img');const avFallback=document.getElementById('pf_avatar_fallback');const photo=(u?.photo_url)||localStorage.getItem('dve_photo_url')||'';if(photo&&avImg){avImg.onload=()=>{avImg.style.display='block';if(avFallback)avFallback.style.display='none';};avImg.onerror=()=>{if(avFallback)avFallback.textContent=(first||'D').trim().slice(0,1).toUpperCase();};avImg.src=photo;}else if(avFallback){avFallback.textContent=(first||'D').trim().slice(0,1).toUpperCase();}if(uid){fetch('/api/profile-summary?user_id='+encodeURIComponent(uid)).then(r=>r.json()).then(d=>{setTxt('pf_balance',d.balance||'$0');setTxt('pf_total',String(d.total??0));setTxt('pf_completed',String(d.completed??0));setTxt('pf_earned',d.earned||'$0');setTxt('pf_today',d.earned_today||'$0');setTxt('pf_refs',String(d.refs??0));setTxt('pf_queue',String(d.current_queue??0));setTxt('pf_status',(d.current_queue??0)>0?'В работе':'Готов к сдаче');document.getElementById('pf_recent').innerHTML=recentHtml(d.recent||[]);}).catch(()=>{setTxt('pf_balance','$0');setTxt('pf_total','0');setTxt('pf_completed','0');setTxt('pf_earned','$0');setTxt('pf_today','$0');setTxt('pf_refs','0');setTxt('pf_queue','0');document.getElementById('pf_recent').innerHTML='<div class="empty">Не удалось загрузить историю.</div>';});}</script>"""
@@ -2264,6 +2271,22 @@ async def miniapp_vtb_logo(request):
 async def miniapp_gaz_logo(request):
   return web.FileResponse(Path('gaz_logo.png'))
 
+async def miniapp_nav_home(request):
+  return web.FileResponse(Path('nav_home.jpg'))
+
+async def miniapp_nav_manuals(request):
+  return web.FileResponse(Path('nav_manuals.jpg'))
+
+async def miniapp_nav_dve(request):
+  return web.FileResponse(Path('nav_dve.jpg'))
+
+async def miniapp_nav_numbers(request):
+  return web.FileResponse(Path('nav_numbers.jpg'))
+
+async def miniapp_nav_profile(request):
+  return web.FileResponse(Path('nav_profile.jpg'))
+
+
 
 async def miniapp_profile(request):
   return web.Response(text=miniapp_profile_html(), content_type='text/html', charset='utf-8')
@@ -2436,6 +2459,11 @@ async def run_web_server():
   app.router.add_get('/bil_logo.png', miniapp_bil_logo)
   app.router.add_get('/vtb_logo.png', miniapp_vtb_logo)
   app.router.add_get('/gaz_logo.png', miniapp_gaz_logo)
+  app.router.add_get('/nav_home.jpg', miniapp_nav_home)
+  app.router.add_get('/nav_manuals.jpg', miniapp_nav_manuals)
+  app.router.add_get('/nav_dve.jpg', miniapp_nav_dve)
+  app.router.add_get('/nav_numbers.jpg', miniapp_nav_numbers)
+  app.router.add_get('/nav_profile.jpg', miniapp_nav_profile)
   runner = web.AppRunner(app)
   await runner.setup()
   site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
@@ -2553,6 +2581,8 @@ def manual_setting_key(section: str) -> str:
     'mts': 'miniapp_mts_text',
     'beeline': 'miniapp_beeline_text',
     'vtbgaz': 'miniapp_vtbgaz_text',
+    'home_title': 'miniapp_home_title',
+    'home_subtitle': 'miniapp_home_subtitle',
   }
   return mapping.get(section, 'miniapp_basics_text')
 
@@ -3013,27 +3043,41 @@ def render_miniapp_settings() -> str:
   beeline = 'задан' if db.get_setting('miniapp_beeline_text', '').strip() else 'по умолчанию'
   vtbgaz = 'задан' if db.get_setting('miniapp_vtbgaz_text', '').strip() else 'по умолчанию'
   submit_bot = db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot').strip() or '@DiamondVaultE_bot'
+  home_title = (db.get_setting('miniapp_home_title', 'DVE APP') or 'DVE APP').strip()
+  home_subtitle = (db.get_setting('miniapp_home_subtitle', 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.') or 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.').strip()
   return (
     '<b>🧩 Настройки Mini App</b>\n\n'
+    f'🏠 Заголовок: <b>{escape(home_title)}</b>\n'
+    f'📝 Подзаголовок: <b>{escape(home_subtitle)}</b>\n\n'
     f'📘 Основы: <b>{basics}</b>\n'
     f'🔴 MTS: <b>{mts}</b>\n'
     f'🟡 Билайн: <b>{beeline}</b>\n'
     f'🔵 ВТБ/Газпром: <b>{vtbgaz}</b>\n'
     f'🤖 Кнопка сдачи QR: <code>{escape(submit_bot)}</code>\n\n'
-    'Выбери раздел ниже. Текст каждого раздела используется и в Telegram-мануалах, и в mini app.'
+    'Здесь можно отдельно менять главную, тексты разделов, быстро открывать превью и сбрасывать нужные части без полного отката.'
   )
 
 
 def miniapp_settings_kb():
   kb = InlineKeyboardBuilder()
+  kb.button(text='🏠 Заголовок главной', callback_data='admin:miniapp_edit:home_title')
+  kb.button(text='📝 Подзаголовок главной', callback_data='admin:miniapp_edit:home_subtitle')
   kb.button(text='📘 Основы', callback_data='admin:miniapp_edit:basics')
   kb.button(text='🔴 MTS ESIM', callback_data='admin:miniapp_edit:mts')
   kb.button(text='🟡 Билайн ESIM', callback_data='admin:miniapp_edit:beeline')
   kb.button(text='🔵 ВТБ/Газпром', callback_data='admin:miniapp_edit:vtbgaz')
   kb.button(text='🤖 Бот для кнопки QR', callback_data='admin:miniapp_set_submit_bot')
+  kb.button(text='🌐 Открыть Mini App', callback_data='admin:miniapp_preview:home')
+  kb.button(text='👁 Превью мануалов', callback_data='admin:miniapp_preview:manuals')
+  kb.button(text='👁 Превью основ', callback_data='admin:miniapp_preview:basics')
+  kb.button(text='♻️ Сброс главной', callback_data='admin:miniapp_reset:home')
+  kb.button(text='♻️ Сброс основ', callback_data='admin:miniapp_reset:basics')
+  kb.button(text='♻️ Сброс MTS', callback_data='admin:miniapp_reset:mts')
+  kb.button(text='♻️ Сброс Билайн', callback_data='admin:miniapp_reset:beeline')
+  kb.button(text='♻️ Сброс ВТБ/Газпром', callback_data='admin:miniapp_reset:vtbgaz')
   kb.button(text='🧹 Сбросить всё', callback_data='admin:miniapp_reset_text')
   kb.button(text='↩️ Назад', callback_data='admin:settings')
-  kb.adjust(2,2,2,1)
+  kb.adjust(2,2,2,2,2,2,2,1,1)
   return kb.as_markup()
 
 
@@ -3910,6 +3954,42 @@ async def admin_miniapp_settings(callback: CallbackQuery):
   await safe_edit_or_send(callback, render_miniapp_settings(), reply_markup=miniapp_settings_kb())
   await callback.answer()
 
+@router.callback_query(F.data.startswith("admin:miniapp_preview:"))
+async def admin_miniapp_preview(callback: CallbackQuery):
+  if not is_admin(callback.from_user.id):
+    return
+  section = callback.data.split(':')[-1]
+  path = {
+    'home': '/',
+    'manuals': '/manuals',
+    'basics': '/manuals/basics',
+  }.get(section, '/')
+  url = miniapp_url(path)
+  kb = InlineKeyboardBuilder()
+  kb.button(text='🚀 Открыть', url=url)
+  kb.button(text='↩️ Назад', callback_data='admin:miniapp_settings')
+  kb.adjust(1)
+  titles = {'home': 'главной', 'manuals': 'мануалов', 'basics': 'раздела Основы'}
+  await callback.message.answer(f"<b>Превью {titles.get(section, 'Mini App')}</b>\n\n<code>{escape(url)}</code>", reply_markup=kb.as_markup())
+  await callback.answer()
+
+@router.callback_query(F.data.startswith("admin:miniapp_reset:"))
+async def admin_miniapp_reset_single(callback: CallbackQuery, state: FSMContext):
+  if not is_admin(callback.from_user.id):
+    return
+  section = callback.data.split(':')[-1]
+  if section == 'home':
+    db.set_setting('miniapp_home_title', 'DVE APP')
+    db.set_setting('miniapp_home_subtitle', 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.')
+    label = 'Главная'
+  else:
+    db.set_setting(manual_setting_key(section), '')
+    label = manual_title(section)
+  await state.clear()
+  await safe_edit_or_send(callback, render_miniapp_settings(), reply_markup=miniapp_settings_kb())
+  await callback.answer(f'{label} сброшен')
+
+
 @router.callback_query(F.data.startswith("admin:miniapp_edit:"))
 async def admin_miniapp_set_text(callback: CallbackQuery, state: FSMContext):
   if not is_admin(callback.from_user.id):
@@ -3943,9 +4023,11 @@ async def admin_miniapp_reset_text(callback: CallbackQuery, state: FSMContext):
   db.set_setting('miniapp_mts_text', '')
   db.set_setting('miniapp_beeline_text', '')
   db.set_setting('miniapp_vtbgaz_text', '')
+  db.set_setting('miniapp_home_title', 'DVE APP')
+  db.set_setting('miniapp_home_subtitle', 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.')
   await state.clear()
   await safe_edit_or_send(callback, render_miniapp_settings(), reply_markup=miniapp_settings_kb())
-  await callback.answer('Тексты сброшены')
+  await callback.answer('Настройки Mini App сброшены')
 
 @router.message(AdminStates.waiting_miniapp_text)
 async def admin_miniapp_text_value(message: Message, state: FSMContext):
