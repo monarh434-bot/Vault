@@ -2089,6 +2089,11 @@ def miniapp_section_html(section: str, bot_username: str) -> str:
   return base.replace(basics_default, content, 1)
 
 
+async def miniapp_index(request):
+  username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
+  return web.Response(text=miniapp_home_html(username), content_type='text/html', charset='utf-8')
+
+
 async def miniapp_mts(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
   return web.Response(text=miniapp_section_html('mts', username), content_type='text/html', charset='utf-8')
