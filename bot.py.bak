@@ -72,6 +72,11 @@ WEBAPP_PORT = int(__import__("os").getenv("PORT", "8080"))
 WEBAPP_BASE_URL = (__import__("os").getenv("WEBAPP_BASE_URL") or "https://vault-production-67a7.up.railway.app").rstrip("/")
 MINI_PROFILE_BANNER = "mini_profile_banner.jpg"
 MINI_MANUALS_BANNER = "mini_manuals_banner.jpg"
+NAV_HOME_ICON = "nav_home.png"
+NAV_MANUALS_ICON = "nav_manuals.png"
+NAV_SUBMIT_ICON = "nav_submit.png"
+NAV_NUMBERS_ICON = "nav_numbers.png"
+NAV_PROFILE_ICON = "nav_profile.png"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", handlers=[logging.StreamHandler(), logging.FileHandler("bot.log", mode="a", encoding="utf-8")])
 logging.info("Railway logging enabled: stdout + bot.log")
@@ -1890,9 +1895,9 @@ def miniapp_home_html(bot_username: str) -> str:
     .btn.primary {{ background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); }}
     .btn.secondary {{ background:linear-gradient(135deg, rgba(23,63,140,.96), rgba(15,31,72,.98)); }}
     .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
-    .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; overflow:hidden; }}
-    .navico {{ width:24px; height:24px; object-fit:contain; display:block; flex-shrink:0; }}
-    .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }} .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
+    .navbtn { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:11px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); white-space:nowrap; text-align:center; }
+    .navbtn img { width:24px; height:24px; display:block; object-fit:contain; }
+    .navbtn.active { outline:1px solid rgba(234,196,116,.32); color:var(--gold2); } .navbtn-center { background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }
     .loader {{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at top, rgba(183,26,36,.26), rgba(0,0,0,0) 35%), linear-gradient(180deg,#140c0d,#070606); transition:opacity .45s ease, visibility .45s ease; }}
     .loader.hidden {{ opacity:0; visibility:hidden; pointer-events:none; }}
     .loader-box {{ display:flex; flex-direction:column; align-items:center; gap:16px; }}
@@ -1918,7 +1923,7 @@ def miniapp_home_html(bot_username: str) -> str:
       <a class=\"action card-dark\" href=\"/numbers\"><h3>📦 Мои номера</h3><p>Список заявок, статусы и место в очереди.</p></a>
     </div><div class=\"btnbar\"><a class=\"btn primary\" href=\"/manuals\">Открыть библиотеку</a><a class=\"btn secondary\" href=\"{bot_link}\">Вернуться в бот</a></div></div></div>
   </div>
-  {_miniapp_nav_inline("home")}
+  <div class=\"bottomnav\"><a class=\"navbtn active\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn navbtn-center\" href=\"/submit\"><span>📲</span><span>DVE</span></a><a class=\"navbtn\" href=\"/numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn\" href=\"/profile\"><span>👤</span><span>Профиль</span></a></div>
 <script>
   const tg = window.Telegram?.WebApp;
   if (tg) {{ tg.ready(); tg.expand(); try {{ tg.disableVerticalSwipes?.(); }} catch (e) {{}} const user = tg.initDataUnsafe?.user; const img = document.getElementById('tgAvatar'); const fallback = document.getElementById('avatarFallback'); if (user?.photo_url) {{ img.src = user.photo_url; img.style.display='block'; fallback.style.display='none'; try {{ localStorage.setItem('dve_photo_url', user.photo_url); }} catch (e) {{}} }} try {{ if (user) {{ localStorage.setItem('dve_first_name', user.first_name||''); localStorage.setItem('dve_last_name', user.last_name||''); localStorage.setItem('dve_username', user.username||''); localStorage.setItem('dve_user_id', String(user.id||'')); }} }} catch (e) {{}} }}
@@ -1929,21 +1934,6 @@ def miniapp_home_html(bot_username: str) -> str:
 </html>"""
 
 
-
-
-def _miniapp_nav_inline(active: str = '') -> str:
-  classes = {k: ('active' if active == k else '') for k in ('home','manuals','submit','numbers','profile')}
-  v = '42'
-  return (
-    f'<div class="bottomnav">'
-    f'<a class="navbtn {classes["home"]}" href="/"><img src="/nav_home.jpg?v={v}" alt="Главная" class="navico"><span class="navlabel">Главная</span></a>'
-    f'<a class="navbtn {classes["manuals"]}" href="/manuals"><img src="/nav_manuals.jpg?v={v}" alt="Мануалы" class="navico"><span class="navlabel">Мануалы</span></a>'
-    f'<a class="navbtn navbtn-center {classes["submit"]}" href="/submit"><img src="/nav_dve.jpg?v={v}" alt="Сдача eSIM" class="navico"><span class="navlabel">Сдача eSIM</span></a>'
-    f'<a class="navbtn {classes["numbers"]}" href="/numbers"><img src="/nav_numbers.jpg?v={v}" alt="Номера" class="navico"><span class="navlabel">Номера</span></a>'
-    f'<a class="navbtn {classes["profile"]}" href="/profile"><img src="/nav_profile.jpg?v={v}" alt="Профиль" class="navico"><span class="navlabel">Профиль</span></a>'
-    f'</div>'
-  )
-
 async def miniapp_index(request):
   username = db.get_setting('bot_username_cached', BOT_USERNAME_FALLBACK) or BOT_USERNAME_FALLBACK
   return web.Response(text=miniapp_home_html(username), content_type='text/html', charset='utf-8')
@@ -1951,18 +1941,13 @@ async def miniapp_index(request):
 
 def _miniapp_shell(title: str, body: str, active: str = '') -> str:
   classes = {k: ('active' if active == k else '') for k in ('home','manuals','submit','numbers','profile')}
-  return f"""<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><title>{escape(title)}</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
+  return f"""<!DOCTYPE html><html lang=\"ru\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover\"><title>{escape(title)}</title><script src=\"https://telegram.org/js/telegram-web-app.js\"></script><style>
   :root {{ --bg:#070606; --bg2:#130908; --gold:#f1d18a; --gold2:#ffd98b; --line:rgba(236,194,107,.24); --text:#f6e8c5; --muted:#c39d5e; --shadow:0 18px 40px rgba(0,0,0,.34); }}
   * {{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }} html,body {{ margin:0; padding:0; min-height:100%; background:radial-gradient(circle at top right, rgba(180,28,36,.20) 0%, rgba(180,28,36,0) 28%),radial-gradient(circle at top, rgba(255,190,92,.12) 0%, rgba(255,190,92,0) 30%),linear-gradient(180deg, #17100f 0%, var(--bg2) 34%, var(--bg) 100%); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; overscroll-behavior:none; touch-action:pan-x pan-y; }}
-  .wrap {{ width:min(100%, 720px); margin:0 auto; padding:14px 14px 108px; }} .top {{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }} .head small {{ display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }} .head h1 {{ margin:0; color:var(--gold2); font-size:34px; line-height:1; }} .head p {{ margin:8px 0 0; color:#d6bc8b; font-size:13px; }} .chip {{ display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:16px; background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); border:1px solid rgba(234,196,116,.24); color:var(--text); text-decoration:none; font-weight:800; min-width:82px; }} .box {{ background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98)); border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow); overflow:hidden; }} .pad {{ padding:16px; }} .grid {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }} .info,.row,.empty {{ background:linear-gradient(135deg, rgba(30,20,15,.98), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); border-radius:18px; padding:14px; }} .info h3 {{ margin:0 0 8px; color:#d6bc8b; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }} .info div,.row div,.row b {{ color:#fff0c8; }} .row {{ margin-bottom:10px; }} .row:last-child{{margin-bottom:0;}} .list {{ display:flex; flex-direction:column; gap:10px; }} .empty {{ text-align:center; color:#d6bc8b; }}
-  .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
-  .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:64px; border-radius:16px; color:#f5e8c6; font-size:11px; gap:6px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; padding:6px 4px 8px; }}
-  .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); box-shadow:inset 0 0 0 1px rgba(255,221,161,.06), 0 10px 24px rgba(0,0,0,.24); }}
-  .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
-  .navicon {{ width:26px; height:26px; object-fit:contain; display:block; filter:drop-shadow(0 2px 6px rgba(0,0,0,.28)); }}
-  .navbtn-center .navicon {{ width:30px; height:30px; }}
-  .navlabel {{ line-height:1; white-space:nowrap; }}
-  </style></head><body><div class="wrap">{body}</div>{_miniapp_nav_inline(active)}<script>window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();document.addEventListener('gesturestart',e=>e.preventDefault());try{{const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;if(u){{if(u.photo_url)localStorage.setItem('dve_photo_url',u.photo_url);localStorage.setItem('dve_first_name',u.first_name||'');localStorage.setItem('dve_last_name',u.last_name||'');localStorage.setItem('dve_username',u.username||'');localStorage.setItem('dve_user_id',String(u.id||''));}}}}catch(e){{}}</script></body></html>"""
+  .wrap {{ width:min(100%, 720px); margin:0 auto; padding:14px 14px 100px; }} .top {{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }} .head small {{ display:block; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; font-size:11px; margin-bottom:8px; }} .head h1 {{ margin:0; color:var(--gold2); font-size:34px; line-height:1; }} .head p {{ margin:8px 0 0; color:#d6bc8b; font-size:13px; }} .chip {{ display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:16px; background:linear-gradient(135deg, rgba(117,16,23,.96), rgba(59,16,18,.98)); border:1px solid rgba(234,196,116,.24); color:var(--text); text-decoration:none; font-weight:800; min-width:82px; }} .box {{ background:linear-gradient(180deg, rgba(22,16,13,.98), rgba(9,7,6,.98)); border:1px solid var(--line); border-radius:24px; box-shadow:var(--shadow); overflow:hidden; }} .pad {{ padding:16px; }} .grid {{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }} .info,.row,.empty {{ background:linear-gradient(135deg, rgba(30,20,15,.98), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); border-radius:18px; padding:14px; }} .info h3 {{ margin:0 0 8px; color:#d6bc8b; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }} .info div,.row div,.row b {{ color:#fff0c8; }} .row {{ margin-bottom:10px; }} .row:last-child{{margin-bottom:0;}} .list {{ display:flex; flex-direction:column; gap:10px; }} .empty {{ text-align:center; color:#d6bc8b; }}
+  .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }} .navbtn {{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:12px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; }} .navbtn.active {{ outline:1px solid rgba(234,196,116,.32); color:var(--gold2); }} .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }}
+  </style></head><body><div class=\"wrap\">{body}</div><div class=\"bottomnav\"><a class=\"navbtn {classes['home']}\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn {classes['manuals']}\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn navbtn-center {classes['submit']}\" href=\"/submit\"><span>📲</span><span>DVE</span></a><a class=\"navbtn {classes['numbers']}\" href=\"/numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn {classes['profile']}\" href=\"/profile\"><span>👤</span><span>Профиль</span></a></div><script>window.Telegram?.WebApp?.ready();window.Telegram?.WebApp?.expand();document.addEventListener('gesturestart',e=>e.preventDefault());try{{const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;if(u){{if(u.photo_url)localStorage.setItem('dve_photo_url',u.photo_url);localStorage.setItem('dve_first_name',u.first_name||'');localStorage.setItem('dve_last_name',u.last_name||'');localStorage.setItem('dve_username',u.username||'');localStorage.setItem('dve_user_id',String(u.id||''));}}}}catch(e){{}}</script></body></html>"""
+
 
 def miniapp_profile_html() -> str:
   body = """<div class="top"><div class="head"><small>Diamond Vault Esim</small><h1>Профиль</h1><p>Тег, ID, баланс и живая сводка по аккаунту.</p></div><a class="chip" href="/submit">DVE</a></div><div class="box pad" id="submitRoot"><div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;"><div id="pf_avatar" style="width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,rgba(191,40,52,.95),rgba(69,18,19,.98));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;box-shadow:0 10px 24px rgba(0,0,0,.22);overflow:hidden;position:relative;"><img id="pf_avatar_img" style="width:100%;height:100%;object-fit:cover;display:none;"><div id="pf_avatar_fallback">D</div></div><div style="min-width:0;flex:1;"><div id="pf_name" style="font-size:20px;font-weight:800;color:#f3dfb1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div><div id="pf_tag" style="font-size:14px;color:#d3b072;margin-top:3px;">—</div><div id="pf_id" style="font-size:13px;color:#9f8454;margin-top:4px;">ID: —</div></div></div><div style="display:grid;grid-template-columns:1.15fr .85fr;gap:10px;margin-bottom:10px;"><div class="info" style="background:linear-gradient(135deg,rgba(133,19,28,.26),rgba(49,16,18,.84));border-color:rgba(236,194,107,.18);"><h3>Баланс</h3><div id="pf_balance" style="font-size:26px;font-weight:900;color:#fff2d1;">—</div><div style="margin-top:6px;color:#c7a566;font-size:12px;">Доступно к выводу</div></div><div class="info"><h3>Сегодня</h3><div id="pf_today" style="font-size:22px;font-weight:900;color:#f3dfb1;">—</div><div style="margin-top:6px;color:#c7a566;font-size:12px;">Заработано за день</div></div></div><div class="grid"><div class="info"><h3>Всего сдано</h3><div id="pf_total">—</div></div><div class="info"><h3>Успешно</h3><div id="pf_completed">—</div></div><div class="info"><h3>В очереди</h3><div id="pf_queue">—</div></div><div class="info"><h3>Рефералы</h3><div id="pf_refs">—</div></div><div class="info"><h3>Заработано</h3><div id="pf_earned">—</div></div><div class="info"><h3>Статус</h3><div id="pf_status">Активен</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;"><a class="chip" style="justify-content:center;min-height:48px;" href="/numbers">📦 Мои номера</a><a class="chip" style="justify-content:center;min-height:48px;" href="/manuals">📚 Мануалы</a></div><div class="box" style="margin-top:14px;padding:14px;"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;"><b style="color:#f3dfb1;">Последние действия</b><a class="chip" href="/numbers" style="font-size:12px;padding:8px 10px;">Все заявки</a></div><div id="pf_recent" class="list"><div class="empty">Загрузка истории…</div></div></div></div><script>const tg=window.Telegram?.WebApp;const u=tg?.initDataUnsafe?.user;function setTxt(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function fmtDate(v){if(!v)return '—';const d=new Date(String(v).replace(' ','T'));if(isNaN(d.getTime()))return v;return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}function recentHtml(items){if(!items||!items.length)return '<div class="empty">Пока нет действий.</div>';return items.map(it=>`<div class="row" style="display:grid;gap:7px;background:rgba(17,12,10,.72);border:1px solid rgba(236,194,107,.12);border-radius:16px;padding:12px;"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><b style="color:#f3dfb1;">#${it.id} • ${esc(it.operator)}</b><span class="chip" style="font-size:12px;padding:6px 10px;">${esc(it.mode)}</span></div><div style="font-size:14px;color:#ead6aa;">${esc(it.phone)}</div><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:#c7a566;"><span>${esc(it.status)}</span><span>${fmtDate(it.created_at)}</span></div>${it.fail_reason?`<div style="font-size:12px;color:#ffb4ad;">${esc(it.fail_reason)}</div>`:''}</div>`).join('');}const first=(u?.first_name)||localStorage.getItem('dve_first_name')||'';const last=(u?.last_name)||localStorage.getItem('dve_last_name')||'';const uname=(u?.username)||localStorage.getItem('dve_username')||'';const uid=(u?.id)||localStorage.getItem('dve_user_id')||'';const full=[first,last].filter(Boolean).join(' ')||'Пользователь';setTxt('pf_name',full);setTxt('pf_tag',uname?('@'+uname):'Без username');setTxt('pf_id','ID: '+(uid||'—'));const avImg=document.getElementById('pf_avatar_img');const avFallback=document.getElementById('pf_avatar_fallback');const photo=(u?.photo_url)||localStorage.getItem('dve_photo_url')||'';if(photo&&avImg){avImg.onload=()=>{avImg.style.display='block';if(avFallback)avFallback.style.display='none';};avImg.onerror=()=>{if(avFallback)avFallback.textContent=(first||'D').trim().slice(0,1).toUpperCase();};avImg.src=photo;}else if(avFallback){avFallback.textContent=(first||'D').trim().slice(0,1).toUpperCase();}if(uid){fetch('/api/profile-summary?user_id='+encodeURIComponent(uid)).then(r=>r.json()).then(d=>{setTxt('pf_balance',d.balance||'$0');setTxt('pf_total',String(d.total??0));setTxt('pf_completed',String(d.completed??0));setTxt('pf_earned',d.earned||'$0');setTxt('pf_today',d.earned_today||'$0');setTxt('pf_refs',String(d.refs??0));setTxt('pf_queue',String(d.current_queue??0));setTxt('pf_status',(d.current_queue??0)>0?'В работе':'Готов к сдаче');document.getElementById('pf_recent').innerHTML=recentHtml(d.recent||[]);}).catch(()=>{setTxt('pf_balance','$0');setTxt('pf_total','0');setTxt('pf_completed','0');setTxt('pf_earned','$0');setTxt('pf_today','$0');setTxt('pf_refs','0');setTxt('pf_queue','0');document.getElementById('pf_recent').innerHTML='<div class="empty">Не удалось загрузить историю.</div>';});}</script>"""
@@ -2010,14 +1995,9 @@ def miniapp_manuals_html(bot_username: str) -> str:
     .vtb-item {{ background:linear-gradient(135deg, rgba(22,83,210,.98), rgba(17,45,108,.98), rgba(11,14,28,.98)); }}
     .back {{ background:linear-gradient(135deg, rgba(43,15,17,.92), rgba(22,15,13,.98), rgba(10,8,7,.98)); }}
     .bottomnav {{ position:fixed; left:50%; bottom:10px; transform:translateX(-50%); width:min(calc(100% - 18px), 720px); display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:10px; border-radius:24px; border:1px solid var(--line); background:rgba(11,8,7,.92); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.35); }}
-    .navbtn {{ position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:64px; border-radius:18px; color:#f5e8c6; font-size:11px; gap:5px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; overflow:hidden; transition:transform .18s ease, box-shadow .22s ease, border-color .22s ease; }}
-    .navicon {{ width:26px; height:26px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,.28)); }}
-    .navlabel {{ line-height:1; }}
-    .navbtn.active {{ outline:none; color:var(--gold2); border-color:rgba(255,219,145,.42); box-shadow:0 0 0 1px rgba(255,219,145,.18) inset, 0 14px 24px rgba(0,0,0,.28), 0 0 18px rgba(225,179,74,.12); transform:translateY(-2px); }}
-    .navbtn-center {{ background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-14px); box-shadow:0 18px 34px rgba(98,16,21,.40), 0 0 24px rgba(185,31,43,.18); }}
-    .navbtn-center.active {{ box-shadow:0 18px 34px rgba(98,16,21,.46), 0 0 26px rgba(242,79,93,.24), 0 0 0 1px rgba(255,219,145,.16) inset; }}
-    .navbtn-center::after {{ content:''; position:absolute; inset:auto 18% 8px; height:2px; border-radius:999px; background:linear-gradient(90deg, transparent, rgba(255,221,154,.0), rgba(255,221,154,.9), rgba(255,221,154,.0), transparent); opacity:.78; animation:dvePulse 2.1s ease-in-out infinite; }}
-    @keyframes dvePulse {{ 0%,100%{{ opacity:.35; transform:scaleX(.92); }} 50%{{ opacity:1; transform:scaleX(1.04); }} }}
+    .navbtn { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:58px; border-radius:16px; color:#f5e8c6; font-size:11px; gap:4px; background:linear-gradient(180deg, rgba(30,20,15,.96), rgba(14,10,9,.98)); border:1px solid rgba(234,196,116,.16); text-decoration:none; white-space:nowrap; text-align:center; }
+    .navbtn img { width:24px; height:24px; display:block; object-fit:contain; }
+    .navbtn.active { outline:1px solid rgba(234,196,116,.32); color:var(--gold2); } .navbtn-center { background:linear-gradient(135deg, rgba(143,14,23,.98), rgba(74,19,21,.99)); color:#fff5da; transform:translateY(-10px); box-shadow:0 16px 30px rgba(98,16,21,.40); }
   </style>
 </head>
 <body>
@@ -2032,7 +2012,7 @@ def miniapp_manuals_html(bot_username: str) -> str:
     <a class=\"back\" href=\"{bot_link}\">Открыть бота в Telegram</a>
   </div>
 </div>
-{_miniapp_nav_inline("manuals")}
+<div class=\"bottomnav\"><a class=\"navbtn\" href=\"/\"><span>🏠</span><span>Главная</span></a><a class=\"navbtn active\" href=\"/manuals\"><span>📚</span><span>Мануалы</span></a><a class=\"navbtn navbtn-center\" href=\"/submit\"><span>📲</span><span>DVE</span></a><a class=\"navbtn\" href=\"/numbers\"><span>📦</span><span>Номера</span></a><a class=\"navbtn\" href=\"/profile\"><span>👤</span><span>Профиль</span></a></div>
 <script>
   const tg = window.Telegram?.WebApp;
   if (tg) {{ tg.ready(); tg.expand(); try {{ tg.disableVerticalSwipes?.(); }} catch (e) {{}} }}
@@ -2293,21 +2273,25 @@ async def miniapp_vtb_logo(request):
 async def miniapp_gaz_logo(request):
   return web.FileResponse(Path('gaz_logo.png'))
 
-async def miniapp_nav_home(request):
-  return web.FileResponse(Path('nav_home.jpg'))
 
-async def miniapp_nav_manuals(request):
-  return web.FileResponse(Path('nav_manuals.jpg'))
+async def miniapp_nav_home_icon(request):
+  return web.FileResponse(Path(NAV_HOME_ICON))
 
-async def miniapp_nav_dve(request):
-  return web.FileResponse(Path('nav_dve.jpg'))
 
-async def miniapp_nav_numbers(request):
-  return web.FileResponse(Path('nav_numbers.jpg'))
+async def miniapp_nav_manuals_icon(request):
+  return web.FileResponse(Path(NAV_MANUALS_ICON))
 
-async def miniapp_nav_profile(request):
-  return web.FileResponse(Path('nav_profile.jpg'))
 
+async def miniapp_nav_submit_icon(request):
+  return web.FileResponse(Path(NAV_SUBMIT_ICON))
+
+
+async def miniapp_nav_numbers_icon(request):
+  return web.FileResponse(Path(NAV_NUMBERS_ICON))
+
+
+async def miniapp_nav_profile_icon(request):
+  return web.FileResponse(Path(NAV_PROFILE_ICON))
 
 
 async def miniapp_profile(request):
@@ -2481,11 +2465,11 @@ async def run_web_server():
   app.router.add_get('/bil_logo.png', miniapp_bil_logo)
   app.router.add_get('/vtb_logo.png', miniapp_vtb_logo)
   app.router.add_get('/gaz_logo.png', miniapp_gaz_logo)
-  app.router.add_get('/nav_home.jpg', miniapp_nav_home)
-  app.router.add_get('/nav_manuals.jpg', miniapp_nav_manuals)
-  app.router.add_get('/nav_dve.jpg', miniapp_nav_dve)
-  app.router.add_get('/nav_numbers.jpg', miniapp_nav_numbers)
-  app.router.add_get('/nav_profile.jpg', miniapp_nav_profile)
+  app.router.add_get('/nav_home.png', miniapp_nav_home_icon)
+  app.router.add_get('/nav_manuals.png', miniapp_nav_manuals_icon)
+  app.router.add_get('/nav_submit.png', miniapp_nav_submit_icon)
+  app.router.add_get('/nav_numbers.png', miniapp_nav_numbers_icon)
+  app.router.add_get('/nav_profile.png', miniapp_nav_profile_icon)
   runner = web.AppRunner(app)
   await runner.setup()
   site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
