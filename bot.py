@@ -1962,8 +1962,6 @@ def miniapp_parse_custom_basics(raw: str):
       if txt.upper().startswith('ВАЖНО'):
         important.append(txt)
         continue
-      if re.search(r'https?://\S+', txt):
-        continue
       blocks.append(block)
     cleaned_sections.append({'title': sec['title'], 'blocks': blocks})
   return {'important': important, 'blocks': cleaned_sections, 'links': links, 'cta': cta}
@@ -1995,7 +1993,7 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
     link_items.append((clean_label, url))
   for msg in parsed['important']:
     clean = msg.replace('ВАЖНО!', '').replace('ВАЖНО:', '').strip() or msg
-    pieces.append(f'<div class="warn"><strong>Важно:</strong> {escape(clean)}</div>')
+    pieces.append(f'<div class="warn"><strong>Важно:</strong> {miniapp_format_rich_text(clean)}</div>')
   link_card_inserted = False
   for block in parsed['blocks']:
     title = escape(block['title'])
@@ -2005,24 +2003,13 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
     if block['blocks']:
       pieces.append('<div class="points">')
       for item in block['blocks']:
-        txt = escape(item['text'])
+        txt = miniapp_format_rich_text(item['text'])
         if item['kind'] == 'bullet':
           pieces.append(f'<div class="point"><b>•</b> {txt}</div>')
         else:
           pieces.append(f'<div class="point">{txt}</div>')
       pieces.append('</div>')
-    if link_items and ('ссылк' in low_title or 'оператор' in low_title):
-      pieces.append('<div class="links">')
-      for label, url in link_items:
-        pieces.append(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(label)}</a>')
-      pieces.append('</div>')
-      link_card_inserted = True
     pieces.append('</div>')
-  if link_items:
-    pieces.append('<div class="card"><h2 class="section-title">Постоянные ссылки на оформление eSIM у операторов</h2><div class="links">')
-    for label, url in link_items:
-      pieces.append(f'<a href="{escape(url)}" target="_blank" rel="noopener">{escape(label)}</a>')
-    pieces.append('</div></div>')
   pieces.append('<div class="card">')
   pieces.append('<h2 class="section-title">Сдача QR</h2>')
   pieces.append('<p class="section-sub">Когда материал изучен, открой бота и передай QR вместе с номером.</p>')
@@ -2675,6 +2662,16 @@ def _manual_split_lines(raw: str):
   return [ln for ln in lines if ln.strip()]
 
 
+
+def miniapp_format_rich_text(text: str) -> str:
+  s = escape(text or '')
+  s = re.sub(r'&lt;(b|strong)&gt;(.*?)&lt;/\1&gt;', r'<b>\2</b>', s, flags=re.I | re.S)
+  s = re.sub(r'&lt;(i|em)&gt;(.*?)&lt;/\1&gt;', r'<i>\2</i>', s, flags=re.I | re.S)
+  s = re.sub(r'&lt;code&gt;(.*?)&lt;/code&gt;', r'<code>\1</code>', s, flags=re.I | re.S)
+  s = re.sub(r'(https?://[^\s<]+)', lambda m: f'<a href="{m.group(1)}" target="_blank" rel="noopener">{m.group(1)}</a>', s)
+  s = re.sub(r'(?<![\w/])@([A-Za-z0-9_]{5,})', lambda m: f'<a href="https://t.me/{m.group(1)}" target="_blank" rel="noopener">@{m.group(1)}</a>', s)
+  return s
+
 def parse_manual_text(raw: str):
   lines = _manual_split_lines(raw)
   if not lines:
@@ -3178,7 +3175,7 @@ def render_miniapp_settings() -> str:
   beeline = 'задан' if db.get_setting('miniapp_beeline_text', '').strip() else 'по умолчанию'
   vtbgaz = 'задан' if db.get_setting('miniapp_vtbgaz_text', '').strip() else 'по умолчанию'
   submit_bot = db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot').strip() or '@DiamondVaultE_bot'
-  home_title = (db.get_setting('miniapp_home_title', 'DVE') or 'DVE APP').strip()
+  home_title = (db.get_setting('miniapp_home_title', 'DVE') or 'DVE').strip()
   home_subtitle = (db.get_setting('miniapp_home_subtitle', 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.') or 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.').strip()
   return (
     '<b>🧩 Настройки Mini App</b>\n\n'
