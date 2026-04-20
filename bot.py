@@ -1839,7 +1839,7 @@ def miniapp_home_html(bot_username: str) -> str:
   body = """
   <div class="box pad">
     <div style="display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:12px;align-items:start;">
-      <div><small class="eyebrow">Diamond Vault Esim</small><h1 class="h1">DVE APP</h1><p class="lead">Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.</p></div>
+      <div><small class="eyebrow">DVE</small><h1 class="h1">DVE</h1><p class="lead">Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.</p></div>
       <div style="width:92px;height:92px;border-radius:22px;overflow:hidden;border:1px solid rgba(236,194,107,.24);background:#120d0b;"><img id="tgAvatar" alt="avatar" style="width:100%;height:100%;object-fit:cover;display:none"><div id="avatarFallback" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:34px;color:#d9be8c;">👤</div></div>
     </div>
     <div class="box" style="overflow:hidden;margin-top:14px;padding:10px;"><img src="/mini_profile_banner.jpg" alt="profile" style="width:100%;height:auto;display:block;border-radius:18px;"></div>
@@ -1921,8 +1921,8 @@ def miniapp_manuals_html(bot_username: str) -> str:
       continue
     extra_buttons.append(f'<a class="btn secondary" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/operator/{escape(key)}"><span>{op_button_label(key)}</span><span>→</span></a>')
   body = """
-  <div class="box" style="overflow:hidden;"><div style="padding:14px 14px 0;"><div style="border-radius:18px;overflow:hidden;border:1px solid rgba(236,194,107,.24);"><img src="/mini_manuals_banner.jpg" alt="manuals" style="display:block;width:100%;height:136px;object-fit:cover;object-position:center 32%;"></div></div><div class="pad"><small class="eyebrow">Diamond Vault Esim</small><h1 class="h1">Мануалы</h1><p class="lead">Выбери нужное направление и переходи к материалам.</p></div></div>
-  <div class="box pad" style="margin-top:14px;"><a class="btn secondary" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/basics"><span>📘 Основы работы</span><span>→</span></a><a class="btn primary" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/mts"><span style="display:flex;align-items:center;gap:10px;">__ICON_MTS__ <span>MTS ESIM</span></span><span>→</span></a><a class="btn gold" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/beeline"><span style="display:flex;align-items:center;gap:10px;">__ICON_BIL__ <span>Билайн ESIM</span></span><span>→</span></a><a class="btn blue" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/vtb-gazprom"><span style="display:flex;align-items:center;gap:10px;">__ICON_VTB__ __ICON_GAZ__ <span>ВТБ, Газпром ESIM</span></span><span>→</span></a>__EXTRA__<div class="grid2" style="margin-top:12px;"><a class="btn secondary" href="/">Главная</a><a class="btn gold" href="__BOT__">Открыть бота</a></div></div>
+  <div class="box" style="overflow:hidden;"><div style="padding:14px 14px 0;"><div style="border-radius:18px;overflow:hidden;border:1px solid rgba(236,194,107,.24);"><img src="/mini_manuals_banner.jpg" alt="manuals" style="display:block;width:100%;height:136px;object-fit:cover;object-position:center 32%;"></div></div><div class="pad"><small class="eyebrow">DVE</small><h1 class="h1">Мануалы</h1><p class="lead">Выбери нужное направление и переходи к материалам.</p></div></div>
+  <div class="box pad" style="margin-top:14px;"><a class="btn secondary" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/basics"><span>📘 Основы работы</span><span>→</span></a><a class="btn primary" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/mts"><span style="display:flex;align-items:center;gap:10px;">🔴 <span>MTS ESIM</span></span><span>→</span></a><a class="btn gold" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/beeline"><span style="display:flex;align-items:center;gap:10px;">🟡 <span>Билайн ESIM</span></span><span>→</span></a><a class="btn blue" style="margin-bottom:12px;justify-content:space-between;" href="/manuals/vtb-gazprom"><span style="display:flex;align-items:center;gap:10px;">🔵 <span>ВТБ, Газпром ESIM</span></span><span>→</span></a>__EXTRA__<div class="grid2" style="margin-top:12px;"><a class="btn secondary" href="/">Главная</a><a class="btn gold" href="__BOT__">Открыть бота</a></div></div>
   """.replace('__BOT__', bot_link).replace('__EXTRA__', ''.join(extra_buttons))
   return _miniapp_shell('Мануалы', body, 'manuals')
 
@@ -2101,7 +2101,7 @@ def miniapp_basics_html(bot_username: str) -> str:
 <body>
 <div class="wrap">
   <div class="hero">
-    <div class="eyebrow">Diamond Vault Esim</div>
+    <div class="eyebrow">DVE</div>
     <h1>Основы работы с E‑SIM</h1>
     
   </div>
@@ -2219,9 +2219,8 @@ def miniapp_icon_html(operator_key: str, size: int = 18) -> str:
 
 
 def miniapp_numbers_html() -> str:
-  body = """<div class="box pad"><small class="eyebrow">Мои номера</small><h1 class="h1" style="font-size:38px;">Мои номера</h1><p class="lead">Все заявки, их статусы и место в очереди в одном разделе.</p><div class="grid2" style="margin-top:12px;"><a class="btn primary compactbtn" href="/submit">📲 Сдать eSIM</a><a class="btn secondary compactbtn" href="/profile">👤 Профиль</a></div><div id="mn_list" style="margin-top:14px;" class="empty">Загрузка...</div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user||{};function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function opIcon(k){const kk=String(k||'').toLowerCase();if(kk.includes('mts'))return '<img src="/mts_logo.jpg" style="width:18px;height:18px;border-radius:999px;object-fit:cover;vertical-align:middle;">';if(kk.includes('bil'))return '<img src="/bil_logo.png" style="width:18px;height:18px;border-radius:999px;object-fit:cover;vertical-align:middle;">';if(kk.includes('vtb'))return '<img src="/vtb_logo.png" style="width:18px;height:18px;border-radius:999px;object-fit:cover;vertical-align:middle;">';if(kk.includes('gaz'))return '<img src="/gaz_logo.png" style="width:18px;height:18px;border-radius:999px;object-fit:cover;vertical-align:middle;">';if(kk.includes('mega'))return '🟢';if(kk.includes('t2'))return '⚫';return '•';}function fmt(v){if(!v)return '—';const d=new Date(v.replace(' ','T'));if(isNaN(d.getTime()))return v;return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}async function loadNumbers(){const box=document.getElementById('mn_list');if(!u?.id){box.textContent='Открой mini app из Telegram.';return;}try{const r=await fetch('/api/my-numbers?user_id='+encodeURIComponent(u.id));const d=await r.json();const items=d.items||[];if(!items.length){box.textContent='Заявок пока нет.';return;}box.className='';box.innerHTML=items.map(it=>`<div class="info" style="margin-bottom:10px;"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><div style="font-weight:800;color:#f3dfb1;display:flex;align-items:center;gap:8px;">${opIcon(it.operator_key)} <span>${esc(it.operator)}</span></div><div class="muted">#${it.id}</div></div><div class="muted" style="margin-top:8px;">${esc(it.phone||'—')} · ${esc(it.mode||'—')}</div><div style="margin-top:8px;color:#fff2cc;font-weight:700;">${esc(it.status||'—')}${it.position?` · очередь: ${it.position}`:''}</div>${it.fail_reason?`<div style="margin-top:6px;color:#ffb3b3;">${esc(it.fail_reason)}</div>`:''}<div class="muted" style="margin-top:6px;">${esc(fmt(it.created_at))}</div></div>`).join('');}catch(e){box.textContent='Не удалось загрузить раздел.';}}loadNumbers();</script>"""
+  body = """<div class="box pad"><small class="eyebrow">Мои номера</small><h1 class="h1" style="font-size:38px;">Мои номера</h1><p class="lead">Статусы, режим и место в очереди по заявкам.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;"><div class="info" style="flex:1;min-width:120px;"><h3>Всего</h3><div id="nm_total">0</div></div><div class="info" style="flex:1;min-width:120px;"><h3>Активных</h3><div id="nm_active">0</div></div><div class="info" style="flex:1;min-width:120px;"><h3>Завершено</h3><div id="nm_done">0</div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;"><button class="btn secondary nm_filter active" data-filter="active" type="button" style="justify-content:center;min-height:44px;">Активные</button><button class="btn secondary nm_filter" data-filter="completed" type="button" style="justify-content:center;min-height:44px;">Завершённые</button><button class="btn secondary nm_filter" data-filter="problem" type="button" style="justify-content:center;min-height:44px;">Проблемные</button></div><div id="numbersWrap" class="list"><div class="empty">Загрузка заявок…</div></div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user;const wrap=document.getElementById('numbersWrap');const totalEl=document.getElementById('nm_total');const activeEl=document.getElementById('nm_active');const doneEl=document.getElementById('nm_done');let allItems=[];let currentFilter='active';function colorByOperator(op){const s=(op||'').toLowerCase();if(s.includes('мтс'))return 'rgba(180,28,39,.16)';if(s.includes('билайн'))return 'rgba(206,175,28,.16)';if(s.includes('втб')||s.includes('газ'))return 'rgba(38,95,224,.16)';if(s.includes('мега'))return 'rgba(31,132,62,.16)';if(s.includes('tele2')||s.includes('t2'))return 'rgba(78,78,78,.18)';return 'rgba(239,198,112,.08)';}function statusGroup(s){s=(s||'').toLowerCase();if(['queued','taken','in_progress'].includes(s))return 'active';if(s==='completed')return 'completed';return 'problem';}function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function fmtDate(v){if(!v)return '—';const d=new Date(v.replace(' ','T'));if(isNaN(d.getTime()))return v;return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}function render(){const activeCount=allItems.filter(it=>statusGroup(it.raw_status)==='active').length;const doneCount=allItems.filter(it=>statusGroup(it.raw_status)==='completed').length;totalEl.textContent=String(allItems.length);activeEl.textContent=String(activeCount);doneEl.textContent=String(doneCount);const rows=allItems.filter(it=>statusGroup(it.raw_status)===currentFilter);if(!rows.length){wrap.innerHTML='<div class="empty">Ничего не найдено.</div>';return;}wrap.innerHTML=rows.map(it=>`<div class="info" style="margin-top:8px;background:${colorByOperator(it.operator)};"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><div style="font-weight:800;color:#f3dfb1;">${esc(it.operator)}</div><div class="muted">${esc(it.status)}</div></div><div style="margin-top:6px;font-size:18px;font-weight:800;">${esc(it.phone||'—')}</div><div class="muted" style="margin-top:4px;">${esc(it.mode||'—')} · ${it.position?('Очередь: '+it.position):'—'} · ${esc(fmtDate(it.created_at))}</div>${it.fail_reason?`<div class="muted" style="margin-top:6px;color:#ffb3b3;">${esc(it.fail_reason)}</div>`:''}</div>`).join('');}async function load(){if(!u?.id){wrap.innerHTML='<div class="empty">Открой mini app из Telegram.</div>';return;}const r=await fetch('/api/my-numbers?user_id='+encodeURIComponent(u.id));const d=await r.json();allItems=d.items||[];render();}document.querySelectorAll('.nm_filter').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.nm_filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=btn.dataset.filter;render();});load();</script>"""
   return _miniapp_shell('Мои номера', body, 'numbers')
-
 
 def miniapp_profile_html() -> str:
   bot_link = f"https://t.me/{bot_username_for_ref()}"
@@ -2551,7 +2550,7 @@ def miniapp_operator_manual_html(operator_key: str) -> str:
   title = OPERATORS.get(operator_key, {}).get('title', operator_key)
   body = (
     '<div class="box pad">'
-    '<small class="eyebrow">Diamond Vault Esim</small>'
+    '<small class="eyebrow">DVE</small>'
     f'<h1 class="h1" style="font-size:34px;">{escape(title)}</h1>'
     '<p class="lead">Раздел для этого оператора можно заполнить позже через админку. Оператор уже доступен в mini app для сдачи.</p>'
     '<div class="grid2" style="margin-top:12px;">'
@@ -2664,7 +2663,7 @@ def telegram_manuals_menu_kb():
   kb.adjust(1)
   url = miniapp_url('/')
   if url:
-    kb.row(InlineKeyboardButton(text='DVE', web_app=WebAppInfo(url=url)))
+    kb.row(InlineKeyboardButton(text='DVE📱', web_app=WebAppInfo(url=url)))
   else:
     kb.row(InlineKeyboardButton(text='DVE', callback_data='miniapp:help'))
   kb.row(InlineKeyboardButton(text='🏠 На главную', callback_data='menu:home'))
@@ -2762,7 +2761,7 @@ def telegram_manual_section_kb(section: str):
     kb.button(text='🤖 Открыть бота для QR', url=miniapp_submit_link())
   url = miniapp_url('/')
   if url:
-    kb.button(text='DVE', web_app=WebAppInfo(url=url))
+    kb.button(text='DVE📱', web_app=WebAppInfo(url=url))
   else:
     kb.button(text='DVE', callback_data='miniapp:help')
   kb.button(text='↩️ Назад к мануалам', callback_data='menu:manuals')
@@ -3179,7 +3178,7 @@ def render_miniapp_settings() -> str:
   beeline = 'задан' if db.get_setting('miniapp_beeline_text', '').strip() else 'по умолчанию'
   vtbgaz = 'задан' if db.get_setting('miniapp_vtbgaz_text', '').strip() else 'по умолчанию'
   submit_bot = db.get_setting('miniapp_submit_bot', '@DiamondVaultE_bot').strip() or '@DiamondVaultE_bot'
-  home_title = (db.get_setting('miniapp_home_title', 'DVE APP') or 'DVE APP').strip()
+  home_title = (db.get_setting('miniapp_home_title', 'DVE') or 'DVE APP').strip()
   home_subtitle = (db.get_setting('miniapp_home_subtitle', 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.') or 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.').strip()
   return (
     '<b>🧩 Настройки Mini App</b>\n\n'
@@ -4124,7 +4123,7 @@ async def admin_miniapp_reset_single(callback: CallbackQuery, state: FSMContext)
     return
   section = callback.data.split(':')[-1]
   if section == 'home':
-    db.set_setting('miniapp_home_title', 'DVE APP')
+    db.set_setting('miniapp_home_title', 'DVE')
     db.set_setting('miniapp_home_subtitle', 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.')
     label = 'Главная'
   else:
@@ -4168,7 +4167,7 @@ async def admin_miniapp_reset_text(callback: CallbackQuery, state: FSMContext):
   db.set_setting('miniapp_mts_text', '')
   db.set_setting('miniapp_beeline_text', '')
   db.set_setting('miniapp_vtbgaz_text', '')
-  db.set_setting('miniapp_home_title', 'DVE APP')
+  db.set_setting('miniapp_home_title', 'DVE')
   db.set_setting('miniapp_home_subtitle', 'Главный центр: сдача eSIM, мануалы, профиль и быстрый доступ к разделам.')
   await state.clear()
   await safe_edit_or_send(callback, render_miniapp_settings(), reply_markup=miniapp_settings_kb())
@@ -4252,13 +4251,13 @@ async def miniapp_cmd(message: Message, state: FSMContext):
   await remove_reply_keyboard(message)
   if not await ensure_required_subscription_entity(message, message.bot, message.from_user.id):
     return
-  await send_banner_message(message, db.get_setting('profile_banner_path', PROFILE_BANNER), '<b>✨ Mini App</b>\n\nВстроенное меню Diamond Vault Esim открывается отдельным окном внутри Telegram.', miniapp_home_kb())
+  await send_banner_message(message, db.get_setting('profile_banner_path', PROFILE_BANNER), '<b>✨ Mini App</b>\n\nВстроенное меню DVE открывается отдельным окном внутри Telegram.', miniapp_home_kb())
 
 
 @router.callback_query(F.data == "menu:miniapp")
 async def menu_miniapp(callback: CallbackQuery, state: FSMContext):
   await state.clear()
-  await replace_banner_message(callback, db.get_setting('profile_banner_path', PROFILE_BANNER), '<b>✨ Mini App</b>\n\nВстроенное меню Diamond Vault Esim открывается отдельным окном внутри Telegram.', miniapp_home_kb())
+  await replace_banner_message(callback, db.get_setting('profile_banner_path', PROFILE_BANNER), '<b>✨ Mini App</b>\n\nВстроенное меню DVE открывается отдельным окном внутри Telegram.', miniapp_home_kb())
   await callback.answer()
 
 
@@ -8754,7 +8753,7 @@ async def main():
     db.set_setting('bot_username_cached', me.username or BOT_USERNAME_FALLBACK)
     if WEBAPP_BASE_URL:
       try:
-        await primary_bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="Diamond Vault Esim", web_app=WebAppInfo(url=miniapp_url('/'))))
+        await primary_bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="DVE", web_app=WebAppInfo(url=miniapp_url('/'))))
       except Exception:
         logging.exception("set_chat_menu_button failed")
     logging.info("Primary bot started as @%s", me.username or BOT_USERNAME_FALLBACK)
