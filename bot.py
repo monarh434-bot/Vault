@@ -1998,17 +1998,25 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
   for block in parsed['blocks']:
     title = escape(block['title'])
     low_title = block['title'].lower()
+    is_links_section = (
+      'постоянные ссылки' in low_title
+      or ('ссылк' in low_title and 'оператор' in low_title)
+      or ('оформление esim' in low_title)
+    )
     pieces.append('<div class="card">')
     pieces.append(f'<h2 class="section-title">{title}</h2>')
+    if is_links_section and link_items:
+      for link_label, link_url in link_items:
+        pieces.append(f'<a class="cta" style="margin-top:10px;" href="{escape(link_url)}" target="_blank" rel="noopener">{escape(link_label)}</a>')
+      pieces.append('</div>')
+      continue
     if block['blocks']:
       pieces.append('<div class="points">')
       for item in block['blocks']:
-        inline_links = manual_links_from_text(item['text'])
-        if inline_links:
-          for link_label, link_url in inline_links:
-            pieces.append(f'<a class="cta" style="margin-top:0;" href="{escape(link_url)}" target="_blank" rel="noopener">{escape(link_label)}</a>')
-          continue
         txt = miniapp_format_rich_text(item['text'])
+        plain = re.sub(r'<[^>]+>', '', txt).strip()
+        if not plain:
+          continue
         if item['kind'] == 'bullet':
           pieces.append(f'<div class="point"><b>•</b> {txt}</div>')
         else:
