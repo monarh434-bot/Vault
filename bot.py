@@ -2003,6 +2003,11 @@ def miniapp_render_custom_basics(raw: str, bot_username: str) -> str:
     if block['blocks']:
       pieces.append('<div class="points">')
       for item in block['blocks']:
+        inline_links = manual_links_from_text(item['text'])
+        if inline_links:
+          for link_label, link_url in inline_links:
+            pieces.append(f'<a class="cta" style="margin-top:0;" href="{escape(link_url)}" target="_blank" rel="noopener">{escape(link_label)}</a>')
+          continue
         txt = miniapp_format_rich_text(item['text'])
         if item['kind'] == 'bullet':
           pieces.append(f'<div class="point"><b>•</b> {txt}</div>')
@@ -2663,11 +2668,49 @@ def _manual_split_lines(raw: str):
 
 
 
+def manual_links_from_text(text: str):
+  raw = (text or '').strip()
+  found = []
+  seen = set()
+  for href, label in re.findall(r"<a\s+href=['\"]([^'\"]+)['\"][^>]*>(.*?)</a>", raw, flags=re.I | re.S):
+    href = href.strip()
+    label = re.sub(r'<[^>]+>', '', label or '').strip() or href
+    if href and href not in seen:
+      seen.add(href)
+      found.append((label, href))
+  for m in re.finditer(r'https?://\S+', raw):
+    url = m.group(0).rstrip(').,;]')
+    if url in seen:
+      continue
+    seen.add(url)
+    tail = raw[m.end():].strip()
+    tail = re.sub(r'^[-–—:]+\s*', '', tail)
+    tail = re.sub(r'<[^>]+>', '', tail).strip()
+    label = tail or url.replace('https://', '').replace('http://', '')
+    low = label.lower()
+    if 'mts' in low or 'мтс' in low:
+      label = 'МТС'
+    elif 'beeline' in low or 'билайн' in low:
+      label = 'Билайн'
+    elif 'megafon' in low or 'мегафон' in low:
+      label = 'Мегафон'
+    elif re.search(r'\bt2\b', low) or 'tele2' in low:
+      label = 'T2'
+    elif 'vtb' in low or 'втб' in low:
+      label = 'ВТБ'
+    elif 'gazprom' in low or 'газпром' in low:
+      label = 'Газпром'
+    found.append((label, url))
+  return found
+
+
 def miniapp_format_rich_text(text: str) -> str:
   s = escape(text or '')
   s = re.sub(r'&lt;(b|strong)&gt;(.*?)&lt;/\1&gt;', r'<b>\2</b>', s, flags=re.I | re.S)
   s = re.sub(r'&lt;(i|em)&gt;(.*?)&lt;/\1&gt;', r'<i>\2</i>', s, flags=re.I | re.S)
   s = re.sub(r'&lt;code&gt;(.*?)&lt;/code&gt;', r'<code>\1</code>', s, flags=re.I | re.S)
+  s = re.sub(r'&lt;/?[^&]*?&gt;', '', s, flags=re.I | re.S)
+  s = re.sub(r'<a\s+href=[^>]+>|</a>', '', s, flags=re.I)
   s = re.sub(r'(https?://[^\s<]+)', lambda m: f'<a href="{m.group(1)}" target="_blank" rel="noopener">{m.group(1)}</a>', s)
   s = re.sub(r'(?<![\w/])@([A-Za-z0-9_]{5,})', lambda m: f'<a href="https://t.me/{m.group(1)}" target="_blank" rel="noopener">@{m.group(1)}</a>', s)
   return s
