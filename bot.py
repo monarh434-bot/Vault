@@ -2087,9 +2087,14 @@ def miniapp_basics_html(bot_username: str) -> str:
     .section-title { margin:0 0 10px; color:var(--gold2); font-size:24px; }
     .section-sub { margin:0 0 12px; color:#ddc08a; font-size:14px; }
     .points { display:grid; gap:10px; }
-    .point { position:relative; padding:14px 14px 14px 44px; border-radius:18px; background:linear-gradient(180deg, rgba(17,13,10,.94), rgba(10,8,7,.98)); border:1px solid rgba(234,196,116,.16); box-shadow:0 8px 20px rgba(0,0,0,.18); }
+    .point { position:relative; padding:14px 14px 14px 44px; border-radius:18px; background:linear-gradient(180deg, rgba(17,13,10,.94), rgba(10,8,7,.98)); border:1px solid rgba(234,196,116,.16); box-shadow:0 8px 20px rgba(0,0,0,.18); line-height:1.42; overflow:hidden; }
     .point:before { content:""; position:absolute; left:16px; top:18px; width:12px; height:12px; border-radius:999px; background:radial-gradient(circle at center, #ffd98b 0%, #bf7a29 75%, rgba(0,0,0,0) 76%); box-shadow:0 0 18px rgba(255,217,138,.24); }
+    .point { line-height:1.42; overflow:hidden; }
+    .point { line-height:1.42; overflow:hidden; }
     .point b { color:#fff0c8; }
+    .point a { color:#8db9ff; text-decoration:underline; overflow-wrap:anywhere; word-break:break-word; }
+    .point a { color:#8db9ff; text-decoration:underline; overflow-wrap:anywhere; word-break:break-word; }
+    .point a { color:#8db9ff; text-decoration:underline; overflow-wrap:anywhere; word-break:break-word; }
     .links a, .cta, .back { display:flex; align-items:center; justify-content:center; text-decoration:none; border-radius:18px; padding:15px 18px; margin-top:12px; background:linear-gradient(135deg, rgba(72,16,19,.94) 0%, rgba(42,24,15,.98) 42%, rgba(18,13,10,.98) 100%); background-size:220% 220%; color:var(--text); font-weight:800; border:1px solid rgba(234,196,116,.28); box-shadow:0 10px 22px rgba(0,0,0,.22); animation:flow 4.5s ease-in-out infinite; position:relative; overflow:hidden; }
     .links a:before, .cta:before, .back:before { content:""; position:absolute; top:0; left:-130%; width:88%; height:100%; background:linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,231,176,.16) 48%, rgba(255,255,255,0) 80%); transform:skewX(-18deg); animation:sweep 3.8s linear infinite; }
     .links { display:grid; gap:10px; margin-top:8px; }
@@ -2713,13 +2718,70 @@ def manual_links_from_text(text: str):
 
 
 def miniapp_format_rich_text(text: str) -> str:
-  s = escape(text or '')
-  s = re.sub(r'&lt;(b|strong)&gt;(.*?)&lt;/\1&gt;', r'<b>\2</b>', s, flags=re.I | re.S)
-  s = re.sub(r'&lt;(i|em)&gt;(.*?)&lt;/\1&gt;', r'<i>\2</i>', s, flags=re.I | re.S)
-  s = re.sub(r'&lt;code&gt;(.*?)&lt;/code&gt;', r'<code>\1</code>', s, flags=re.I | re.S)
-  s = re.sub(r'&lt;/?[^&]*?&gt;', '', s, flags=re.I | re.S)
-  s = re.sub(r'<a\s+href=[^>]+>|</a>', '', s, flags=re.I)
-  s = re.sub(r'(https?://[^\s<]+)', lambda m: f'<a href="{m.group(1)}" target="_blank" rel="noopener">{m.group(1)}</a>', s)
+  raw = (text or '').replace("\r\n", "\n").replace("\r", "\n")
+
+  def _link_label(url: str, explicit: str = '') -> str:
+    label = re.sub(r'<[^>]+>', '', explicit or '').strip()
+    if label:
+      return label
+    low = url.lower()
+    if 'mts' in low:
+      return 'МТС'
+    if 'beeline' in low:
+      return 'Билайн'
+    if 'megafon' in low or 'megafone' in low:
+      return 'Мегафон'
+    if 'tele2' in low or re.search(r'/t2\b|\bt2\.', low):
+      return 'T2'
+    if 'vtb' in low:
+      return 'ВТБ'
+    if 'gazprom' in low:
+      return 'Газпром'
+    if 'dolphin-anty' in low:
+      return 'Dolphin Anty'
+    if 't.me/' in low:
+      return url.rstrip('/').rsplit('/', 1)[-1]
+    return 'ссылка'
+
+  raw = re.sub(
+    r'<a\s+href=[\'\"]([^\'\"]+)[\'\"][^>]*>(.*?)</a>',
+    lambda m: f'[[LINK::{m.group(1)}::{_link_label(m.group(1), m.group(2))}]]',
+    raw,
+    flags=re.I | re.S,
+  )
+  raw = re.sub(
+    r'\[([^\]]+)\]\((https?://[^)]+)\)',
+    lambda m: f'[[LINK::{m.group(2)}::{m.group(1)}]]',
+    raw,
+    flags=re.I,
+  )
+
+  raw = re.sub(r'<\s*(b|strong)\s*>', '[[B]]', raw, flags=re.I)
+  raw = re.sub(r'<\s*/\s*(b|strong)\s*>', '[[/B]]', raw, flags=re.I)
+  raw = re.sub(r'<\s*(i|em)\s*>', '[[I]]', raw, flags=re.I)
+  raw = re.sub(r'<\s*/\s*(i|em)\s*>', '[[/I]]', raw, flags=re.I)
+  raw = re.sub(r'<\s*code\s*>', '[[CODE]]', raw, flags=re.I)
+  raw = re.sub(r'<\s*/\s*code\s*>', '[[/CODE]]', raw, flags=re.I)
+  raw = re.sub(r'<br\s*/?>', '\n', raw, flags=re.I)
+  raw = re.sub(r'<[^>]+>', '', raw, flags=re.S)
+
+  def _bare_link(m):
+    url = m.group(1).rstrip(').,;]')
+    return f'[[LINK::{url}::{_link_label(url)}]]'
+
+  raw = re.sub(r'(https?://[^\s<]+)', _bare_link, raw)
+
+  s = escape(raw)
+  s = s.replace('[[B]]', '<b>').replace('[[/B]]', '</b>')
+  s = s.replace('[[I]]', '<i>').replace('[[/I]]', '</i>')
+  s = s.replace('[[CODE]]', '<code>').replace('[[/CODE]]', '</code>')
+
+  def _restore_link(m):
+    url = escape(m.group(1), quote=True)
+    label = escape(m.group(2))
+    return f'<a href="{url}" target="_blank" rel="noopener">{label}</a>'
+
+  s = re.sub(r'\[\[LINK::(.*?)::(.*?)\]\]', _restore_link, s)
   s = re.sub(r'(?<![\w/])@([A-Za-z0-9_]{5,})', lambda m: f'<a href="https://t.me/{m.group(1)}" target="_blank" rel="noopener">@{m.group(1)}</a>', s)
   return s
 
