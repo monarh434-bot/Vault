@@ -2188,12 +2188,10 @@ async def miniapp_gaz_logo(request):
 
 
 def miniapp_profile_html() -> str:
-  body = """<div class="box pad"><small class="eyebrow">Профиль</small><h1 class="h1" style="font-size:38px;">Профиль</h1><p class="lead">Тег, ID, баланс и живая сводка по аккаунту.</p><div style="display:flex;align-items:center;gap:14px;margin-top:14px;margin-bottom:14px;"><div id="pf_avatar" style="width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,rgba(191,40,52,.95),rgba(69,18,19,.98));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;overflow:hidden;"><img id="pf_avatar_img" style="width:100%;height:100%;object-fit:cover;display:none;"><div id="pf_avatar_fallback">D</div></div><div style="min-width:0;flex:1;"><div id="pf_name" style="font-size:20px;font-weight:800;color:#f3dfb1;">—</div><div id="pf_tag" style="font-size:14px;color:#d3b072;margin-top:3px;">—</div><div id="pf_id" style="font-size:13px;color:#9f8454;margin-top:4px;">ID: —</div></div></div><div class="info-grid"><div class="info"><h3>Баланс</h3><div id="pf_balance">—</div></div><div class="info"><h3>Заработано</h3><div id="pf_earned">—</div></div><div class="info"><h3>Всего сдано</h3><div id="pf_total">—</div></div><div class="info"><h3>В очереди</h3><div id="pf_queue">—</div></div></div><div class="box pad" style="margin-top:12px;"><small class="eyebrow">Счёт для выплат</small><div id="pf_payout_view" class="empty">Загрузка счёта…</div><div id="pf_payout_form" style="display:none;margin-top:10px;"><input id="pf_payout_input" class="input" placeholder="Вставь ссылку на многоразовый счёт CryptoBot"><div class="grid2" style="margin-top:10px;"><button class="btn primary" type="button" id="pf_save_payout">Сохранить счёт</button><button class="btn secondary" type="button" id="pf_cancel_payout">Отмена</button></div></div><div class="grid2" style="margin-top:12px;"><button class="btn gold" type="button" id="pf_edit_payout">Заполнить / сменить счёт</button><a class="btn blue" href="https://t.me/__BOT__">Вывод в боте</a></div></div><div class="grid2" style="margin-top:12px;"><a class="btn secondary" href="/numbers">📦 Мои номера</a><a class="btn gold" href="/manuals">📚 Мануалы</a></div><div class="box pad" style="margin-top:14px;"><small class="eyebrow">Последние действия</small><div id="pf_recent" class="empty">Загрузка...</div></div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user||{};function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function fmt(v){if(!v)return '—';const d=new Date(v.replace(' ','T'));if(isNaN(d.getTime()))return v;return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}function editPayout(show){document.getElementById('pf_payout_form').style.display=show?'block':'none';}async function loadProfile(){if(!u?.id){document.getElementById('pf_recent').textContent='Открой mini app из Telegram.';return;}const r=await fetch('/api/profile-summary?user_id='+encodeURIComponent(u.id));const d=await r.json();document.getElementById('pf_name').textContent=[u.first_name||'',u.last_name||''].join(' ').trim()||'Пользователь';document.getElementById('pf_tag').textContent=u.username?('@'+u.username):'—';document.getElementById('pf_id').textContent='ID: '+(u.id||'—');document.getElementById('pf_balance').textContent=d.balance||'—';document.getElementById('pf_earned').textContent=d.earned||'—';document.getElementById('pf_total').textContent=String(d.total||0);document.getElementById('pf_queue').textContent=String(d.current_queue||0);const img=document.getElementById('pf_avatar_img');const fb=document.getElementById('pf_avatar_fallback');if(u.photo_url){img.src=u.photo_url;img.style.display='block';fb.style.display='none';}document.getElementById('pf_payout_view').innerHTML=d.payout_link?('<div style="word-break:break-all;text-align:left;">'+esc(d.payout_link)+'</div>'):'Счёт ещё не заполнен.';document.getElementById('pf_payout_input').value=d.payout_link||'';const recent=(d.recent||[]).map(it=>`<div class="info" style="margin-top:8px;"><div style="font-weight:800;color:#f3dfb1;">${esc(it.operator)} · ${esc(it.status)}</div><div class="muted" style="margin-top:4px;">${esc(it.phone||'—')} · ${esc(it.mode||'—')} · ${esc(fmt(it.created_at))}</div></div>`).join('');document.getElementById('pf_recent').innerHTML=recent||'Нет данных.';}document.getElementById('pf_edit_payout').onclick=()=>editPayout(true);document.getElementById('pf_cancel_payout').onclick=()=>editPayout(false);document.getElementById('pf_save_payout').onclick=async()=>{const val=(document.getElementById('pf_payout_input').value||'').trim();if(!u?.id){return;}const fd=new FormData();fd.append('user_id',String(u.id));fd.append('payout_link',val);const r=await fetch('/api/payout-account',{method:'POST',body:fd});const d=await r.json();if(d.ok){editPayout(false);loadProfile();}else{document.getElementById('pf_payout_view').innerHTML='<span style="color:#ffb3b3;">'+esc(d.error||'Не удалось сохранить счёт.')+'</span>';}};loadProfile();</script>""".replace('__BOT__', BOT_USERNAME_FALLBACK)
+  bot_link = f"https://t.me/{bot_username_for_ref()}"
+  body = """<div class="box pad"><small class="eyebrow">Профиль</small><h1 class="h1" style="font-size:38px;">Профиль</h1><p class="lead">Тег, ID, баланс и живая сводка по аккаунту.</p><div style="display:flex;align-items:center;gap:14px;margin-top:14px;margin-bottom:14px;"><div id="pf_avatar" style="width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,rgba(191,40,52,.95),rgba(69,18,19,.98));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;overflow:hidden;"><img id="pf_avatar_img" style="width:100%;height:100%;object-fit:cover;display:none;"><div id="pf_avatar_fallback">D</div></div><div style="min-width:0;flex:1;"><div id="pf_name" style="font-size:20px;font-weight:800;color:#f3dfb1;">—</div><div id="pf_tag" style="font-size:14px;color:#d3b072;margin-top:3px;">—</div><div id="pf_id" style="font-size:13px;color:#9f8454;margin-top:4px;">ID: —</div></div></div><div class="info-grid"><div class="info"><h3>Баланс</h3><div id="pf_balance">—</div></div><div class="info"><h3>Заработано</h3><div id="pf_earned">—</div></div><div class="info"><h3>Всего сдано</h3><div id="pf_total">—</div></div><div class="info"><h3>В очереди</h3><div id="pf_queue">—</div></div></div><div class="box pad" style="margin-top:12px;"><small class="eyebrow">Счёт для выплат</small><div id="pf_payout_view" class="empty">Загрузка счёта…</div><div id="pf_payout_form" style="display:none;margin-top:10px;"><input id="pf_payout_input" class="input" placeholder="Вставь ссылку на многоразовый счёт CryptoBot"><div class="grid2" style="margin-top:10px;"><button class="btn primary" type="button" id="pf_save_payout">Сохранить счёт</button><button class="btn secondary" type="button" id="pf_cancel_payout">Отмена</button></div></div><div class="grid2" style="margin-top:12px;"><button class="btn gold" type="button" id="pf_edit_payout">Заполнить / сменить счёт</button><a class="btn blue" href="/withdraw">Вывод средств</a></div><div style="margin-top:10px;"><a class="btn secondary" href="__BOT__">Открыть бота</a></div></div><div class="grid2" style="margin-top:12px;"><a class="btn secondary" href="/numbers">📦 Мои номера</a><a class="btn gold" href="/manuals">📚 Мануалы</a></div><div class="box pad" style="margin-top:14px;"><small class="eyebrow">Последние действия</small><div id="pf_recent" class="empty">Загрузка...</div></div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user||{};function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function fmt(v){if(!v)return '—';const d=new Date(v.replace(' ','T'));if(isNaN(d.getTime()))return v;return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}function editPayout(show){document.getElementById('pf_payout_form').style.display=show?'block':'none';}async function loadProfile(){if(!u?.id){document.getElementById('pf_recent').textContent='Открой mini app из Telegram.';return;}const r=await fetch('/api/profile-summary?user_id='+encodeURIComponent(u.id));const d=await r.json();document.getElementById('pf_name').textContent=[u.first_name||'',u.last_name||''].join(' ').trim()||'Пользователь';document.getElementById('pf_tag').textContent=u.username?('@'+u.username):'—';document.getElementById('pf_id').textContent='ID: '+(u.id||'—');document.getElementById('pf_balance').textContent=d.balance||'—';document.getElementById('pf_earned').textContent=d.earned||'—';document.getElementById('pf_total').textContent=String(d.total||0);document.getElementById('pf_queue').textContent=String(d.current_queue||0);const img=document.getElementById('pf_avatar_img');const fb=document.getElementById('pf_avatar_fallback');if(u.photo_url){img.src=u.photo_url;img.style.display='block';fb.style.display='none';}document.getElementById('pf_payout_view').innerHTML=d.payout_link?('<div style="word-break:break-all;text-align:left;">'+esc(d.payout_link)+'</div>'):'Счёт ещё не заполнен.';document.getElementById('pf_payout_input').value=d.payout_link||'';const recent=(d.recent||[]).map(it=>`<div class="info" style="margin-top:8px;"><div style="font-weight:800;color:#f3dfb1;">${esc(it.operator)} · ${esc(it.status)}</div><div class="muted" style="margin-top:4px;">${esc(it.phone||'—')} · ${esc(it.mode||'—')} · ${esc(fmt(it.created_at))}</div></div>`).join('');document.getElementById('pf_recent').innerHTML=recent||'Нет данных.';}document.getElementById('pf_edit_payout').onclick=()=>editPayout(true);document.getElementById('pf_cancel_payout').onclick=()=>editPayout(false);document.getElementById('pf_save_payout').onclick=async()=>{const val=(document.getElementById('pf_payout_input').value||'').trim();if(!u?.id){return;}const fd=new FormData();fd.append('user_id',String(u.id));fd.append('payout_link',val);const r=await fetch('/api/payout-account',{method:'POST',body:fd});const d=await r.json();if(d.ok){editPayout(false);loadProfile();}else{document.getElementById('pf_payout_view').innerHTML='<span style="color:#ffb3b3;">'+esc(d.error||'Не удалось сохранить счёт.')+'</span>';}};loadProfile();</script>""".replace('__BOT__', bot_link)
   return _miniapp_shell('Профиль', body, 'profile')
 
-def miniapp_numbers_html() -> str:
-  body = """<div class="box pad"><small class="eyebrow">Мои номера</small><h1 class="h1" style="font-size:38px;">Мои номера</h1><p class="lead">Статусы, режим и место в очереди по заявкам.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;"><div class="info" style="flex:1;min-width:120px;"><h3>Всего</h3><div id="nm_total">0</div></div><div class="info" style="flex:1;min-width:120px;"><h3>Активных</h3><div id="nm_active">0</div></div><div class="info" style="flex:1;min-width:120px;"><h3>Завершено</h3><div id="nm_done">0</div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;"><button class="btn secondary nm_filter active" data-filter="active" type="button" style="justify-content:center;min-height:44px;">Активные</button><button class="btn secondary nm_filter" data-filter="completed" type="button" style="justify-content:center;min-height:44px;">Завершённые</button><button class="btn secondary nm_filter" data-filter="problem" type="button" style="justify-content:center;min-height:44px;">Проблемные</button></div><div id="numbersWrap" class="list"><div class="empty">Загрузка заявок…</div></div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user;const wrap=document.getElementById('numbersWrap');const totalEl=document.getElementById('nm_total');const activeEl=document.getElementById('nm_active');const doneEl=document.getElementById('nm_done');let allItems=[];let currentFilter='active';function colorByOperator(op){const s=(op||'').toLowerCase();if(s.includes('мтс'))return 'rgba(180,28,39,.16)';if(s.includes('билайн'))return 'rgba(206,175,28,.16)';if(s.includes('втб')||s.includes('газ'))return 'rgba(38,95,224,.16)';if(s.includes('мега'))return 'rgba(31,132,62,.16)';if(s.includes('tele2')||s.includes('t2'))return 'rgba(78,78,78,.18)';return 'rgba(239,198,112,.08)';}function statusGroup(s){s=(s||'').toLowerCase();if(['queued','taken','in_progress'].includes(s))return 'active';if(s==='completed')return 'completed';return 'problem';}function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function fmtDate(v){if(!v)return '—';const d=new Date(v.replace(' ','T'));if(isNaN(d.getTime()))return v;return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}function render(){const activeCount=allItems.filter(it=>statusGroup(it.raw_status)==='active').length;const doneCount=allItems.filter(it=>statusGroup(it.raw_status)==='completed').length;totalEl.textContent=String(allItems.length);activeEl.textContent=String(activeCount);doneEl.textContent=String(doneCount);const rows=allItems.filter(it=>statusGroup(it.raw_status)===currentFilter);if(!rows.length){wrap.innerHTML='<div class="empty">Ничего не найдено.</div>';return;}wrap.innerHTML=rows.map(it=>`<div class="info" style="margin-top:8px;background:${colorByOperator(it.operator)};"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;"><div style="font-weight:800;color:#f3dfb1;">${esc(it.operator)}</div><div class="muted">${esc(it.status)}</div></div><div style="margin-top:6px;font-size:18px;font-weight:800;">${esc(it.phone||'—')}</div><div class="muted" style="margin-top:4px;">${esc(it.mode||'—')} · ${it.position?('Очередь: '+it.position):'—'} · ${esc(fmtDate(it.created_at))}</div>${it.fail_reason?`<div class="muted" style="margin-top:6px;color:#ffb3b3;">${esc(it.fail_reason)}</div>`:''}</div>`).join('');}async function load(){if(!u?.id){wrap.innerHTML='<div class="empty">Открой mini app из Telegram.</div>';return;}const r=await fetch('/api/my-numbers?user_id='+encodeURIComponent(u.id));const d=await r.json();allItems=d.items||[];render();}document.querySelectorAll('.nm_filter').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.nm_filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=btn.dataset.filter;render();});load();</script>"""
-  return _miniapp_shell('Мои номера', body, 'numbers')
 
 async def miniapp_profile(request):
   return web.Response(text=miniapp_profile_html(), content_type='text/html', charset='utf-8')
@@ -2409,6 +2407,99 @@ async def api_my_numbers(request):
       })
   return web.json_response({'items': items})
 
+def miniapp_withdraw_html() -> str:
+  body = """<div class="box pad"><small class="eyebrow">Вывод средств</small><h1 class="h1" style="font-size:38px;">Вывод</h1><p class="lead">Создай заявку на вывод прямо из mini app. Если счёт не заполнен — сначала добавь его в профиле.</p><div class="info-grid" style="margin-top:12px;"><div class="info"><h3>Баланс</h3><div id="wd_balance">—</div></div><div class="info"><h3>Минимум</h3><div id="wd_min">—</div></div></div><div class="box pad" style="margin-top:12px;"><small class="eyebrow">Счёт для выплат</small><div id="wd_account" class="empty">Загрузка…</div><div class="grid2" style="margin-top:12px;"><input id="wd_amount" class="input" inputmode="decimal" placeholder="Сумма в $"><button class="btn primary" type="button" id="wd_submit">Создать заявку</button></div><div id="wd_msg" class="empty" style="margin-top:12px;display:none;"></div></div><div class="grid2" style="margin-top:12px;"><a class="btn secondary" href="/profile">Назад в профиль</a><a class="btn gold" href="/numbers">Мои номера</a></div></div><script>const u=window.Telegram?.WebApp?.initDataUnsafe?.user||{};function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function msg(t,ok){const el=document.getElementById('wd_msg');el.style.display='block';el.style.color=ok?'#b6f0c3':'#ffb3b3';el.innerHTML=t;}async function loadWithdraw(){if(!u?.id){msg('Открой mini app из Telegram.', false);return;}const r=await fetch('/api/withdraw-meta?user_id='+encodeURIComponent(u.id));const d=await r.json();document.getElementById('wd_balance').textContent=d.balance||'—';document.getElementById('wd_min').textContent=d.min_withdraw||'—';document.getElementById('wd_account').innerHTML=d.payout_link?('<div style="word-break:break-all;text-align:left;">'+esc(d.payout_link)+'</div>'):'Счёт для выплат ещё не заполнен. Добавь его в профиле.';}document.getElementById('wd_submit').onclick=async()=>{if(!u?.id){return;}const fd=new FormData();fd.append('user_id', String(u.id));fd.append('username', u.username||'');fd.append('full_name', [u.first_name||'', u.last_name||''].join(' ').trim());fd.append('amount', (document.getElementById('wd_amount').value||'').trim());const r=await fetch('/api/withdraw-request', {method:'POST', body:fd});const d=await r.json();if(d.ok){msg('✅ Заявка на вывод создана.', true);document.getElementById('wd_amount').value='';loadWithdraw();}else{msg(esc(d.error||'Не удалось создать заявку.'), false);}};loadWithdraw();</script>"""
+  return _miniapp_shell('Вывод', body, 'profile')
+
+async def miniapp_withdraw(request):
+  return web.Response(text=miniapp_withdraw_html(), content_type='text/html', charset='utf-8')
+
+async def api_withdraw_meta(request):
+  try:
+    user_id = int(request.query.get('user_id', '0'))
+  except Exception:
+    user_id = 0
+  user = db.get_user(user_id) if user_id else None
+  return web.json_response({
+    'ok': True,
+    'balance': usd(user['balance'] if user else 0),
+    'min_withdraw': usd(float(db.get_setting('min_withdraw', str(MIN_WITHDRAW)))),
+    'payout_link': (db.get_payout_link(user_id) or '') if user_id else '',
+  })
+
+async def api_withdraw_request(request):
+  data = await request.post()
+  try:
+    user_id = int((data.get('user_id') or '0').strip())
+  except Exception:
+    user_id = 0
+  username = (data.get('username') or '').strip()
+  full_name = (data.get('full_name') or '').strip()
+  raw_amount = (data.get('amount') or '').strip().replace(',', '.')
+  if not user_id:
+    return web.json_response({'ok': False, 'error': 'Нет пользователя.'}, status=400)
+  try:
+    amount = round(float(raw_amount), 2)
+  except Exception:
+    amount = 0.0
+  minimum = float(db.get_setting('min_withdraw', str(MIN_WITHDRAW)))
+  if amount <= 0:
+    return web.json_response({'ok': False, 'error': 'Укажи сумму вывода.'}, status=400)
+  if amount < minimum:
+    return web.json_response({'ok': False, 'error': f'Минимальный вывод: {usd(minimum)}'}, status=400)
+  touch_user(user_id, username, full_name or username or str(user_id))
+  user = db.get_user(user_id)
+  balance = float(user['balance'] if user else 0)
+  if amount > balance:
+    return web.json_response({'ok': False, 'error': 'Недостаточно средств на балансе.'}, status=400)
+  payout_link = (db.get_payout_link(user_id) or '').strip()
+  if not payout_link:
+    return web.json_response({'ok': False, 'error': 'Сначала заполни счёт для выплат в профиле.'}, status=400)
+  db.subtract_balance(user_id, amount)
+  wd_id = db.create_withdrawal(user_id, amount)
+  username_line = f"\n🔹 Username: @{escape(username)}" if username else ""
+  full_name_safe = escape(full_name or username or str(user_id))
+  text = (
+    "<b>📨 Новая заявка на вывод</b>\n\n"
+    f"🧾 ID: <b>{wd_id}</b>\n"
+    f"👤 Пользователь: <b>{full_name_safe}</b>{username_line}\n"
+    f"🆔 ID: <code>{user_id}</code>\n"
+    f"💸 Сумма: <b>{usd(amount)}</b>\n\n"
+    f"💳 <b>Счёт для оплаты:</b>\n{escape(payout_link)}"
+  )
+  plain_text = (
+    "📨 Новая заявка на вывод\n\n"
+    f"ID: {wd_id}\nПользователь: {full_name or username or user_id}"
+    f"{(' @' + username) if username else ''}\nID: {user_id}\nСумма: {usd(amount)}\n\nСчёт для оплаты:\n{payout_link}"
+  )
+  bot = PRIMARY_BOT or Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+  close_after = PRIMARY_BOT is None
+  sent_ok = False
+  try:
+    channel_id = int(db.get_setting('withdraw_channel_id', str(WITHDRAW_CHANNEL_ID)))
+    withdraw_thread_id = int(db.get_setting('withdraw_thread_id', '0') or 0)
+    try:
+      await bot.send_message(channel_id, text, reply_markup=withdraw_admin_kb(wd_id), message_thread_id=(withdraw_thread_id or None))
+      sent_ok = True
+    except Exception:
+      logging.exception('miniapp withdraw send failed (with topic)')
+    if not sent_ok:
+      try:
+        await bot.send_message(channel_id, text, reply_markup=withdraw_admin_kb(wd_id))
+        sent_ok = True
+      except Exception:
+        logging.exception('miniapp withdraw send failed (without topic)')
+    if not sent_ok:
+      try:
+        await bot.send_message(channel_id, plain_text, reply_markup=withdraw_admin_kb(wd_id))
+        sent_ok = True
+      except Exception:
+        logging.exception('miniapp withdraw send failed (plain text)')
+  finally:
+    if close_after:
+      await bot.session.close()
+  return web.json_response({'ok': True, 'withdraw_id': int(wd_id), 'sent_ok': sent_ok})
+
 async def miniapp_loading_frame(request):
   name = request.match_info.get('name', '')
   if not re.fullmatch(r'DVE_frame_\d{3}\.png', name or ''):
@@ -2444,6 +2535,7 @@ async def run_web_server():
   app = web.Application(client_max_size=15 * 1024 * 1024)
   app.router.add_get('/', miniapp_index)
   app.router.add_get('/profile', miniapp_profile)
+  app.router.add_get('/withdraw', miniapp_withdraw)
   app.router.add_get('/numbers', miniapp_numbers)
   app.router.add_get('/submit', miniapp_submit)
   app.router.add_get('/manuals', miniapp_manuals)
@@ -2458,6 +2550,8 @@ async def run_web_server():
   app.router.add_get('/manuals/vtb-gazprom/', miniapp_vtbgaz)
   app.router.add_get('/manuals/operator/{key}', miniapp_manual_operator)
   app.router.add_get('/api/profile-summary', api_profile_summary)
+  app.router.add_get('/api/withdraw-meta', api_withdraw_meta)
+  app.router.add_post('/api/withdraw-request', api_withdraw_request)
   app.router.add_get('/api/payout-account', api_payout_account)
   app.router.add_post('/api/payout-account', api_payout_account)
   app.router.add_get('/api/my-numbers', api_my_numbers)
