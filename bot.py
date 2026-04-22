@@ -1274,9 +1274,9 @@ def main_menu():
   kb.adjust(2, 2, 2, 1)
   url = miniapp_url('/')
   if url:
-    kb.row(InlineKeyboardButton(text="DVE APP⭐️", web_app=WebAppInfo(url=url)))
+    kb.row(InlineKeyboardButton(text="DVE", web_app=WebAppInfo(url=url)))
   else:
-    kb.row(InlineKeyboardButton(text="DVE APP⭐️", callback_data="miniapp:help"))
+    kb.row(InlineKeyboardButton(text="DVE", callback_data="miniapp:help"))
   return kb.as_markup()
 
 
@@ -1817,7 +1817,7 @@ def miniapp_home_kb():
   kb = InlineKeyboardBuilder()
   url = miniapp_url('/')
   if url:
-    kb.button(text="DVE APP⭐️", web_app=WebAppInfo(url=url))
+    kb.button(text="DVE", web_app=WebAppInfo(url=url))
   else:
     kb.button(text="ℹ️ Mini App не настроен", callback_data="miniapp:help")
   kb.button(text="🏠 На главную", callback_data="menu:home")
@@ -7501,7 +7501,12 @@ async def open_qr_browser_message(message: Message, index: int = 0):
     return
   idx = max(0, min(index, len(items) - 1))
   item = items[idx]
-  await message.answer_photo(queue_photo_input(item['qr_file_id']), caption=render_qr_browser_caption(item), reply_markup=admin_qr_browser_kb(idx, len(items)))
+  caption = render_qr_browser_caption(item)
+  photo = queue_photo_input(item['qr_file_id'])
+  try:
+    await message.answer_photo(photo, caption=caption, reply_markup=admin_qr_browser_kb(idx, len(items)))
+  except Exception:
+    await message.answer(caption + "\n\n<i>QR preview недоступен.</i>", reply_markup=admin_qr_browser_kb(idx, len(items)))
 
 async def update_qr_browser_message(callback: CallbackQuery, index: int = 0):
   items = recent_qr_items(50)
@@ -7510,11 +7515,16 @@ async def update_qr_browser_message(callback: CallbackQuery, index: int = 0):
     return
   idx = max(0, min(index, len(items) - 1))
   item = items[idx]
-  media = InputMediaPhoto(media=queue_photo_input(item['qr_file_id']), caption=render_qr_browser_caption(item), parse_mode=ParseMode.HTML)
+  caption = render_qr_browser_caption(item)
+  photo = queue_photo_input(item['qr_file_id'])
   try:
+    media = InputMediaPhoto(media=photo, caption=caption, parse_mode=ParseMode.HTML)
     await callback.message.edit_media(media=media, reply_markup=admin_qr_browser_kb(idx, len(items)))
   except Exception:
-    await callback.message.answer_photo(queue_photo_input(item['qr_file_id']), caption=render_qr_browser_caption(item), reply_markup=admin_qr_browser_kb(idx, len(items)))
+    try:
+      await callback.message.edit_caption(caption=caption + "\n\n<i>QR preview недоступен.</i>", reply_markup=admin_qr_browser_kb(idx, len(items)), parse_mode=ParseMode.HTML)
+    except Exception:
+      await callback.message.answer(caption + "\n\n<i>QR preview недоступен.</i>", reply_markup=admin_qr_browser_kb(idx, len(items)))
 
 def render_admin_queue_text() -> str:
   items = latest_queue_items(10)
@@ -8706,7 +8716,7 @@ async def main():
     db.set_setting('bot_username_cached', me.username or BOT_USERNAME_FALLBACK)
     if WEBAPP_BASE_URL:
       try:
-        await primary_bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="Diamond Vault Esim", web_app=WebAppInfo(url=miniapp_url('/'))))
+        await primary_bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="DVE", web_app=WebAppInfo(url=miniapp_url('/'))))
       except Exception:
         logging.exception("set_chat_menu_button failed")
     logging.info("Primary bot started as @%s", me.username or BOT_USERNAME_FALLBACK)
